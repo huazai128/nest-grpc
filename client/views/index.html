@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta charset="UTF-8">
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="description" content="前端架构">
+  <meta name="keyword" content="前端架构">
+  <meta http-equiv="x-dns-prefetch-control" content="on" />
+  <meta name='viewport'
+    content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no' />
+  <!-- <link rel="dns-prefetch" href="" /> -->
+  <!-- EMP inject title -->
+  <title><%= htmlWebpackPlugin.options.title %></title>
+
+  <!-- EMP inject css -->
+  <% for (let i in htmlWebpackPlugin.options.files.css) { %>
+  <link rel="stylesheet" href="<%= htmlWebpackPlugin.options.files.css[i] %>" /><% } %>
+  <!-- EMP inject js -->
+  <% for (let i in htmlWebpackPlugin.options.files.js) { %>
+  <script src="<%= htmlWebpackPlugin.options.files.js[i] %>"></script><% } %>
+
+  <style>
+    #emp-root {
+      width: 100%;
+      height: 100vh;
+    }
+
+    .emp-loading-box {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .emp-loading-box .loading,
+    .emp-loading-box .loading>div {
+      position: relative;
+      box-sizing: border-box;
+    }
+
+    .emp-loading-box .loading {
+      display: block;
+      font-size: 0;
+      color: #13547a;
+    }
+
+    .emp-loading-box .loading>div {
+      display: inline-block;
+      float: none;
+      background-color: currentColor;
+      border: 0 solid currentColor;
+    }
+
+    .emp-loading-box .loading {
+      width: 42px;
+      height: 32px;
+    }
+
+    .emp-loading-box .loading>div:nth-child(1) {
+      position: absolute;
+      bottom: 32%;
+      left: 18%;
+      width: 14px;
+      height: 14px;
+      border-radius: 100%;
+      transform-origin: center bottom;
+      animation: ball-climbing-dot-jump 0.6s ease-in-out infinite;
+    }
+
+    .emp-loading-box .loading>div:not(:nth-child(1)) {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 14px;
+      height: 2px;
+      border-radius: 0;
+      transform: translate(60%, 0);
+      animation: ball-climbing-dot-steps 1.8s linear infinite;
+    }
+
+    .emp-loading-box .loading>div:not(:nth-child(1)):nth-child(2) {
+      animation-delay: 0ms;
+    }
+
+    .emp-loading-box .loading>div:not(:nth-child(1)):nth-child(3) {
+      animation-delay: -600ms;
+    }
+
+    .emp-loading-box .loading>div:not(:nth-child(1)):nth-child(4) {
+      animation-delay: -1200ms;
+    }
+
+    @keyframes ball-climbing-dot-jump {
+      0% {
+        transform: scale(1, 0.7);
+      }
+
+      20% {
+        transform: scale(0.7, 1.2);
+      }
+
+      40% {
+        transform: scale(1, 1);
+      }
+
+      50% {
+        bottom: 125%;
+      }
+
+      46% {
+        transform: scale(1, 1);
+      }
+
+      80% {
+        transform: scale(0.7, 1.2);
+      }
+
+      90% {
+        transform: scale(0.7, 1.2);
+      }
+
+      100% {
+        transform: scale(1, 0.7);
+      }
+    }
+
+    @keyframes ball-climbing-dot-steps {
+      0% {
+        top: 0;
+        right: 0;
+        opacity: 0;
+      }
+
+      50% {
+        opacity: 1;
+      }
+
+      100% {
+        top: 100%;
+        right: 100%;
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="emp-root">
+    <div class="emp-loading-box">
+      <div class="loading">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
