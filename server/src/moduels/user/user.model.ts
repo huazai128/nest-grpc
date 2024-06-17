@@ -8,7 +8,7 @@ import {
   IsString,
   IsNumber,
 } from 'class-validator';
-import paginate from 'mongoose-paginate-v2';
+import * as paginate from 'mongoose-paginate-v2';
 
 @plugin(AutoIncrementID, {
   field: 'userId',
@@ -28,6 +28,7 @@ import paginate from 'mongoose-paginate-v2';
   },
 })
 export class User {
+
   @prop({ unique: true }) // 设置唯一索引
   userId: number;
 

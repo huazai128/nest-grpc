@@ -9,7 +9,22 @@ export class UserService {
     @InjectModel(User) private readonly userModel: MongooseModel<User>,
   ) {}
 
-  async getUserInfo(id) {
-    await this.userModel.findById({ id: id }).exec();
+  /**
+   * 根据ID获取用户数据
+   * @param {*} id
+   * @return {*} 
+   * @memberof UserService
+   */
+  getUserInfo(id) {
+    return  this.userModel.find({ id: id }).exec();
+  }
+
+  /**
+   * 获取所有用户
+   * @return {*} 
+   * @memberof UserService
+   */
+  getAllUser() {
+    return this.userModel.find().exec()
   }
 }
