@@ -12,19 +12,19 @@ export class UserService {
   /**
    * 根据ID获取用户数据
    * @param {*} id
-   * @return {*} 
+   * @return {*}
    * @memberof UserService
    */
   getUserInfo(id) {
-    return  this.userModel.find({ id: id }).exec();
+    return this.userModel.find({ id: id }).exec();
   }
 
   /**
    * 获取所有用户
-   * @return {*} 
+   * @return {*}
    * @memberof UserService
    */
   getAllUser() {
-    return this.userModel.find().exec()
+    return this.userModel.find().exec();
   }
 }

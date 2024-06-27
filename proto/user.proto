@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package apiproto;
+package userproto;
 
 service UserService {
     rpc getUsers(getBooksRequest) returns (getUsersResponse) {}

@@ -1,7 +1,7 @@
+import { dbUrl } from 'config';
 import { connection, disconnect, connect, set } from 'mongoose';
 
 export const DB_CONNECTION_TOKEN = 'DB_CONNECTION_TOKEN';
-const dbUrl = 'mongodb://127.0.0.1:27017/server';
 
 export const databaseProviders = [
   {
