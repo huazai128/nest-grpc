@@ -14,8 +14,6 @@ export class ProtousersController implements OnModuleInit {
 
   async onModuleInit() {
     this.userService = this.client.getService<UserService>('UserService')
-    const res = await this.userService.getUsers({})
-    console.log(res, 'res')
   }
 
   @Get()

@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common'
 import { ClientsModule, Transport } from '@nestjs/microservices'
 import { join } from 'path'
 import { ProtousersController } from './protousers.controller'
+import { ReflectionService } from '@grpc/reflection'
+import { loadPackageDefinition } from '@grpc/grpc-js'
 
 @Module({
   imports: [
@@ -12,7 +14,7 @@ import { ProtousersController } from './protousers.controller'
         options: {
           url: '0.0.0.0:50052',
           package: 'userproto',
-          protoPath: '0.0.0.0:50051/',
+          protoPath: join(__dirname, '../../../../../proto/user.proto'),
         },
       },
     ]),

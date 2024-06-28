@@ -64,6 +64,7 @@
   "dependencies": {
     "@grpc/grpc-js": "^1.10.10",
     "@grpc/proto-loader": "^0.7.13",
+    "@grpc/reflection": "^1.0.4",
     "@nestjs/common": "^10.0.0",
     "@nestjs/core": "^10.0.0",
     "@nestjs/microservices": "^10.3.9",
@@ -79,6 +80,7 @@
     "mobx-react": "^7.2.1",
     "mobx-react-lite": "^3.2.2",
     "morgan": "^1.10.0",
+    "nestjs-proto-gen-ts": "^1.0.21",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-router-dom": "5",
