@@ -14,7 +14,7 @@ import { loadPackageDefinition } from '@grpc/grpc-js'
         options: {
           url: '0.0.0.0:50052',
           package: 'userproto',
-          protoPath: join(__dirname, '../../../../../proto/user.proto'),
+          protoPath: join(__dirname, './user.proto'),
         },
       },
     ]),
