@@ -7,6 +7,7 @@ yarn.lock
 yarn-debug.lock
 pnpm-debug.log
 config.env
+/server/protos
 
 # Logs
 logs
