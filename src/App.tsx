@@ -8,6 +8,7 @@ const App = () => {
     <>
       <h1>Micro Host大苏打</h1>
       <StoreComp />
+      <div>登录</div>
       <Button customLabel="HOST" />
     </>
   )

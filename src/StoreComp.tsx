@@ -1,5 +1,6 @@
-import {observer} from 'mobx-react'
+import { observer } from 'mobx-react'
 import incStore from './store/incStore'
+
 const StoreComp = observer(() => {
   return (
     <>
