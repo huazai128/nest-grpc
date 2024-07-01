@@ -12,7 +12,6 @@ import { Request } from 'express'
 import morgan from 'morgan'
 import { get } from 'lodash'
 import ejs from 'ejs'
-import helmet from 'helmet'
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule)
@@ -23,15 +22,6 @@ async function bootstrap() {
   app.setViewEngine('html')
   app.engine('html', ejs.renderFile)
 
-  // app.use(
-  //   helmet({
-  //     contentSecurityPolicy: {
-  //       directives: {
-  //         'script-src': ["'self'", 'cdn.jsdelivr.net'],
-  //       },
-  //     },
-  //   }),
-  // )
   app.use(compression())
   app.use(bodyParser.json({ limit: '10mb' }))
   app.use(cookieParser(COOKIE_KEY))

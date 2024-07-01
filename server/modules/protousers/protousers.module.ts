@@ -2,8 +2,6 @@ import { Module } from '@nestjs/common'
 import { ClientsModule, Transport } from '@nestjs/microservices'
 import { join } from 'path'
 import { ProtousersController } from './protousers.controller'
-import { ReflectionService } from '@grpc/reflection'
-import { loadPackageDefinition } from '@grpc/grpc-js'
 
 @Module({
   imports: [
