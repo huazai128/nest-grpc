@@ -22,7 +22,8 @@
     "emp:build": "emp build",
     "build:ts": "emp build -t",
     "emp:start": "emp serve",
-    "stat": "emp build --analyze"
+    "stat": "emp build --analyze",
+    "proto": "sh ./scripts/proto.sh"
   },
   "author": "",
   "license": "ISC",

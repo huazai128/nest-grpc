@@ -4,9 +4,15 @@ PROTO_DIR="./server/protos"
 
 rm -rf "$PROTO_DIR"
 
-git clone https://github.com/huazai128/protos.git
+cd ./server
 
-find "$PROTO_DIR" ! -name "*.proto" ! -name "*.ts" -mindepth 1 -delete
+git clone https://github.com/huazai128/protos-file.git
+
+
+mv ./protos-file/protos ./
+
+rm -rf ./protos-file
+
 
 
 
