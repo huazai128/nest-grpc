@@ -7,11 +7,6 @@ yarn.lock
 yarn-debug.lock
 pnpm-debug.log
 config.env
-/src/protos/node_modules
-/src/protos/scripts
-/src/protos/.gitignore
-/src/protos/package.json
-/src/protos/yarn.lock
 
 # Logs
 logs
