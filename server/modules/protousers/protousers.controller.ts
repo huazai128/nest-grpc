@@ -14,10 +14,13 @@ export class ProtousersController implements OnModuleInit {
 
   async onModuleInit() {
     this.userService = this.client.getService<UserService>('UserService')
+    Observable
   }
 
   @Get()
   async getProtoUsers() {
-    return this.userService.getUsers({})
+    const data = this.userService.getUsers({})
+    console.log(data, '=====')
+    return data
   }
 }
