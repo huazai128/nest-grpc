@@ -1,0 +1,81 @@
+@use 'sass:math';
+
+@function increase-value($base-value, $increment, $max-value, $unit) {
+  $values: (); // 定义一个空的值映射
+
+  @for $i from 0 through math.div($max-value - $base-value, $increment) {
+    $value: $base-value + ($increment * $i);
+    $values: map-merge(
+      $values,
+      (
+        $value: #{$value}#{$unit},
+      )
+    ); // 将每个值添加到映射中
+  }
+
+  @return $values; // 返回值映射
+}
+
+$font-sizes: increase-value(12, 2, 70, 'px');
+$padding-values: increase-value(0, 2, 100, 'px');
+$margin-values: increase-value(0, 2, 100, 'px');
+
+// 打印字体大小 如: fs-12
+@each $size, $value in $font-sizes {
+  .fs-#{$size} {
+    font-size: $value;
+  }
+}
+
+// 打印内边距 如：pd12
+@each $size, $value in $padding-values {
+  .pd-#{$size} {
+    padding: $value;
+  }
+}
+
+// 打印外边距 mg12
+@each $size, $value in $margin-values {
+  .mg-#{$size} {
+    margin: $value;
+  }
+}
+
+// 定义方向和属性名称的列表
+$directions: (
+  ('top', 'padding-top'),
+  ('left', 'padding-left'),
+  ('right', 'padding-right'),
+  ('bottom', 'padding-bottom')
+);
+
+// 生成 padding 类 ptop-12
+@each $direction in $directions {
+  $direction-name: nth($direction, 1);
+  $property-name: nth($direction, 2);
+
+  @each $size, $value in $padding-values {
+    .p#{$direction-name}-#{$size} {
+      #{$property-name}: $value;
+    }
+  }
+}
+
+$mDirections: (
+  ('top', 'margin-top'),
+  ('left', 'margin-left'),
+  ('right', 'margin-right'),
+  ('bottom', 'margin-bottom')
+);
+
+// 生成 margin 类 使用mtop-12
+@each $direction in $mDirections {
+  $direction-name: nth($direction, 1);
+  $property-name: nth($direction, 2);
+
+  @each $size, $value in $margin-values {
+    .m#{$direction-name}-#{$size} {
+      #{$property-name}: $value;
+    }
+  }
+}

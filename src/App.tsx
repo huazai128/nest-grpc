@@ -1,9 +1,5 @@
 import React from 'react'
-import { Button } from 'src/Button'
-import StoreComp from './StoreComp'
-import incStore from './store/incStore'
 import { auth } from '@src/services/api'
-export { Button, StoreComp, incStore }
 const App = () => {
   return (
     <>

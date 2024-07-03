@@ -1,5 +1,6 @@
 declare interface Window {
   INIT_DATA: {
+    categoryList: Array<CategotyItem>
     userInfo?: {
       name: string
       userId: number
@@ -16,3 +17,16 @@ declare module 'worker-loader!*.ts' {
   export default WebpackWorker
 }
 
+/**
+ * 全局Store
+ * @interface IStore
+ */
+interface IStore {
+  globalStore: IGlobalStore.GlobalStore
+  authStore: IAuthStore.AuthStorex
+}
+
+declare module '*.scss' {
+  const classes: { readonly [key: string]: string }
+  export = classes
+}
