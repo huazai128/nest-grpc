@@ -12,9 +12,6 @@ import { RedisCoreModule } from './processors/redis/redis.module'
     RedisCoreModule.forRoot({
       type: 'single',
       url: 'redis://localhost:6379',
-      options: {
-        // retryStrategy: retryStrategy,
-      },
     }),
     ...modules,
   ],

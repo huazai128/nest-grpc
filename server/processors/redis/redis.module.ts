@@ -2,7 +2,7 @@ import {
   RedisModuleAsyncOptions,
   RedisModuleOptions,
   RedisModuleOptionsFactory,
-} from '@app/interfaces/redis.interfaces'
+} from '@app/interfaces/redis.interface'
 import { DynamicModule, Global, Module, Provider } from '@nestjs/common'
 import { createRedisConnection, getRedisConnectionToken, getRedisOptionsToken } from './redis.util'
 import { RedisService } from './redis.service'

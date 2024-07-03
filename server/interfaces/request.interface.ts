@@ -5,20 +5,7 @@ declare global {
     interface Request {
       isLogin: boolean
     }
-
-    interface AuthenticatedRequest extends Request {
-      user: User
-    }
-
-    interface UnauthenticatedRequest extends Request {
-      user?: undefined
-    }
   }
-}
-
-export interface User {
-  account: string
-  userId: number
 }
 
 export interface TimeInfo {

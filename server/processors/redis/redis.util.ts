@@ -3,7 +3,7 @@ import {
   REDIS_MODULE_CONNECTION_TOKEN,
   REDIS_MODULE_OPTIONS_TOKEN,
 } from '@app/constants/redis.constant'
-import { RedisModuleOptions } from '@app/interfaces/redis.interfaces'
+import { RedisModuleOptions } from '@app/interfaces/redis.interface'
 import logger from '@app/utils/logger'
 import { Redis, RedisOptions } from 'ioredis'
 

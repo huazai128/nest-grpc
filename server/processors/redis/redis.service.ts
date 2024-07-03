@@ -3,7 +3,7 @@ import { Redis } from 'ioredis'
 import { createLogger } from '@app/utils/logger'
 import { isDevEnv } from '@app/app.env'
 import { isNil, UNDEFINED } from '@app/constants/value.constant'
-import { RedisModuleOptions } from '@app/interfaces/redis.interfaces'
+import { RedisModuleOptions } from '@app/interfaces/redis.interface'
 import { InjectRedis, InjectRedisOptions } from '@app/decorators/redis.decorator'
 
 const logger = createLogger({ scope: 'RedisService', time: isDevEnv })

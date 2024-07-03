@@ -1,5 +1,4 @@
 import { isDevEnv } from '@app/app.env'
-import { User } from '@app/interfaces/request.interface'
 import logger from '@app/utils/logger'
 import { Injectable, NestMiddleware } from '@nestjs/common'
 import { Request, Response, NextFunction } from 'express'

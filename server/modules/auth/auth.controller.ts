@@ -1,21 +1,28 @@
-import { Body, Controller, Post, Req, Res } from '@nestjs/common'
+import { Body, Controller, Post, Req, Res, Session } from '@nestjs/common'
 import { AuthService } from './auth.service'
 import { AuthDTO } from './auth.dto'
 import { Request, Response } from 'express'
+import { SessionInfo } from '@app/interfaces/session.interfave'
+import { AuthInfo } from '@app/interfaces/auth.interface'
 
 @Controller('api/auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
-  public async adminLogin(@Req() req: Request, @Body() data: AuthDTO, @Res() res: Response) {
+  public async adminLogin(
+    @Req() req: Request,
+    @Body() data: AuthDTO,
+    @Session() session: SessionInfo,
+    @Res() res: Response,
+  ) {
     const { accessToken, ...result } = await this.authService.login(data)
     res.cookie('jwt', accessToken, {
       sameSite: true,
       httpOnly: true,
     })
     res.cookie('userId', result.userId)
-    // req.session.user = result
+    session.user = result as AuthInfo
     return res.status(200).send({
       result: result,
       status: 'success',
