@@ -4,14 +4,14 @@ import styles from './style.scss'
 
 const { Content } = Layout
 
-const Site = () => {
+const DataVerview = () => {
   return (
-    <Page title="首页" className={styles.siteBox}>
+    <Page title="数据汇总" className={styles.siteBox}>
       <Content className={styles.siteLayout} style={{ padding: '24px 50px' }}>
-        首页
+        数据汇总
       </Content>
     </Page>
   )
 }
 
-export default Site
+export default DataVerview

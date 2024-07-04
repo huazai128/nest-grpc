@@ -2,6 +2,8 @@ import { StoreExt } from '@src/utils/reactExt'
 import { action, observable, makeObservable, computed, toJS } from 'mobx'
 import * as STORE_KEY from '@src/constants/storeKey.constant'
 import { MenuProps } from 'antd'
+import { routesFlat } from '@src/routes'
+import { pathToRegexp } from 'path-to-regexp'
 
 export class GlobalStore extends StoreExt {
   constructor() {
@@ -75,6 +77,13 @@ export class GlobalStore extends StoreExt {
   onSelected: MenuProps['onSelect'] = ({ selectedKeys }: any) => {
     this.selectedKeys = selectedKeys
     localStorage.setItem(STORE_KEY.SELECTED_KEY, JSON.stringify(selectedKeys))
+  }
+
+  @action
+  updateSelectKey = (pathname: string) => {
+    const key = (routesFlat.find((item) => item.path && pathToRegexp(item.path).exec(pathname))?.key || '1') as string
+    this.selectedKeys = [key]
+    localStorage.setItem(STORE_KEY.SELECTED_KEY, JSON.stringify(toJS(this.selectedKeys)))
   }
 }
 

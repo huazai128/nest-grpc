@@ -39,7 +39,7 @@ export class RouterController {
    * @return {*}
    * @memberof AppController
    */
-  @Get()
+  @Get('/page/*')
   // @UseGuards(RouterGuard)
   @Header('content-type', 'text/html')
   @Render('index')

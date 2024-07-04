@@ -32,7 +32,6 @@ interface IProps {
   sideBarTheme: IGlobalStore.SideBarTheme
   navOpenKeys: string[]
   setOpenKeys: (openKeys: string[]) => void
-  userInfo: IAuthStore.UserInfo
   history: History
   siteId: string
   selectedKeys: string[]
@@ -50,7 +49,7 @@ const SiderMenu: React.FC = () => {
   const { sideBarTheme, selectedKeys, menuProps, onSelected, updateSelectKey } = globalStore
   const history = useHistory()
   const location = useLocation()
-  let { params } = useRouteMatch('/admin/:id/*') as { params: any }
+  let { params } = useRouteMatch('/page/*') as { params: any }
 
   useEffect(() => {
     updateSelectKey(location.pathname)
