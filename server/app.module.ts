@@ -15,7 +15,7 @@ import { RedisCoreModule } from './processors/redis/redis.module'
     }),
     ...modules,
   ],
-  controllers: [AppController],
+  controllers: [],
   providers: [AppService],
 })
 export class AppModule {

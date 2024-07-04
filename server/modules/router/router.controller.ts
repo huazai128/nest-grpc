@@ -5,7 +5,7 @@ import { SessionPipe } from '@app/pipes/session.pipe'
 import { QueryParams } from '@app/decorators/params.decorator'
 import { RouterSercive } from './router.service'
 
-@Controller('')
+@Controller()
 export class RouterController {
   constructor(private readonly routeService: RouterSercive) {}
   /**
@@ -59,6 +59,6 @@ export class RouterController {
   @Header('content-type', 'text/html')
   @Render('index')
   allPage(@Req() req: Request) {
-    return { redirectUrl: '/' }
+    return { data: { name: '首页' } }
   }
 }

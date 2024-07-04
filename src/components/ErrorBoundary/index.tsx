@@ -24,7 +24,7 @@ function ErrorBoundaryHoc<T extends object>(WrappedComponent: React.FC<T>, name:
     }
 
     componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-      console.log(error, '=======')
+      console.log(error, '此处可以上报')
     }
 
     render() {
