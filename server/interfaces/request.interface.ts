@@ -1,3 +1,6 @@
+import { AuthInfo } from './auth.interface'
+import { SessionInfo } from './session.interfave'
+
 /* eslint-disable @typescript-eslint/no-namespace */
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -5,10 +8,19 @@ declare global {
     interface Request {
       isLogin: boolean
     }
+
+    interface AuthenticatedRequest extends Request {
+      user: AuthInfo
+    }
+
+    interface UnauthenticatedRequest extends Request {
+      user?: AuthInfo
+    }
   }
 }
 
-export interface TimeInfo {
-  startTime?: number
-  endTime?: number
+declare module 'express' {
+  interface Request {
+    session: SessionInfo
+  }
 }

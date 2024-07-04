@@ -1,0 +1,50 @@
+@import '~antd/dist/reset.css';
+
+:global {
+  body,
+  html {
+    margin: 0;
+    background: #151a30;
+  }
+
+  #emp-root {
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .site-layout {
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .site-header {
+    width: 100%;
+    background: #222b45;
+    color: #fff;
+    box-shadow: 0 5px 15px 0 #1a1f33;
+    height: 70px;
+    z-index: 10;
+    position: relative;
+  }
+
+  .site-content {
+    height: calc(100vh - 70px);
+    background: #fff;
+  }
+
+  .spaceBox {
+    width: 100%;
+    min-height: 82px;
+    & > div {
+      width: 50%;
+    }
+  }
+
+  .spaceLoading {
+    width: 100%;
+    min-height: 82px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

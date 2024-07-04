@@ -1,16 +1,14 @@
-import React from 'react'
-import { auth } from '@src/services/api'
-const App = () => {
-  return (
-    <>
-      <h1>Micro Host大苏打</h1>
-      <div style={{ padding: 0 }} onClick={() => { 
-        auth.login({
-          account: 'admin',
-          password: 'admin'
-        })
-      }}>登录</div>
-    </>
-  )
-}
+import RouterComp from '@src/components/RouterComp'
+import { RouterCompProps } from '@src/types'
+import '@src/styles/flex.less'
+import '@src/styles/common.scss'
+import { configure } from 'mobx'
+import './App.scss'
+
+configure({
+  enforceActions: 'never',
+})
+
+const App = (props: RouterCompProps) => <RouterComp {...props} />
+
 export default App

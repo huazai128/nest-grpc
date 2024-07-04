@@ -15,19 +15,16 @@ const routes: Array<IMenu<RouteCompont>> = [
     component: 'Login',
     title: '登录',
   },
-  
+
   // 如果这里放在前面，就会拦截admin相关的路由，所以这种路由都要放在最后
   {
-    path: '/home',
+    path: '/',
     component: 'Site',
     title: '首页',
   },
-  
 ]
 
-export const menus: Array<IMenu<RouteCompont>> = [
-  
-]
+export const menus: Array<IMenu<RouteCompont>> = []
 
 const flatRouter = (list: Array<IMenu<RouteCompont>>): Array<Omit<IMenu<RouteCompont>, 'children'>> => {
   return list.reduce((items, { children, ...item }: any) => {

@@ -1,5 +1,5 @@
 import { AuthModule } from './auth/auth.module'
 import { ProtousersModule } from './protousers/protousers.module'
-import { RoutesModule } from './routes/routes.module'
+import { RouterModule } from './router/router.module'
 
-export default [AuthModule, ProtousersModule, RoutesModule]
+export default [AuthModule, ProtousersModule, RouterModule]
