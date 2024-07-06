@@ -10,11 +10,6 @@ export interface QueryVisitor {
   ua_result: Partial<IResult>
 }
 
-export interface UserInfo {
-  userId: number
-  account: string
-}
-
 export interface QueryCookies {
   [key: string]: any
 }

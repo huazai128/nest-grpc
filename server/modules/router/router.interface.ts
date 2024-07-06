@@ -1,7 +1,7 @@
-import { UserInfo } from '@app/decorators/params.decorator'
+import { AuthInfo } from '@app/interfaces/auth.interface'
 
 export interface PageInfo {
-  userInfo?: Omit<UserInfo, 'account'> & {
+  userInfo?: Omit<AuthInfo, 'account'> & {
     name: string
   }
   apiHost?: string

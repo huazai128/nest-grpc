@@ -29,7 +29,7 @@ export const COOKIE_KEY = '@get-cookie-1212-dffas'
 
 // session 配置
 export const SESSION: session.SessionOptions = {
-  secret: 'sup3rs3cr3t',
+  secret: 'grpc_client_session_secret',
   name: 'sid',
   saveUninitialized: false,
   resave: false,
@@ -42,6 +42,6 @@ export const SESSION: session.SessionOptions = {
 }
 
 export const AUTH = {
-  jwtTokenSecret: '',
+  jwtTokenSecret: 'grpc_client_token',
   expiresIn: 3600 * 24 * 7, // TOKEN过期时间， 目前还没有处理实时更新token
 }

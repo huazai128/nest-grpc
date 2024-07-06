@@ -3,6 +3,10 @@ import { ClientsModule, Transport } from '@nestjs/microservices'
 import { join } from 'path'
 import { AuthService } from './auth.service'
 import { AuthController } from './auth.controller'
+import { PassportModule } from '@nestjs/passport'
+import { AUTH } from '@app/config'
+import { JwtModule } from '@nestjs/jwt'
+import { JwtStrategy } from './jwt.strategy'
 
 @Module({
   imports: [
@@ -17,8 +21,16 @@ import { AuthController } from './auth.controller'
         },
       },
     ]),
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+    JwtModule.register({
+      privateKey: AUTH.jwtTokenSecret,
+      signOptions: {
+        expiresIn: AUTH.expiresIn as number,
+      },
+    }),
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, JwtStrategy],
+  exports: [AuthService],
 })
 export class AuthModule {}

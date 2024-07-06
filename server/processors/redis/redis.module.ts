@@ -9,14 +9,12 @@ import { RedisService } from './redis.service'
 import { createLogger } from '@app/utils/logger'
 import { isDevEnv } from '@app/app.env'
 import { CacheService } from './cache.service'
-import { SessionModule } from 'nestjs-session'
-import { sessionProvider } from './session.config'
 
 const logger = createLogger({ scope: 'RedisCoreModule', time: isDevEnv })
 
 @Global()
 @Module({
-  imports: [SessionModule.forRootAsync(sessionProvider)],
+  imports: [],
   providers: [RedisService, CacheService],
   exports: [RedisService, CacheService],
 })
