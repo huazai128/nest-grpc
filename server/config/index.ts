@@ -42,6 +42,6 @@ export const SESSION: session.SessionOptions = {
 }
 
 export const AUTH = {
-  jwtTokenSecret: 'grpc_client_token',
+  jwtTokenSecret: 'grpc_client_token_f2_we-_adasd_122-sdasdas_asdvfhfhj',
   expiresIn: 3600 * 24 * 7, // TOKEN过期时间， 目前还没有处理实时更新token
 }

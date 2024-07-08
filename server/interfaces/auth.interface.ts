@@ -3,3 +3,8 @@ export type AuthInfo = {
   account: string
   expiresIn?: number
 }
+
+export interface TokenInfo {
+  accessToken: string
+  expiresIn: number
+}

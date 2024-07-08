@@ -27,13 +27,13 @@ export class AppModule {
     consumer
       .apply(
         CorsMiddleware,
-        AppMiddleware,
         session({
           store: new RedisStore({
             client: this.redisService.client,
           }),
           ...SESSION,
         }),
+        AppMiddleware,
         LocalMiddleware,
       )
       .forRoutes('*')

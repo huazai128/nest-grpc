@@ -2,21 +2,35 @@ import { Inject, Injectable, OnModuleInit } from '@nestjs/common'
 import { ClientGrpc } from '@nestjs/microservices'
 import { AuthDTO } from './auth.dto'
 import { lastValueFrom } from 'rxjs'
-import {
-  AuthService as AuthServiceT,
-  LoginResponse,
-  ValidateUserRequest,
-  TokenRequest,
-  TokenResponse,
-} from '@app/protos/auth'
+import { AuthService as AuthServiceT, LoginResponse, ValidateUserRequest } from '@app/protos/auth'
+import { JwtService } from '@nestjs/jwt'
+import { AUTH } from '@app/config'
+import { TokenInfo } from '@app/interfaces/auth.interface'
 
 @Injectable()
 export class AuthService implements OnModuleInit {
   public authService: AuthServiceT
 
-  constructor(@Inject('AUTHPROTO_PACKAGE') private client: ClientGrpc) {}
+  constructor(
+    @Inject('AUTHPROTO_PACKAGE') private readonly client: ClientGrpc,
+    private readonly jwtService: JwtService,
+  ) {}
   onModuleInit() {
     this.authService = this.client.getService<AuthServiceT>('AuthService')
+  }
+
+  /**
+   * 生成token
+   * @param {*} data
+   * @return {*}  {TokenInfo}
+   * @memberof AuthService
+   */
+  public creatToken(data): TokenInfo {
+    const token = {
+      accessToken: this.jwtService.sign({ data }),
+      expiresIn: AUTH.expiresIn as number,
+    }
+    return token
   }
 
   /**
@@ -25,8 +39,17 @@ export class AuthService implements OnModuleInit {
    * @return {*}  {Promise<LoginResponse>}
    * @memberof AuthService
    */
-  public login(data: AuthDTO): Promise<LoginResponse> {
-    return lastValueFrom(this.authService.login(data))
+  public async login(data: AuthDTO): Promise<LoginResponse & TokenInfo> {
+    const { userId, account } = await lastValueFrom(this.authService.login(data))
+    const token = this.creatToken({
+      account: account,
+      userId: userId,
+    })
+    return {
+      ...token,
+      userId,
+      account,
+    }
   }
 
   /**
@@ -40,12 +63,15 @@ export class AuthService implements OnModuleInit {
   }
 
   /**
-   * 创建token
-   * @param {TokenRequest} data
-   * @return {*}  {Promise<TokenResponse>}
+   * 通过验证获取用户信息
+   * @param {string} jwt
+   * @return {*}  {Promise<any>}
    * @memberof AuthService
    */
-  public async creatToken(data: TokenRequest): Promise<TokenResponse> {
-    return lastValueFrom(this.authService.creatToken(data))
+  public async verifyAsync(jwt: string): Promise<any> {
+    const payload = await this.jwtService.verifyAsync(jwt, {
+      secret: AUTH.jwtTokenSecret,
+    })
+    return payload
   }
 }

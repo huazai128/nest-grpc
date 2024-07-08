@@ -40,7 +40,7 @@ export class RouterController {
    * @memberof AppController
    */
   @Get('/page/*')
-  // @UseGuards(RouterGuard)
+  @UseGuards(RouterGuard)
   @Header('content-type', 'text/html')
   @Render('index')
   homePage(@Req() req: Request) {
@@ -55,7 +55,7 @@ export class RouterController {
    * @memberof AppController
    */
   @Get('*')
-  // @UseGuards(RouterGuard)
+  @UseGuards(RouterGuard)
   @Header('content-type', 'text/html')
   @Render('index')
   allPage(@Req() req: Request) {
