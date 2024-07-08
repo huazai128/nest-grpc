@@ -16,6 +16,8 @@ export class AppMiddleware implements NestMiddleware {
   constructor(private readonly authService: AuthService) {}
 
   async use(request: Request, response: Response, next: NextFunction) {
+    // isApp 这里还要加上一个app 来源判断，在UA或者cookie 加上一个标识用于判断是否为内部APP.
+    // if (!isDevEnv && isApp) {
     if (!isDevEnv) {
       logger.info('来源为app内嵌h5页面授权')
       // 把用户相关信息注入到UA或者cookie中，通过UA或者cookie获取用户信息进行授权登录。
