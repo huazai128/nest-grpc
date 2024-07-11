@@ -46,15 +46,4 @@ export class AuthController {
     console.log(pattern, 'pattern')
     return this.client.sendData(pattern, {})
   }
-  /**
-   * redis 微服务
-   * @return {*}
-   * @memberof AuthController
-   */
-  @MessagePattern({ cmd: 'getUserListRes' })
-  async getUserListRes() {
-    const userList = [{ id: 1, name: '测试' }]
-    console.log('dasdad')
-    return { userList }
-  }
 }
