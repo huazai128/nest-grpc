@@ -21,6 +21,7 @@ export class AppMiddleware implements NestMiddleware {
     if (!isDevEnv) {
       logger.info('来源为app内嵌h5页面授权')
       // 把用户相关信息注入到UA或者cookie中，通过UA或者cookie获取用户信息进行授权登录。
+      // 确保服务端生成的jwt和node服务规则一致，如果不行可以通过grpc调用服务获取数据
       const jwt = get(request, 'cookies.jwt')
       if (jwt) {
         try {
