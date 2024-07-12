@@ -7,7 +7,7 @@ import { CONFIG } from '@app/config'
 @Global()
 @Module({
   imports: [
-    // ClientsModule处理了redis连接，内部还是使用routingMap 存储和处理回调问题。在多进程或者多机器下存在问题。
+    // ClientsModule处理了redis连接，内部还是使用routingMap 存储和处理回调问题。在多进程或者多机器下存在问题。建议使用grpc， grpc 内部没有routingMap存在回调关系
     ClientsModule.register([
       {
         name: REDIS_SERVICE,

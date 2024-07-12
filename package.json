@@ -74,6 +74,8 @@
     "@nestjs/microservices": "^10.3.9",
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.0.0",
+    "@nestjs/platform-socket.io": "^10.3.10",
+    "@nestjs/websockets": "^10.3.10",
     "antd": "^5.19.0",
     "axios": "^0.21.4",
     "class-transformer": "^0.5.1",
