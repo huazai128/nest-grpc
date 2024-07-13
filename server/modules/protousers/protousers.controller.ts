@@ -20,7 +20,6 @@ export class ProtousersController implements OnModuleInit {
   @Get()
   async getProtoUsers() {
     const data = this.userService.getUsers({})
-    console.log(data, '=====')
     return data
   }
 }

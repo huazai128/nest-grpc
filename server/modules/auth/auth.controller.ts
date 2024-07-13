@@ -1,10 +1,9 @@
-import { Body, Controller, Get, Inject, Post, Req, Res, Session } from '@nestjs/common'
+import { Body, Controller, Get, Post, Req, Res, Session } from '@nestjs/common'
 import { AuthService } from './auth.service'
 import { AuthDTO } from './auth.dto'
 import { Request, Response } from 'express'
 import { SessionInfo } from '@app/interfaces/session.interfave'
 import { AuthInfo } from '@app/interfaces/auth.interface'
-import { MessagePattern } from '@nestjs/microservices'
 import { RedisMicroserviceService } from '@app/processors/microservices/redis.microservice.service'
 
 @Controller('api/auth')
@@ -43,7 +42,6 @@ export class AuthController {
   @Get('list')
   getUserList() {
     const pattern = { cmd: 'getUserListRes' }
-    console.log(pattern, 'pattern')
     return this.client.sendData(pattern, {})
   }
 }
