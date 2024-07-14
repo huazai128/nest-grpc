@@ -6,20 +6,19 @@
 
 /* eslint-disable */
 
-export const protobufPackage = "userproto";
+export const protobufPackage = 'userproto'
 
-export interface getBooksRequest {
-}
+export interface getBooksRequest {}
 
 export interface getUsersResponse {
-  users: User[];
+  users: User[]
 }
 
 export interface User {
-  id: number;
-  name: string;
+  id: number
+  name: string
 }
 
 export interface UserService {
-  getUsers(request: getBooksRequest): Promise<getUsersResponse>;
+  getUsers(request: getBooksRequest): Promise<getUsersResponse>
 }

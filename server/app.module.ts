@@ -10,9 +10,10 @@ import { CONFIG, SESSION } from './config'
 import RedisStore from 'connect-redis'
 import { APP_PIPE } from '@nestjs/core'
 import { MicroserviceModule } from '@app/processors/microservices/microservice.module'
+import { WebsocketModule } from '@app/processors/websocket/websocket.module'
 
 @Module({
-  imports: [RedisCoreModule.forRoot(CONFIG.redis), MicroserviceModule, ...modules],
+  imports: [RedisCoreModule.forRoot(CONFIG.redis), MicroserviceModule, WebsocketModule, ...modules],
   controllers: [],
   providers: [
     {

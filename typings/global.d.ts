@@ -24,6 +24,7 @@ declare module 'worker-loader!*.ts' {
 interface IStore {
   globalStore: IGlobalStore.GlobalStore
   authStore: IAuthStore.AuthStorex
+  socketStore: ISocketStore.SocketStore
 }
 
 declare module '*.scss' {
