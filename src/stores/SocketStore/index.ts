@@ -9,19 +9,13 @@ export class SocketStore {
 
   @action
   initScoket = () => {
-    this.socket = io('ws://localhost:8080')
+    this.socket = io('ws://localhost:8081')
     // 监听连接成功
     this.socket.on('connect', () => {
       console.log('连接成功')
     })
     // 监听断开连接
     this.socket.on('disconnect', () => {
-      this.socket.on('disconnect', () => {
-        const lastToDisconnect = io.of('/').sockets.size === 0
-        if (lastToDisconnect) {
-          gc()
-        }
-      })
       console.log('disconnect')
     })
     // 监听连接失败

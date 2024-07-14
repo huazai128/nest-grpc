@@ -3,8 +3,9 @@ import {
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
-  WsException,
   WsResponse,
+  OnGatewayConnection,
+  OnGatewayDisconnect,
 } from '@nestjs/websockets'
 import { from, Observable, map } from 'rxjs'
 import { Server } from 'socket.io'
@@ -14,13 +15,19 @@ import { Server } from 'socket.io'
     origin: '*',
   },
 })
-export class EventsGateway {
+export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
+  handleDisconnect(client: any) {
+    console.log('连接关闭')
+  }
+
+  handleConnection(client: any, ...args: any[]) {
+    console.log('连接成功')
+  }
   @WebSocketServer()
   server: Server
 
   @SubscribeMessage('events')
-  findAll(@MessageBody() data: any): Observable<WsResponse<number>> {
-    console.log('我执行了两次')
+  handleMessage(@MessageBody() data: any): Observable<WsResponse<number>> {
     console.log('接收消息events的数据', data)
     return from([1, 2, 3]).pipe(map((item) => ({ event: 'events', data: item })))
   }
