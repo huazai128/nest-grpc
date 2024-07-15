@@ -9,7 +9,8 @@ export class SocketStore {
 
   @action
   initScoket = () => {
-    this.socket = io('ws://localhost:8081')
+    // this.socket = io('ws://localhost:8081')
+    this.socket = io('ws://172.26.130.15:8081')
     // 监听连接成功
     this.socket.on('connect', () => {
       console.log('连接成功')
@@ -24,6 +25,24 @@ export class SocketStore {
     })
     // 向events发送data
     this.socket.emit('events', { data: 'q23123' })
+    // 返回数据
+    this.socket.on('events', (data) => {
+      console.log(data, 'data')
+    })
+  }
+
+  @action
+  emitWs = (event: string, data: any) => {
+    this.socket.emit('events', { data: 'q23123' })
+  }
+
+  @action
+  onMessage = <T>(event: string) => {
+    return new Promise<T>((resolve, reject) => {
+      this.socket.on(event, (data) => {
+        resolve(data)
+      })
+    })
   }
 }
 
