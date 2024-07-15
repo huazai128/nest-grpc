@@ -12,6 +12,7 @@ import { Request } from 'express'
 import morgan from 'morgan'
 import { get } from 'lodash'
 import ejs from 'ejs'
+import { RedisIoAdapter } from '@app/adapters/redis-io.adapter'
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule)
@@ -47,6 +48,11 @@ async function bootstrap() {
       ':remote-addr - [:userId] - :remote-user ":method :url HTTP/:http-version" ":referrer" ":user-agent" :status :res[content-length] :requestParameters :requestBody --- :response-time ms',
     ),
   )
+
+  const redisIoAdapter = new RedisIoAdapter(app)
+  await redisIoAdapter.connectToRedis()
+
+  app.useWebSocketAdapter(redisIoAdapter)
 
   await app.listen(APP.PORT).then(() => {
     logger.info(`Application is running on: http://${getServerIp()}:${APP.PORT}, env: ${environment}}`)
