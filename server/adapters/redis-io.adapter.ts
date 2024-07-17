@@ -4,9 +4,16 @@ import { createAdapter } from '@socket.io/redis-adapter'
 import { createRedisConnection } from '@app/processors/redis/redis.util'
 import { CONFIG } from '@app/config'
 
+/**
+ * Redis 适配器
+ * @export
+ * @class RedisIoAdapter
+ * @extends {IoAdapter}
+ */
 export class RedisIoAdapter extends IoAdapter {
   private adapterConstructor: ReturnType<typeof createAdapter>
 
+  // 连接redis
   async connectToRedis(): Promise<void> {
     const pubClient = createRedisConnection(CONFIG.redis)
     const subClient = pubClient.duplicate()
