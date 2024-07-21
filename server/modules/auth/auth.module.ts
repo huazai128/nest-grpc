@@ -17,7 +17,12 @@ import { JwtStrategy } from './jwt.strategy'
         options: {
           url: '0.0.0.0:50052',
           package: 'authproto',
-          protoPath: join(__dirname, '../../protos/auth.proto'),
+          protoPath: ['auth.proto'],
+          loader: {
+            includeDirs: [join(__dirname, '../../protos')],
+            keepCase: true,
+          },
+          // protoPath: join(__dirname, '../../protos/auth.proto'),
         },
       },
     ]),

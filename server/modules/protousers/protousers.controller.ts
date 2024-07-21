@@ -6,6 +6,12 @@ interface UserService {
   getUsers({}): Observable<any>
 }
 
+/**
+ * 用于验证和测试
+ * @export
+ * @class ProtousersController
+ * @implements {OnModuleInit}
+ */
 @Controller('protousers')
 export class ProtousersController implements OnModuleInit {
   private userService: UserService

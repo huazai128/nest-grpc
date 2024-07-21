@@ -12,7 +12,12 @@ import { ProtousersController } from './protousers.controller'
         options: {
           url: '0.0.0.0:50052',
           package: 'userproto',
-          protoPath: join(__dirname, '../../protos/user.proto'),
+          protoPath: ['user.proto'],
+          loader: {
+            includeDirs: [join(__dirname, '../../protos')],
+            keepCase: true,
+          },
+          // protoPath: join(__dirname, '../../protos/user.proto'),
         },
       },
     ]),
