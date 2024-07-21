@@ -1,10 +1,8 @@
+import { OrderService } from '@app/protos/orders/service'
+import { UserService } from '@app/protos/user'
 import { Controller, OnModuleInit, Inject, Get } from '@nestjs/common'
 import { ClientGrpc } from '@nestjs/microservices'
-import { Observable } from 'rxjs'
-
-interface UserService {
-  getUsers({}): Observable<any>
-}
+import { lastValueFrom } from 'rxjs'
 
 /**
  * 用于验证和测试
@@ -15,17 +13,21 @@ interface UserService {
 @Controller('protousers')
 export class ProtousersController implements OnModuleInit {
   private userService: UserService
-
   constructor(@Inject('USERPROTO_PACKAGE') private client: ClientGrpc) {}
 
   async onModuleInit() {
     this.userService = this.client.getService<UserService>('UserService')
-    Observable
   }
 
   @Get()
   async getProtoUsers() {
-    const data = this.userService.getUsers({})
-    return data
+    return lastValueFrom(this.userService.getUsers({}))
+  }
+
+  @Get('test')
+  getList() {
+    return this.userService.find({
+      id: 1,
+    })
   }
 }
