@@ -1,9 +1,7 @@
-import { OrderService } from '@app/protos/orders/service'
 import { UserService } from '@app/protos/user'
 import { Controller, OnModuleInit, Inject, Get } from '@nestjs/common'
 import { ClientGrpc } from '@nestjs/microservices'
 import { lastValueFrom, ReplaySubject, Subject, toArray } from 'rxjs'
-import * as GRPC from '@grpc/grpc-js'
 
 /**
  * 用于验证和测试
