@@ -1,3 +1,5 @@
+import { isDevEnv } from '@app/config'
+import { createLogger } from '@app/utils/logger'
 import {
   MessageBody,
   SubscribeMessage,
@@ -10,6 +12,8 @@ import {
 import { from, Observable, map } from 'rxjs'
 import { Server } from 'socket.io'
 
+const Logger = createLogger({ scope: 'EventsGateway', time: isDevEnv })
+
 @WebSocketGateway(8081, {
   cors: {
     origin: '*',
@@ -17,18 +21,18 @@ import { Server } from 'socket.io'
 })
 export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   handleDisconnect(client: any) {
-    console.log('连接关闭')
+    Logger.log('连接关闭')
   }
 
   handleConnection(client: any, ...args: any[]) {
-    console.log('连接成功')
+    Logger.log('连接成功')
   }
   @WebSocketServer()
   server: Server
 
   @SubscribeMessage('events')
   handleMessage(@MessageBody() data: any): Observable<WsResponse<number>> {
-    console.log('接收消息events的数据', data)
+    Logger.log('接收消息events的数据', data)
     return from([1, 2, 3]).pipe(map((item) => ({ event: 'events', data: item })))
   }
 }
