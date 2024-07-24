@@ -1,4 +1,5 @@
 declare const styles: {
-  readonly 'rc-select-box': string
-}
-export = styles
+  readonly "rc-select-box": string;
+};
+export = styles;
+
