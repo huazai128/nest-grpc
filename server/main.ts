@@ -1,18 +1,18 @@
 import { NestExpressApplication } from '@nestjs/platform-express'
+import { RedisIoAdapter } from '@app/adapters/redis-io.adapter'
+import { APP, COOKIE_KEY, environment } from '@app/config'
 import { NestFactory } from '@nestjs/core'
 import { AppModule } from '@app/app.module'
 import logger from '@app/utils/logger'
 import { getServerIp } from '@app/utils/util'
-import { APP, COOKIE_KEY, environment } from '@app/config'
-import { join } from 'path'
 import bodyParser from 'body-parser'
 import compression from 'compression'
 import cookieParser from 'cookie-parser'
 import { Request } from 'express'
+import { join } from 'path'
 import morgan from 'morgan'
 import { get } from 'lodash'
 import ejs from 'ejs'
-import { RedisIoAdapter } from '@app/adapters/redis-io.adapter'
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule)
