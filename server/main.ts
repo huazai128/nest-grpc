@@ -1,6 +1,6 @@
 import { NestExpressApplication } from '@nestjs/platform-express'
 import { RedisIoAdapter } from '@app/adapters/redis-io.adapter'
-import { APP, COOKIE_KEY, environment } from '@app/config'
+import { APP, CONFIG, COOKIE_KEY, environment } from '@app/config'
 import { NestFactory } from '@nestjs/core'
 import { AppModule } from '@app/app.module'
 import logger from '@app/utils/logger'
@@ -13,6 +13,7 @@ import { join } from 'path'
 import morgan from 'morgan'
 import { get } from 'lodash'
 import ejs from 'ejs'
+import { MicroserviceOptions, Transport } from '@nestjs/microservices'
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule)
@@ -54,6 +55,12 @@ async function bootstrap() {
 
   app.useWebSocketAdapter(redisIoAdapter)
 
+  // redis 微服务
+  app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.REDIS,
+    options: CONFIG.redisConf,
+  })
+  await app.startAllMicroservices()
   await app.listen(APP.PORT).then(() => {
     logger.info(`Application is running on: http://${getServerIp()}:${APP.PORT}, env: ${environment}}`)
   })

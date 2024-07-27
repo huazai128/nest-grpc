@@ -9,8 +9,8 @@ export class SocketStore {
 
   @action
   initScoket = () => {
-    // this.socket = io('ws://localhost:8081')
-    this.socket = io('ws://172.26.130.15:8081')
+    this.socket = io('ws://localhost:8081')
+    // this.socket = io('ws://172.26.130.15:8081')
 
     // 监听连接成功
     this.socket.on('connect', () => {
@@ -32,6 +32,14 @@ export class SocketStore {
 
     // 返回数据
     this.socket.on('events', (data) => {
+      console.log(data, 'data')
+    })
+
+    // 触发socket
+    this.socket.emit('userLogin', { data: '登录成功' })
+
+    // 监听socket
+    this.socket.on('userLogin', (data) => {
       console.log(data, 'data')
     })
   }

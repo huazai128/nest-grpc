@@ -5,6 +5,14 @@ import { Request, Response } from 'express'
 import { SessionInfo } from '@app/interfaces/session.interfave'
 import { AuthInfo } from '@app/interfaces/auth.interface'
 import { RedisMicroserviceService } from '@app/processors/microservices/redis.microservice.service'
+import { MessageBody, SubscribeMessage, WsResponse } from '@nestjs/websockets'
+import { createLogger } from '@app/utils/logger'
+import { isDevEnv } from '@app/config'
+import { from, Observable, map } from 'rxjs'
+import { MessagePattern } from '@nestjs/microservices'
+import { USER_LOGIN } from '@app/constants/pattern.constant'
+
+const Logger = createLogger({ scope: 'EventsGateway', time: isDevEnv })
 
 @Controller('api/auth')
 export class AuthController {
@@ -43,5 +51,12 @@ export class AuthController {
   getUserList() {
     const pattern = { cmd: 'getUserListRes' }
     return this.client.sendData(pattern, {})
+  }
+
+  @MessagePattern(USER_LOGIN)
+  handleLogin() {
+    Logger.log('触发了')
+    const userList = [{ id: 1, name: '测试der' }]
+    return { userList }
   }
 }
