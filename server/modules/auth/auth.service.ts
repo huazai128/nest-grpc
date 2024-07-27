@@ -4,8 +4,10 @@ import { AuthDTO } from './auth.dto'
 import { lastValueFrom } from 'rxjs'
 import { AuthService as AuthServiceT, LoginResponse, ValidateUserRequest } from '@app/protos/auth'
 import { JwtService } from '@nestjs/jwt'
-import { AUTH } from '@app/config'
+import { AUTH, isDevEnv } from '@app/config'
 import { TokenInfo } from '@app/interfaces/auth.interface'
+import { createLogger } from '@app/utils/logger'
+const Logger = createLogger({ scope: 'AuthController', time: isDevEnv })
 
 @Injectable()
 export class AuthService implements OnModuleInit {
@@ -41,6 +43,7 @@ export class AuthService implements OnModuleInit {
    */
   public async login(data: AuthDTO): Promise<LoginResponse & TokenInfo> {
     const { userId, account } = await lastValueFrom(this.authService.login(data))
+    Logger.log('gRPC 获取登录数据', { userId, account })
     const token = this.creatToken({
       account: account,
       userId: userId,

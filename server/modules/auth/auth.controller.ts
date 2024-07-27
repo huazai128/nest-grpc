@@ -12,7 +12,7 @@ import { from, Observable, map } from 'rxjs'
 import { MessagePattern } from '@nestjs/microservices'
 import { USER_LOGIN } from '@app/constants/pattern.constant'
 
-const Logger = createLogger({ scope: 'EventsGateway', time: isDevEnv })
+const Logger = createLogger({ scope: 'AuthController', time: isDevEnv })
 
 @Controller('api/auth')
 export class AuthController {

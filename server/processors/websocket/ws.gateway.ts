@@ -20,7 +20,7 @@ const Logger = createLogger({ scope: 'EventsGateway', time: isDevEnv })
   cors: {
     origin: '*',
   },
-  transports: ['websocket'], //要将 socket.io 与多个负载平衡实例一起使用，你必须通过在客户端 socket.io 配置中设置 transports: ['websocket'] 来禁用轮询
+  transports: ['websocket', 'polling'], //要将 socket.io 与多个负载平衡实例一起使用，你必须通过在客户端 socket.io 配置中设置 transports: ['websocket'] 来禁用轮询
 })
 export class WsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(private readonly redisService: RedisMicroserviceService) {}
