@@ -23,7 +23,8 @@
     "build:ts": "emp build -t",
     "emp:start": "emp serve",
     "stat": "emp build --analyze",
-    "proto": "sh ./scripts/proto.sh"
+    "proto": "sh ./scripts/proto.sh",
+    "prod": "pm2 start pm2.config.js --no-daemon"
   },
   "author": "",
   "license": "ISC",
