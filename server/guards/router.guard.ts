@@ -18,7 +18,7 @@ export class RouterGuard extends LoggedInGuard {
     }
     const request = context.switchToHttp().getRequest()
     // 目前还没有roles字段存储到session中，需要保存到session中
-    const user = get(request, 'session.user') as unknown as AuthInfo
+    const user = get(request, 'session.user')
     const res = await super.canActivate(context)
     return res as boolean
   }

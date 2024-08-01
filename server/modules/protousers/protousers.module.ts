@@ -3,6 +3,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices'
 import { ReflectionService } from '@grpc/reflection'
 import { ProtousersController } from './protousers.controller'
 import { join } from 'path'
+import { CONFIG } from '@app/config'
 
 @Module({
   imports: [
@@ -11,7 +12,7 @@ import { join } from 'path'
         name: 'USERPROTO_PACKAGE',
         transport: Transport.GRPC,
         options: {
-          url: '0.0.0.0:50052',
+          url: CONFIG.grpcUrl,
           package: 'userproto',
           protoPath: ['user.proto'],
           loader: {

@@ -4,7 +4,7 @@ import { join } from 'path'
 import { AuthService } from './auth.service'
 import { AuthController } from './auth.controller'
 import { PassportModule } from '@nestjs/passport'
-import { AUTH } from '@app/config'
+import { AUTH, CONFIG } from '@app/config'
 import { JwtModule } from '@nestjs/jwt'
 import { JwtStrategy } from './jwt.strategy'
 
@@ -15,7 +15,7 @@ import { JwtStrategy } from './jwt.strategy'
         name: 'AUTHPROTO_PACKAGE', // name 属性的值作为注入标记
         transport: Transport.GRPC,
         options: {
-          url: '0.0.0.0:50052',
+          url: CONFIG.grpcUrl,
           package: 'authproto',
           protoPath: ['auth.proto'],
           //loader api： https://github.com/grpc/grpc-node/blob/master/packages/proto-loader/README.md

@@ -9,6 +9,7 @@ const config: ConfigServer = {
     type: 'single',
     url: 'redis://localhost:6379',
   },
+  grpcUrl: '0.0.0.0:50052',
 }
 
 export default config

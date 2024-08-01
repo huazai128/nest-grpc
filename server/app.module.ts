@@ -1,14 +1,23 @@
 import { MiddlewareConsumer, Module, ValidationPipe } from '@nestjs/common'
+import session from 'express-session'
+import RedisStore from 'connect-redis'
+import { APP_PIPE } from '@nestjs/core'
+
+// config
+import { CONFIG, SESSION } from './config'
+
+// modules
 import modules from '@app/modules/index'
+
+// middlewares
 import { LocalMiddleware } from '@app/middlewares/local.middleware'
 import { CorsMiddleware } from '@app/middlewares/cors.middleware'
 import { AppMiddleware } from '@app/middlewares/app.middleware'
+import { RouterMiddleware } from '@app/middlewares/router.middleware'
+
+// processors
 import { RedisCoreModule } from '@app/processors/redis/redis.module'
 import { RedisService } from '@app/processors/redis/redis.service'
-import session from 'express-session'
-import { CONFIG, SESSION } from './config'
-import RedisStore from 'connect-redis'
-import { APP_PIPE } from '@nestjs/core'
 import { MicroserviceModule } from '@app/processors/microservices/microservice.module'
 import { WebsocketModule } from '@app/processors/websocket/websocket.module'
 
@@ -36,6 +45,7 @@ export class AppModule {
         }),
         AppMiddleware,
         LocalMiddleware,
+        RouterMiddleware,
       )
       .forRoutes('*')
   }
