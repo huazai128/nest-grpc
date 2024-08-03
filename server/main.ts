@@ -14,6 +14,7 @@ import morgan from 'morgan'
 import { get } from 'lodash'
 import ejs from 'ejs'
 import { MicroserviceOptions, Transport } from '@nestjs/microservices'
+import { LoggingInterceptor } from './interceptors/logging.interceptor'
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule)
@@ -49,6 +50,8 @@ async function bootstrap() {
       ':remote-addr - [:userId] - :remote-user ":method :url HTTP/:http-version" ":referrer" ":user-agent" :status :res[content-length] :requestParameters :requestBody --- :response-time ms',
     ),
   )
+
+  app.useGlobalInterceptors(new LoggingInterceptor())
 
   const redisIoAdapter = new RedisIoAdapter(app)
   await redisIoAdapter.connectToRedis()

@@ -7,6 +7,8 @@ declare global {
   namespace Express {
     interface Request {
       isLogin: boolean
+      session: SessionInfo
+      isRouter: boolean
     }
 
     interface AuthenticatedRequest extends Request {
@@ -16,11 +18,5 @@ declare global {
     interface UnauthenticatedRequest extends Request {
       user?: AuthInfo
     }
-  }
-}
-
-declare module 'express' {
-  interface Request {
-    session: SessionInfo
   }
 }

@@ -4,6 +4,9 @@ import '@src/styles/flex.less'
 import '@src/styles/common.scss'
 import { configure } from 'mobx'
 import './App.scss'
+import { Monitor } from './monitor'
+
+const monitor = new Monitor()
 
 configure({
   enforceActions: 'never',
