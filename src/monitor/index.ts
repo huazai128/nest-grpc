@@ -1,4 +1,3 @@
-import config from './config'
 import { ConfigProps } from './interfaces/config.interface'
 
 export class Monitor {
@@ -10,6 +9,5 @@ export class Monitor {
     if (!appKey) {
       throw '上报map 存储位置为空'
     }
-    config.initConfig(data)
   }
 }

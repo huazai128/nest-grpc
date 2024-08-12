@@ -1,10 +1,10 @@
-import 'reflect-metadata'
 import { ConfigProps } from './interfaces/config.interface'
 
 class Config {
   public config!: ConfigProps
 
-  initConfig(config: ConfigProps) {
+  setConfig(config: ConfigProps) {
+    console.log(config, 'config')
     this.config = config
   }
 
