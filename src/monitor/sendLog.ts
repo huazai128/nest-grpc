@@ -3,7 +3,8 @@ import { ConfigProps } from './interfaces/config.interface'
 import { MetricsName } from './interfaces/util.interface'
 import LogStore from './logStore'
 import 'reflect-metadata'
-import { Injectable } from '@tanbo/di'
+import { Inject, Injectable } from '@tanbo/di'
+import { ConfigToken } from '.'
 
 /**
  * 发送日志
@@ -13,10 +14,9 @@ import { Injectable } from '@tanbo/di'
  */
 @Injectable()
 export class SendLog extends LogStore {
-  public readonly config!: ConfigProps
-  constructor() {
+  constructor(@Inject(ConfigToken) private config: ConfigProps) {
     super()
-    this.config = Config.getConfig()
+    console.log(this.config, config, '===dasd')
   }
 
   handlerCommon(key: MetricsName | string): void {
