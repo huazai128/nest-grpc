@@ -16,7 +16,6 @@ import { ConfigToken } from '.'
 export class SendLog extends LogStore {
   constructor(@Inject(ConfigToken) private config: ConfigProps) {
     super()
-    console.log(this.config, config, '===dasd')
   }
 
   handlerCommon(key: MetricsName | string): void {

@@ -9,8 +9,8 @@ export class SocketStore {
 
   @action
   initScoket = () => {
-    this.socket = io('ws://localhost:8081')
-    // this.socket = io('ws://172.26.130.15:8081')
+    // this.socket = io('ws://localhost:8081')
+    this.socket = io('ws://172.26.132.136:8081')
 
     // 监听连接成功
     this.socket.on('connect', () => {

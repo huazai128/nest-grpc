@@ -29,9 +29,9 @@ export class Monitor {
         },
       },
     ])
-    const sendLog = injector.get(SendLog)
-    const userVitals = injector.get(UserVitals)
-    const webVitals = injector.get(WebVitals)
+    // const sendLog = injector.get(SendLog)
+    // const userVitals = injector.get(UserVitals)
+    // const webVitals = injector.get(WebVitals)
     // sendLog.add(MetricsName.CBR, { name: '1' })
   }
 }
