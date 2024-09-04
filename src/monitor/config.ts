@@ -1,6 +1,6 @@
 import { ConfigProps } from './interfaces/config.interface'
 
-class Config {
+export class Config {
   public config!: ConfigProps
 
   setConfig(config: ConfigProps) {

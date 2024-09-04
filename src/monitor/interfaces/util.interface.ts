@@ -12,18 +12,18 @@ export type FN1 = (e: any) => void
 export type FN2<T, P> = (e: T, other: P) => void
 
 export interface MPerformanceNavigationTiming {
-  FP?: number
-  TTI?: number
-  DomReady?: number
-  Load?: number
-  FirseByte?: number
-  DNS?: number
-  TCP?: number
-  SSL?: number
-  TTFB?: number
-  Trans?: number
-  DomParse?: number
-  Res?: number
+  fp?: number
+  tti?: number
+  domReady?: number
+  load?: number
+  firseByte?: number
+  dns?: number
+  tcp?: number
+  ssl?: number
+  ttfb?: number
+  trans?: number
+  domParse?: number
+  res?: number
 }
 
 export enum MechanismType {
@@ -63,4 +63,15 @@ export enum MetricsName {
   HT = 'http-record',
   CE = 'change-exposure',
   RV = 'record-video',
+}
+
+export enum TransportCategory {
+  PV = 'pv',
+  PREF = 'perf',
+  EVENT = 'event',
+  CUSTOM = 'custom',
+  API = 'api',
+  ERROR = 'error',
+  RV = 'video',
+  USER = 'user',
 }

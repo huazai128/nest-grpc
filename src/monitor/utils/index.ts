@@ -115,18 +115,18 @@ export const getNavigationTiming = (): MPerformanceNavigationTiming | undefined 
     } = entry
 
     return {
-      FP: responseEnd - fetchStart, // 白屏时间
-      TTI: domInteractive - fetchStart, // 首次可交互时间
-      DomReady: domContentLoadedEventEnd - fetchStart, // HTML加载完成时间也就是 DOM Ready 时间。
-      Load: loadEventStart - fetchStart, // 页面完全加载时间
-      FirseByte: responseStart - domainLookupStart, // 首包时间
-      DNS: domainLookupEnd - domainLookupStart, // DNS查询耗时
-      TCP: connectEnd - connectStart, // TCP连接耗时
-      SSL: secureConnectionStart ? connectEnd - secureConnectionStart : 0, // SSL安全连接耗时
-      TTFB: responseStart - requestStart, // 请求响应耗时
-      Trans: responseEnd - responseStart, // 内容传输耗时
-      DomParse: domInteractive - responseEnd, // DOM解析耗时
-      Res: loadEventStart - domContentLoadedEventEnd, // 资源加载耗时
+      fp: responseEnd - fetchStart, // 白屏时间
+      tti: domInteractive - fetchStart, // 首次可交互时间
+      domReady: domContentLoadedEventEnd - fetchStart, // HTML加载完成时间也就是 DOM Ready 时间。
+      load: loadEventStart - fetchStart, // 页面完全加载时间
+      firseByte: responseStart - domainLookupStart, // 首包时间
+      dns: domainLookupEnd - domainLookupStart, // DNS查询耗时
+      tcp: connectEnd - connectStart, // TCP连接耗时
+      ssl: secureConnectionStart ? connectEnd - secureConnectionStart : 0, // SSL安全连接耗时
+      ttfb: responseStart - requestStart, // 请求响应耗时
+      trans: responseEnd - responseStart, // 内容传输耗时
+      domParse: domInteractive - responseEnd, // DOM解析耗时
+      res: loadEventStart - domContentLoadedEventEnd, // 资源加载耗时
     }
   }
 

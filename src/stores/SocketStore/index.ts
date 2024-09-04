@@ -1,3 +1,4 @@
+import config from '@src/config'
 import { action, makeAutoObservable, observable } from 'mobx'
 import { io, Socket } from 'socket.io-client'
 
@@ -9,8 +10,7 @@ export class SocketStore {
 
   @action
   initScoket = () => {
-    // this.socket = io('ws://localhost:8081')
-    this.socket = io('ws://172.26.132.136:8081')
+    this.socket = io(config.wsUrl)
 
     // 监听连接成功
     this.socket.on('connect', () => {
