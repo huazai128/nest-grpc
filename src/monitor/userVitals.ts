@@ -1,7 +1,10 @@
 import { CommonExtends } from './commonExtends'
-import { MetricsName, TransportCategory } from './interfaces/util.interface'
-import { SendLog } from './sendLog'
+import { proxyFetch, proxyXmlHttp } from './httpProxy'
+import { CustomAnalyticsData, FN1, HttpMetrics, MetricsName, TransportCategory } from './interfaces/util.interface'
 import 'reflect-metadata'
+import { mOberver } from './utils'
+import isHtml from 'is-html'
+import { onTTFB } from 'web-vitals'
 
 /**
  * 监听用户行为
@@ -9,7 +12,7 @@ import 'reflect-metadata'
  * @class UserVitals
  */
 export class UserVitals extends CommonExtends {
-  private events: Array<string> = ['click', 'touchstart', 'blur']
+  private events: Array<string> = ['click', 'touchstart', 'blur', 'touchend']
   constructor() {
     super()
     this.initClickHandler()
@@ -21,17 +24,18 @@ export class UserVitals extends CommonExtends {
    * @memberof UserVitals
    */
   initPV = () => {
+    // const { pathname, href } = window.location
     const metrice = {
       reportsType: MetricsName.RCR,
       category: TransportCategory.PV,
     }
     this.sendLog.add(MetricsName.RCR, metrice)
-    const { pathname, href } = window.location
+
     // this.behaviorTracking.push({ ...metrice, path: pathname, href })
   }
 
   /**
-   * 上报事件
+   * 点击、输入失去焦点、触发相关事件
    * @memberof UserVitals
    */
   initClickHandler = () => {
@@ -42,17 +46,25 @@ export class UserVitals extends CommonExtends {
         return null
       }
       const data = target.dataset || {} // 点击事件上报参数
-      let classNames = target.classList?.value
+      const classNames = target.classList?.value
       const id = target.id ? ` id="${target.id}"` : ''
       const innerText = target.innerText
       const value = target.value
       // 获取包含id、class、innerTextde字符串的标签
-      const nodeDom = `<${tagName} ${id} ${classNames !== '' ? classNames : ''}>${innerText} ${
-        !!value && '输入框值为：' + value
-      }</${tagName}>`
+      const nodeDom = `<${tagName} ${id} ${classNames !== '' ? classNames : ''}>${innerText} ${!!value ? '输入框值为：' + value : null}</${tagName}>`
+      const metrice = {
+        reportsType: MetricsName.CBR,
+        nodeId: target.id,
+        classList: Array.from(target.classList),
+        tagName: tagName,
+        tagText: innerText || target.textContent,
+        category: TransportCategory.EVENT,
+        nodeDom: nodeDom,
+        ...data,
+      }
       // 只有标签节点上添加上报参数，data-logId=""才会上报
       if (data.logId) {
-        // this.add(MetricsName.CBR, metrice)
+        this.sendLog.add(MetricsName.CBR, metrice)
       }
     }
     this.events.forEach((event) => {
@@ -61,20 +73,20 @@ export class UserVitals extends CommonExtends {
   }
 
   /**
-   * 上报曝光
+   * 曝光上报
    * @memberof UserVitals
    */
   initExposure = () => {
     // 针对曝光监控
     const itOberser = new IntersectionObserver(
-      (entries, observer: IntersectionObserverInit) => {
+      (entries) => {
         entries.forEach((entry) => {
           // 检查元素发生了碰撞
           const nodeRef = entry.target as HTMLElement
           const att = nodeRef.getAttribute('data-visible')
           if (entry.isIntersecting && entry.intersectionRatio >= 0.55 && !att) {
             const data: any = nodeRef.dataset || {} // 曝光埋点日志数据
-            const metrice: BehaviorStack = {
+            const metrice = {
               reportsType: MetricsName.CE,
               classList: Array.from(nodeRef.classList),
               tagName: nodeRef.tagName,
@@ -82,7 +94,7 @@ export class UserVitals extends CommonExtends {
               category: TransportCategory.EVENT,
               ...data,
             }
-            // this.add(MetricsName.CE, metrice)
+            this.sendLog.add(MetricsName.CE, metrice)
             // 曝光不是用户行为，可以不作为采集信息
             nodeRef.setAttribute('data-visible', 'y')
           }
@@ -95,6 +107,7 @@ export class UserVitals extends CommonExtends {
       },
     )
 
+    // 在class 元素上添加 on-visible  用于监听曝光
     const nodes = (document as Document).querySelectorAll('.on-visible')
     nodes.forEach((child) => {
       itOberser?.observe(child)
@@ -127,14 +140,14 @@ export class UserVitals extends CommonExtends {
    */
   initCustomerHandler = (): FN1 => {
     return (options: CustomAnalyticsData) => {
-      const metrice: BehaviorStack = {
+      const metrice = {
         reportsType: MetricsName.CDR,
         category: TransportCategory.CUSTOM,
         ...options,
       }
-      // this.add(MetricsName.CDR, metrice)
+      this.sendLog.add(MetricsName.CDR, metrice)
       // 记录到用户行为追踪队列
-      this.behaviorTracking.push(metrice)
+      // this.behaviorTracking.push(metrice)
     }
   }
 
@@ -144,16 +157,15 @@ export class UserVitals extends CommonExtends {
    */
   initHttpHandler = (): void => {
     const handler = (metrics: HttpMetrics) => {
-      if (metrics.status == 0) return false
+      onTTFB(console.log)
       const metrice = {
         reportsType: MetricsName.HT,
         category: TransportCategory.API,
         ...metrics,
         body: typeof metrics.body === 'string' && isHtml(metrics.body) ? '[-Body内容为HTML已过滤-]' : metrics.body,
       }
-      this.add(MetricsName.HT, metrice)
+      this.sendLog.add(MetricsName.HT, metrice)
       // 记录到用户行为追踪队列
-      this.behaviorTracking.push(metrice)
     }
     proxyXmlHttp(null, handler)
     proxyFetch(null, handler)

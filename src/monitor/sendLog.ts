@@ -1,5 +1,3 @@
-import Config from './config'
-import { ConfigProps } from './interfaces/config.interface'
 import { MetricsName } from './interfaces/util.interface'
 import LogStore from './logStore'
 import 'reflect-metadata'
@@ -23,6 +21,5 @@ export class SendLog extends LogStore {
   }
   private handleRoutineReport() {}
 }
-
 
 export default new SendLog()

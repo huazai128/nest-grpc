@@ -1,8 +1,6 @@
 import { UserVitals } from './userVitals'
 import { WebVitals } from './webVitals'
 import { ConfigProps } from './interfaces/config.interface'
-import { MetricsName } from './interfaces/util.interface'
-import config from './config'
 
 export class Monitor {
   constructor(data: ConfigProps) {

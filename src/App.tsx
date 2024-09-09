@@ -7,7 +7,7 @@ import './App.scss'
 import { Monitor } from './monitor'
 import config from './config'
 
-const  monitor = new Monitor({
+const monitor = new Monitor({
   url: `${config.apiHost}` || 'http://172.26.130.15:5001',
   isExposure: true,
   appKey: '64cca8d4443fcc436aeba554', //上报map 存储位置

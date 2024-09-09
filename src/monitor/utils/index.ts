@@ -43,14 +43,14 @@ export const mOberver = (callback: MutationObserverHandler): MutationObserver =>
  * @param {PerformanceEntryHandler} callback
  * @return {*}  {(PerformanceObserver | undefined)}
  */
-export const observe = (type: string, callback: PerformanceEntryHandler): PerformanceObserver | undefined => {
+export const observe = (
+  options: PerformanceObserverInit,
+  callback: PerformanceEntryHandler,
+): PerformanceObserver | undefined => {
   try {
-    // 类型合规，就返回 observe
-    if (PerformanceObserver?.supportedEntryTypes?.includes(type)) {
-      const ob: PerformanceObserver = new PerformanceObserver((l) => l.getEntries().map(callback))
-      ob.observe({ entryTypes: [type] }) // 兼容safari
-      return ob
-    }
+    const ob: PerformanceObserver = new PerformanceObserver((l) => l.getEntries().map(callback))
+    ob.observe(options)
+    return ob
   } catch (error) {}
   return undefined
 }
@@ -197,7 +197,7 @@ export const getResourceFlow = (resourceFlow: Array<ResourceFlowTiming>): Perfor
     )
   }
 
-  return observe('resource', entryHandler) // 没有监听到全部资源加载
+  return observe({ type: 'resource' }, entryHandler) // 没有监听到全部资源加载
 }
 
 /**

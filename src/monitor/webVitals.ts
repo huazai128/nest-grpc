@@ -1,5 +1,16 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { IMetrics, MetricsName, ResourceFlowTiming, TransportCategory } from './interfaces/util.interface'
-import { afterLoad, getFCP, getFP, getNavigationTiming, getPerformanceResourceFlow, getResourceFlow, mOberver, normalizePerformanceRecord, supported } from './utils'
+import {
+  afterLoad,
+  getFCP,
+  getFP,
+  getNavigationTiming,
+  getPerformanceResourceFlow,
+  getResourceFlow,
+  mOberver,
+  normalizePerformanceRecord,
+  supported,
+} from './utils'
 import { SendLog } from './sendLog'
 import { CommonExtends } from './commonExtends'
 
@@ -22,16 +33,20 @@ export class WebVitals extends CommonExtends {
       this.initNavigationTiming()
     })
   }
-   /**
+  /**
    * 白屏
    * @memberof WebVitals
    */
-   private async initFP () {
+  private async initFP() {
     try {
       const entry = await getFP()
       if (entry) {
-        const { name, ...metrics} = normalizePerformanceRecord(entry)
-        this.sendLog.set(MetricsName.FP, { ...metrics, reportsType: MetricsName.FP, category: TransportCategory.PREF })
+        const { name, ...metrics } = normalizePerformanceRecord(entry)
+        this.sendLog.set(MetricsName.FP, {
+          ...metrics,
+          reportsType: MetricsName.FP,
+          category: TransportCategory.PREF,
+        })
       }
     } catch (error) {}
   }
@@ -40,14 +55,18 @@ export class WebVitals extends CommonExtends {
    * 灰屏
    * @memberof WebVitals
    */
-  private async initFCP () {
+  private async initFCP() {
     try {
       const entry = (await getFCP()) as IMetrics
       const time = Date.now() - this.startTime
       if (entry) {
         this.diffTime = Number((entry.startTime - time).toFixed(2))
         const { name, ...metrics } = normalizePerformanceRecord(entry)
-        this.sendLog.set(MetricsName.FCP, { ...metrics, reportsType: MetricsName.FCP, category: TransportCategory.PREF })
+        this.sendLog.set(MetricsName.FCP, {
+          ...metrics,
+          reportsType: MetricsName.FCP,
+          category: TransportCategory.PREF,
+        })
       }
     } catch (error) {}
   }
@@ -56,7 +75,7 @@ export class WebVitals extends CommonExtends {
    * 首次有效绘制
    * @memberof WebVitals
    */
-  private initFMP () {
+  private initFMP() {
     try {
       let isOnce = false
       const time = this.startTime
@@ -98,7 +117,7 @@ export class WebVitals extends CommonExtends {
    * 初始化 timing
    * @memberof WebVitals
    */
-  private initNavigationTiming () {
+  private initNavigationTiming() {
     try {
       const navigationTiming = getNavigationTiming()
       const metrics = navigationTiming as IMetrics
@@ -110,7 +129,7 @@ export class WebVitals extends CommonExtends {
    * 初始化 RF
    * @memberof WebVitals
    */
-  private initResourceFlow () {
+  private initResourceFlow() {
     if (supported.performance) {
       try {
         const resourceFlow: Array<ResourceFlowTiming> = []

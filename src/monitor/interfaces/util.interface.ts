@@ -75,3 +75,40 @@ export enum TransportCategory {
   RV = 'video',
   USER = 'user',
 }
+
+export interface HttpMetrics {
+  method: string
+  url: string
+  body: Document | XMLHttpRequestBodyInit | null | undefined | ReadableStream
+  requestTime: number
+  responseTime: number
+  status: number
+  statusText: string
+  response?: any
+  params?: any
+  queryUrl?: string | URL
+  traceId?: string
+  zeroTime: number
+  loadingTime: number
+  loadedTime: number
+  interactionTime: number
+  endTime: number
+}
+
+/**
+ * 自定义埋点
+ * @export
+ * @interface CustomAnalyticsData
+ */
+export interface CustomAnalyticsData {
+  // 事件类别
+  eventCategory: string
+  // 事件动作
+  eventAction: string
+  // 事件标签
+  eventLabel: string
+  // 事件值
+  eventValue?: string
+  // 自定义事件ID
+  eventId: number
+}

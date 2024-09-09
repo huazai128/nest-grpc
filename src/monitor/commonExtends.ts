@@ -1,10 +1,10 @@
-import config, { Config } from "./config";
-import sendLog,{ SendLog } from "./sendLog";
+import config, { Config } from './config'
+import sendLog, { SendLog } from './sendLog'
 
-export class CommonExtends { 
+export class CommonExtends {
   protected sendLog!: SendLog
   protected config!: Config
-  constructor() { 
+  constructor() {
     this.sendLog = sendLog
     this.config = config
   }
