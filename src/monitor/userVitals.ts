@@ -4,7 +4,6 @@ import { CustomAnalyticsData, FN1, HttpMetrics, MetricsName, TransportCategory }
 import 'reflect-metadata'
 import { mOberver } from './utils'
 import isHtml from 'is-html'
-import { onTTFB } from 'web-vitals'
 
 /**
  * 监听用户行为
@@ -157,7 +156,6 @@ export class UserVitals extends CommonExtends {
    */
   initHttpHandler = (): void => {
     const handler = (metrics: HttpMetrics) => {
-      onTTFB(console.log)
       const metrice = {
         reportsType: MetricsName.HT,
         category: TransportCategory.API,

@@ -1,6 +1,7 @@
 import { UserVitals } from './userVitals'
 import { WebVitals } from './webVitals'
 import { ConfigProps } from './interfaces/config.interface'
+import ErrorVitals from './errorVitals'
 
 export class Monitor {
   constructor(data: ConfigProps) {
@@ -13,5 +14,6 @@ export class Monitor {
     }
     new WebVitals()
     new UserVitals()
+    new ErrorVitals()
   }
 }

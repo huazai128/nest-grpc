@@ -112,3 +112,17 @@ export interface CustomAnalyticsData {
   // 自定义事件ID
   eventId: number
 }
+
+export interface ExceptionMetrics {
+  reportsType: string
+  value?: string
+  errorType: string
+  stackTrace?: Object
+  breadcrumbs?: Array<string>
+  meta?: any
+}
+
+export interface ErrorInfo {
+  componentStack: string
+  componentName: string
+}
