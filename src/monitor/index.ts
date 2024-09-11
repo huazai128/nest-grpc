@@ -2,6 +2,7 @@ import { UserVitals } from './userVitals'
 import { WebVitals } from './webVitals'
 import { ConfigProps } from './interfaces/config.interface'
 import ErrorVitals from './errorVitals'
+import sendLog from './sendLog'
 
 export class Monitor {
   constructor(data: ConfigProps) {
@@ -12,6 +13,7 @@ export class Monitor {
     if (!appKey) {
       throw '上报map 存储位置为空'
     }
+    sendLog.setConfig(data)
     new WebVitals()
     new UserVitals()
     new ErrorVitals()

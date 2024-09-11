@@ -11,7 +11,6 @@ import {
   normalizePerformanceRecord,
   supported,
 } from './utils'
-import { SendLog } from './sendLog'
 import { CommonExtends } from './commonExtends'
 
 /**

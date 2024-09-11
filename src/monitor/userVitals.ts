@@ -1,8 +1,7 @@
 import { CommonExtends } from './commonExtends'
 import { proxyFetch, proxyXmlHttp } from './httpProxy'
 import { CustomAnalyticsData, FN1, HttpMetrics, MetricsName, TransportCategory } from './interfaces/util.interface'
-import 'reflect-metadata'
-import { mOberver } from './utils'
+import { mOberver, proxyHash, proxyHistory } from './utils'
 import isHtml from 'is-html'
 
 /**
@@ -16,6 +15,21 @@ export class UserVitals extends CommonExtends {
     super()
     this.initClickHandler()
     this.initHttpHandler()
+    this.initRouterChange()
+  }
+
+  /**
+   * 处理路由监听变化 初始化相关逻辑
+   * @memberof UserVitals
+   */
+  initRouterChange = () => {
+    const handler = () => {
+      this.initPV()
+      this.initExposure()
+    }
+    window.addEventListener('pageshow', handler, { once: true, capture: true })
+    proxyHash(handler)
+    proxyHistory(handler)
   }
 
   /**
@@ -27,10 +41,9 @@ export class UserVitals extends CommonExtends {
     const metrice = {
       reportsType: MetricsName.RCR,
       category: TransportCategory.PV,
+      // pathname:
     }
     this.sendLog.add(MetricsName.RCR, metrice)
-
-    // this.behaviorTracking.push({ ...metrice, path: pathname, href })
   }
 
   /**
@@ -112,6 +125,7 @@ export class UserVitals extends CommonExtends {
       itOberser?.observe(child)
     })
 
+    // 监听元素变化后，判断是否存在曝光买点
     mOberver(function (mutation: MutationRecord) {
       const addedNodes = mutation.addedNodes
       if (!!addedNodes.length) {
@@ -160,7 +174,10 @@ export class UserVitals extends CommonExtends {
         reportsType: MetricsName.HT,
         category: TransportCategory.API,
         ...metrics,
-        body: typeof metrics.body === 'string' && isHtml(metrics.body) ? '[-Body内容为HTML已过滤-]' : metrics.body,
+        response:
+          typeof metrics.response === 'string' && isHtml(metrics.response)
+            ? '[-Body内容为HTML已过滤-]'
+            : metrics.body,
       }
       this.sendLog.add(MetricsName.HT, metrice)
       // 记录到用户行为追踪队列

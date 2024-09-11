@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-this-alias */
 import { CommonExtends } from './commonExtends'
 import { proxyFetch, proxyXmlHttp } from './httpProxy'
 import {
@@ -7,9 +8,10 @@ import {
   MechanismType,
   TransportCategory,
 } from './interfaces/util.interface'
-import { generateUUID, getErrorKey, getErrorUid, parseStackFrames } from './utils'
+import { getErrorKey, getErrorUid, parseStackFrames } from './utils'
 import { record } from 'rrweb'
 import isHtml from 'is-html'
+import { v4 as uuidv4 } from 'uuid'
 
 const reportsTypeList = [MechanismType.JS, MechanismType.UJ, MechanismType.HP]
 
@@ -53,7 +55,7 @@ export default class ErrorVitals extends CommonExtends {
     // 删除
     delete errorInfo.errorUid
     // 生成唯一UUID, 用于录制
-    const uuid = generateUUID()
+    const uuid = uuidv4()
     // 添加到数组
     this.pushErrorUidList(uuid)
     // 错误信息
@@ -172,8 +174,7 @@ export default class ErrorVitals extends CommonExtends {
    */
   initHttpError = () => {
     const loadHandler = (metrics: HttpMetrics) => {
-      let res: any
-      res = metrics.response
+      const res = metrics.response
 
       const qUrl = String(metrics.url)?.split('?')[0] || ''
       const isSite = /markiapp.com/.test(String(qUrl))
