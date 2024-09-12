@@ -177,7 +177,7 @@ export class UserVitals extends CommonExtends {
         response:
           typeof metrics.response === 'string' && isHtml(metrics.response)
             ? '[-Body内容为HTML已过滤-]'
-            : metrics.body,
+            : metrics.response,
       }
       this.sendLog.add(MetricsName.HT, metrice)
       // 记录到用户行为追踪队列

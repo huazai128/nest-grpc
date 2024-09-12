@@ -17,8 +17,6 @@ function Login() {
     })
   }
 
-  const onFinishFailed = (errorInfo: any) => {}
-
   return (
     <div className={`${styles.loginBox} flex flex-center`}>
       <Form
@@ -27,7 +25,6 @@ function Login() {
         wrapperCol={{ span: 16 }}
         initialValues={{ remember: true }}
         onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
         autoComplete="off"
       >
         <Form.Item label="账号" name="account" rules={[{ required: true, message: '请输入账号' }]}>

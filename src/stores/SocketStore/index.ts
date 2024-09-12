@@ -1,5 +1,5 @@
 import config from '@src/config'
-import { action, makeAutoObservable, observable } from 'mobx'
+import { action, makeAutoObservable } from 'mobx'
 import { io, Socket } from 'socket.io-client'
 
 export class SocketStore {
@@ -62,7 +62,7 @@ export class SocketStore {
    */
   @action
   onMessage = <T>(event: string) => {
-    return new Promise<T>((resolve, reject) => {
+    return new Promise<T>((resolve) => {
       this.socket.on(event, (data) => {
         resolve(data)
       })
