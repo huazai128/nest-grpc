@@ -445,3 +445,26 @@ export const getPerformanceResourceFlow = (): Array<ResourceFlowTiming> => {
   }
   return []
 }
+
+/**
+ * 通过请求图片获取网络速度
+ * @param {*} { url, size }
+ * @return {*}
+ */
+export function downloadSpeed({ url, size }: { url: string; size: number }): Promise<Record<string, number>> {
+  return new Promise<Record<string, number>>((resolve, reject) => {
+    const img = new Image()
+    img.src = `${url}?_t=${Math.random()}` // 加个时间戳以避免浏览器只发起一次请求
+    const startTime = performance.now()
+
+    img.onload = function () {
+      const fileSize = size // 单位是 kb
+      const endTime = performance.now()
+      const costTime = endTime - startTime
+      const speed = (fileSize / (endTime - startTime)) * 1000 // 单位是 kb/s
+      resolve({ speed, costTime })
+    }
+
+    img.onerror = reject
+  })
+}

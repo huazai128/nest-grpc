@@ -126,3 +126,37 @@ export interface ErrorInfo {
   componentStack: string
   componentName: string
 }
+
+export interface PageInfo {
+  // 浏览器的语种 (eg:zh)
+  lang?: string
+  // 屏幕宽高
+  winScreen?: string
+  // 文档宽高
+  docScreen?: string
+  // 用户ID
+  userId?: string
+  // 标题
+  title?: string
+  // 路由
+  path?: string
+  // href
+  href?: string
+  // referrer
+  referrer?: string
+  // prevHref
+  prevHref?: string
+  // 跳转方式
+  jumpType?: string
+  // 用户来源方式
+  type?: number
+  // 页面闭环追踪ID
+  traceId?: string
+  // 页面切换都会产生UUID
+  pageId?: string
+}
+
+export interface BehaviorItem {
+  type: TransportCategory
+  monitorId: string
+}

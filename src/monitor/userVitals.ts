@@ -1,8 +1,9 @@
 import { CommonExtends } from './commonExtends'
 import { proxyFetch, proxyXmlHttp } from './httpProxy'
 import { CustomAnalyticsData, FN1, HttpMetrics, MetricsName, TransportCategory } from './interfaces/util.interface'
-import { mOberver, proxyHash, proxyHistory } from './utils'
+import { downloadSpeed, mOberver, proxyHash, proxyHistory } from './utils'
 import isHtml from 'is-html'
+import { v4 as uuidv4 } from 'uuid'
 
 /**
  * 监听用户行为
@@ -33,17 +34,20 @@ export class UserVitals extends CommonExtends {
   }
 
   /**
-   * 上报pv
+   * 上报pv,在上报pv 时，会获取网络速度
    * @memberof UserVitals
    */
-  initPV = () => {
-    // const { pathname, href } = window.location
+  initPV = async () => {
+    const url = 'https://biu-cn.dwstatic.com/upload/1726199407972.jpg'
+    const res = await downloadSpeed({ url, size: 103.13 })
+    const monitorId = TransportCategory.PV + uuidv4()
     const metrice = {
       reportsType: MetricsName.RCR,
       category: TransportCategory.PV,
-      // pathname:
+      monitorId: monitorId,
+      ...res,
     }
-    this.sendLog.add(MetricsName.RCR, metrice)
+    this.sendLog.add(metrice)
   }
 
   /**
@@ -64,6 +68,7 @@ export class UserVitals extends CommonExtends {
       const value = target.value
       // 获取包含id、class、innerTextde字符串的标签
       const nodeDom = `<${tagName} ${id} ${classNames !== '' ? classNames : ''}>${innerText} ${!!value ? '输入框值为：' + value : null}</${tagName}>`
+      const monitorId = TransportCategory.EVENT + uuidv4()
       const metrice = {
         reportsType: MetricsName.CBR,
         nodeId: target.id,
@@ -72,12 +77,10 @@ export class UserVitals extends CommonExtends {
         tagText: innerText || target.textContent,
         category: TransportCategory.EVENT,
         nodeDom: nodeDom,
+        monitorId,
         ...data,
       }
-      // 只有标签节点上添加上报参数，data-logId=""才会上报
-      if (data.logId) {
-        this.sendLog.add(MetricsName.CBR, metrice)
-      }
+      this.sendLog.add(metrice)
     }
     this.events.forEach((event) => {
       window.addEventListener(event, handle, true)
@@ -98,15 +101,17 @@ export class UserVitals extends CommonExtends {
           const att = nodeRef.getAttribute('data-visible')
           if (entry.isIntersecting && entry.intersectionRatio >= 0.55 && !att) {
             const data: any = nodeRef.dataset || {} // 曝光埋点日志数据
+            const monitorId = TransportCategory.EVENT + uuidv4()
             const metrice = {
               reportsType: MetricsName.CE,
               classList: Array.from(nodeRef.classList),
               tagName: nodeRef.tagName,
               text: nodeRef.textContent,
               category: TransportCategory.EVENT,
+              monitorId,
               ...data,
             }
-            this.sendLog.add(MetricsName.CE, metrice)
+            this.sendLog.add(metrice)
             // 曝光不是用户行为，可以不作为采集信息
             nodeRef.setAttribute('data-visible', 'y')
           }
@@ -153,14 +158,15 @@ export class UserVitals extends CommonExtends {
    */
   initCustomerHandler = (): FN1 => {
     return (options: CustomAnalyticsData) => {
+      const monitorId = TransportCategory.CUSTOM + uuidv4()
       const metrice = {
         reportsType: MetricsName.CDR,
         category: TransportCategory.CUSTOM,
+        monitorId,
         ...options,
       }
-      this.sendLog.add(MetricsName.CDR, metrice)
+      this.sendLog.add(metrice)
       // 记录到用户行为追踪队列
-      // this.behaviorTracking.push(metrice)
     }
   }
 
@@ -170,17 +176,18 @@ export class UserVitals extends CommonExtends {
    */
   initHttpHandler = (): void => {
     const handler = (metrics: HttpMetrics) => {
+      const monitorId = TransportCategory.API + uuidv4()
       const metrice = {
         reportsType: MetricsName.HT,
         category: TransportCategory.API,
+        monitorId,
         ...metrics,
         response:
           typeof metrics.response === 'string' && isHtml(metrics.response)
             ? '[-Body内容为HTML已过滤-]'
             : metrics.response,
       }
-      this.sendLog.add(MetricsName.HT, metrice)
-      // 记录到用户行为追踪队列
+      this.sendLog.add(metrice)
     }
     proxyXmlHttp(null, handler)
     proxyFetch(null, handler)

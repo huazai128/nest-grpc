@@ -14,7 +14,7 @@ interface ChildrenProps<T> {
 
 /**
  * 已包含Observer
- * @param param0
+ * @param {ChildrenProps<IStore>} { children }
  */
 export const RootConsumer = ({ children }: ChildrenProps<IStore>) => <Observer>{() => children(stores)}</Observer>
 

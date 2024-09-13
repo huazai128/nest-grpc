@@ -41,11 +41,11 @@ export class WebVitals extends CommonExtends {
       const entry = await getFP()
       if (entry) {
         const { name, ...metrics } = normalizePerformanceRecord(entry)
-        this.sendLog.set(MetricsName.FP, {
-          ...metrics,
-          reportsType: MetricsName.FP,
-          category: TransportCategory.PREF,
-        })
+        // this.sendLog.set(MetricsName.FP, {
+        //   ...metrics,
+        //   reportsType: MetricsName.FP,
+        //   category: TransportCategory.PREF,
+        // })
       }
     } catch (error) {}
   }
@@ -61,11 +61,11 @@ export class WebVitals extends CommonExtends {
       if (entry) {
         this.diffTime = Number((entry.startTime - time).toFixed(2))
         const { name, ...metrics } = normalizePerformanceRecord(entry)
-        this.sendLog.set(MetricsName.FCP, {
-          ...metrics,
-          reportsType: MetricsName.FCP,
-          category: TransportCategory.PREF,
-        })
+        // this.sendLog.set(MetricsName.FCP, {
+        //   ...metrics,
+        //   reportsType: MetricsName.FCP,
+        //   category: TransportCategory.PREF,
+        // })
       }
     } catch (error) {}
   }
@@ -84,11 +84,11 @@ export class WebVitals extends CommonExtends {
             if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
               if (!isOnce) {
                 const t = Date.now() - time + this.diffTime
-                this.sendLog.set(MetricsName.FMP, {
-                  fmpTime: t,
-                  reportsType: MetricsName.FMP,
-                  category: TransportCategory.PREF,
-                })
+                // this.sendLog.set(MetricsName.FMP, {
+                //   fmpTime: t,
+                //   reportsType: MetricsName.FMP,
+                //   category: TransportCategory.PREF,
+                // })
                 isOnce = true
               }
             }
@@ -120,7 +120,7 @@ export class WebVitals extends CommonExtends {
     try {
       const navigationTiming = getNavigationTiming()
       const metrics = navigationTiming as IMetrics
-      this.sendLog.set(MetricsName.NT, { ...metrics, reportsType: MetricsName.NT, category: TransportCategory.PREF })
+      // this.sendLog.set(MetricsName.NT, { ...metrics, reportsType: MetricsName.NT, category: TransportCategory.PREF })
     } catch (error) {}
   }
 
@@ -140,12 +140,12 @@ export class WebVitals extends CommonExtends {
           const metrics = getPerformanceResourceFlow() as Array<ResourceFlowTiming>
           const list = metrics.map((item: IMetrics) => normalizePerformanceRecord(item))
           const cacheQuantity = metrics.filter((item) => item.isCache)?.length
-          this.sendLog.set(MetricsName.RF, {
-            resourcePrefs: list,
-            reportsType: MetricsName.RF,
-            category: TransportCategory.PREF,
-            cacheRate: ((cacheQuantity / metrics.length) * 100).toFixed(2),
-          })
+          // this.sendLog.set(MetricsName.RF, {
+          //   resourcePrefs: list,
+          //   reportsType: MetricsName.RF,
+          //   category: TransportCategory.PREF,
+          //   cacheRate: ((cacheQuantity / metrics.length) * 100).toFixed(2),
+          // })
         }
         // 当页面 pageshow 触发时，中止
         window.addEventListener('load', stopListening, { once: true, capture: true })

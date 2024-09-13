@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import React, { Component } from 'react'
+import React from 'react'
 import { SearchTableProps, SearchTable } from './SearchTable'
 import { TreeBox, ITreeProps } from './Tree'
 

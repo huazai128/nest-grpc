@@ -1,4 +1,7 @@
-import { IMetrics, MetricsName } from './interfaces/util.interface'
+import { BehaviorItem, IMetrics, TransportCategory } from './interfaces/util.interface'
+
+// 排除
+const noList = [TransportCategory.PREF, TransportCategory.RV]
 
 /**
  * 存储常规上报数据
@@ -6,39 +9,67 @@ import { IMetrics, MetricsName } from './interfaces/util.interface'
  * @class MetricsStore 抽象类-抽象方法
  */
 export default abstract class LogStore {
-  public state: Map<MetricsName | string, IMetrics> = new Map()
-  public keys: Array<MetricsName | string> = []
-  public isOver: boolean = true
+  // 用于存储日志
+  private logList: IMetrics[] = []
+  // 用于存储用户行为
+  private behaviorList: BehaviorItem[] = []
+  // 当前日志上报是否发生完成
+  public isOver = true
 
-  set = (key: MetricsName | string, value: IMetrics): void => {
-    this.state.set(key, value)
-    this.handlerCommon(key)
+  /**
+   * 添加日志
+   * @param {IMetrics} value
+   * @memberof LogStore
+   */
+  add = (value: IMetrics): void => {
+    // 排除不能作为用户行为的数据
+    if (!noList.includes(value.category) && !!value.monitorId) {
+      this.push({
+        type: value.category,
+        monitorId: value.monitorId,
+      })
+    }
+    this.logList.push(value)
+    this.handlerCommon()
   }
 
-  add = (key: MetricsName | string, value: IMetrics): void => {
-    const keyValue = this.state.get(key)
-    this.state.set(key, keyValue ? keyValue.concat([value]) : [value])
-    this.handlerCommon(key)
+  /**
+   * 获取日志并删除已上报的数据
+   * @memberof LogStore
+   */
+  getLog = (): IMetrics[] => {
+    const logs: IMetrics[] = []
+    const list = this.logList.filter((item, index: number) => {
+      if (index < 10) {
+        logs.push(logs)
+      }
+      return index >= 10
+    })
+    this.logList = [...list]
+    return logs
   }
 
-  get = (key: MetricsName | string): IMetrics | undefined => {
-    const value = this.state.get(key)
-    this.state.delete(key)
-    this.keys = this.keys.filter((item) => item !== key)
-    return value
+  /**
+   * 添加用户行为并保存最大长度为200 可以配置
+   * @param {BehaviorItem} value
+   * @memberof LogStore
+   */
+  push(value: BehaviorItem) {
+    if (this.behaviorList.length < 200) {
+      this.behaviorList.push(value)
+    } else {
+      this.behaviorList.shift() // 删除数组第一个元素
+      this.behaviorList.push(value) // 添加最新元素
+    }
   }
 
-  has = (key: MetricsName | string): boolean => {
-    return this.state.has(key)
-  }
-
-  clear = () => {
-    this.state.clear()
-  }
-
-  getValues = (): IMetrics => {
-    // Map 转为 对象 返回
-    return Object.fromEntries(this.state)
+  /**
+   * 获取所有的行为数据
+   * @return {*}
+   * @memberof LogStore
+   */
+  getList(): BehaviorItem[] {
+    return this.behaviorList
   }
 
   /**
@@ -46,5 +77,5 @@ export default abstract class LogStore {
    * @param {(MetricsName | string)} key
    * @memberof MetricsStore
    */
-  abstract handlerCommon(key: MetricsName | string): void
+  abstract handlerCommon(): void
 }
