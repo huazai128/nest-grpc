@@ -11,7 +11,7 @@ import { v4 as uuidv4 } from 'uuid'
  * @class UserVitals
  */
 export class UserVitals extends CommonExtends {
-  private events: Array<string> = ['click', 'touchstart', 'blur', 'touchend']
+  private events: Array<string> = ['click', 'blur', 'touchend']
   constructor() {
     super()
     this.initClickHandler()

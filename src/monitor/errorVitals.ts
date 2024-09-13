@@ -12,8 +12,6 @@ import { getErrorKey, getErrorUid, parseStackFrames } from './utils'
 import isHtml from 'is-html'
 import { v4 as uuidv4 } from 'uuid'
 
-const reportsTypeList = [MechanismType.JS, MechanismType.UJ, MechanismType.HP]
-
 /**
  * 错误采集上报
  * @export
@@ -43,6 +41,7 @@ export default class ErrorVitals extends CommonExtends {
     }
     const monitorId = TransportCategory.ERROR + uuidv4()
     const hasStatus = this.errorUids.includes(errorInfo.errorUid)
+    // 处理重复错误上报
     if (hasStatus) return false
     // 保存上报错误uid， 防止同一个用户重复上报
     this.errorUids.push(errorInfo.errorUid)
@@ -63,10 +62,6 @@ export default class ErrorVitals extends CommonExtends {
       event.preventDefault()
       // 这里只搜集js 错误
       if (getErrorKey(event) !== MechanismType.JS) return false
-      const value = event.message
-      if (/ResizeObserver/.test(value) || /Loading CSS/.test(value) || /Uncaught ChunkLoadErro/.test(value)) {
-        return false
-      }
       const errUid = getErrorUid(`${MechanismType.JS}-${event.message}-${event.filename}`)
       const errInfo = {
         // 上报错误归类
@@ -139,6 +134,24 @@ export default class ErrorVitals extends CommonExtends {
       if (Object.prototype.toString.call(value) === '[Object Object]') {
         value = JSON.stringify(value)
       }
+      const type = e.reason.name || 'UnKnowun'
+      const errUid = getErrorUid(`${MechanismType.UJ}-${value}-${type}`)
+      const errorInfo = {
+        // 上报错误归类
+        reportsType: MechanismType.UJ,
+        // 错误信息
+        value: value,
+        // 错误类型
+        errorType: type,
+        // 解析后的错误堆栈
+        stackTrace: parseStackFrames(e.reason),
+        // 用户行为追踪 breadcrumbs 在 errorSendHandler 中统一封装
+        // 错误的标识码
+        errorUid: errUid,
+        // 附带信息
+        meta: {},
+      } as ExceptionMetrics
+      this.errorSendHandler(errorInfo)
     }
     window.addEventListener('unhandledrejection', (e) => handler(e), true)
   }
