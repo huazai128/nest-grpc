@@ -1,4 +1,5 @@
 declare const styles: {
-  readonly siteLayout: string
-}
-export = styles
+  readonly "siteLayout": string;
+};
+export = styles;
+

@@ -24,7 +24,7 @@ export interface MutationObserverHandler {
 
 export const mOberver = (callback: MutationObserverHandler): MutationObserver => {
   const mOb = new MutationObserver(function (mutationsList: MutationRecord[]) {
-    mutationsList.forEach(callback)
+    mutationsList?.forEach(callback)
   })
   mOb.observe(document.body, {
     attributes: true,

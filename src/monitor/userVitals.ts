@@ -125,8 +125,8 @@ export class UserVitals extends CommonExtends {
     )
 
     // 在class 元素上添加 on-visible  用于监听曝光
-    const nodes = (document as Document).querySelectorAll('.on-visible')
-    nodes.forEach((child) => {
+    const nodes = (document as Document).querySelectorAll('.on-visible') || []
+    nodes?.forEach((child) => {
       itOberser?.observe(child)
     })
 

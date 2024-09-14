@@ -11,6 +11,12 @@ import {
 import { getErrorKey, getErrorUid, parseStackFrames } from './utils'
 import isHtml from 'is-html'
 import { v4 as uuidv4 } from 'uuid'
+import { record } from '@rrweb/record'
+import localForage from 'localforage'
+
+const store = localForage.createInstance({
+  name: 'recordLog',
+})
 
 /**
  * 错误采集上报
@@ -19,7 +25,20 @@ import { v4 as uuidv4 } from 'uuid'
  * @extends {CommonExtend}
  */
 export default class ErrorVitals extends CommonExtends {
-  private errorUids: Array<string> = [] // 生成同一个
+  // 用于存储错误ID，防止重复提交错误
+  private errorUids: Array<string> = []
+  // 用于存储录制数据
+  private eventsMatrix: any[] = []
+  // 当前录制ID
+  private curRecordId!: string
+  // 是否开始录制
+  private isStartRecord: boolean = false
+  // 保存最近5个录制数据
+  private reordHistoryKeys: string[] = []
+  // 缓存
+  private historyKeys: string = 'historyKeys'
+  // 缓存
+  private curRecordKey: string = 'curRecordKey'
   constructor() {
     super()
     this.initJsError()
@@ -27,6 +46,23 @@ export default class ErrorVitals extends CommonExtends {
     this.initPromiseError()
     this.initHttpError()
     this.initCorsError()
+    this.onPageLoad()
+  }
+
+  /**
+   * 等页面加载完成
+   * @memberof ErrorVitals
+   */
+  onPageLoad = () => {
+    // 只允许触发一次，后面不在触发录屏
+    const handler = () => {
+      if (!this.isStartRecord) {
+        this.isStartRecord = true
+        this.startRecordId()
+        this.startRecord()
+      }
+    }
+    window.addEventListener('pageshow', handler, { once: true, capture: true })
   }
 
   /**
@@ -48,7 +84,7 @@ export default class ErrorVitals extends CommonExtends {
     // 删除
     delete errorInfo.errorUid
     // 错误信息
-    errorInfo = { ...errorInfo, meta: meta, stackTrace: stackTrace, monitorId }
+    errorInfo = { ...errorInfo, meta: meta, stackTrace: stackTrace, monitorId, recordKeys: this.reordHistoryKeys }
     // 发送
     this.sendLog.add(errorInfo)
   }
@@ -163,11 +199,8 @@ export default class ErrorVitals extends CommonExtends {
   initHttpError = () => {
     const loadHandler = (metrics: HttpMetrics) => {
       const res = metrics.response
-
-      const qUrl = String(metrics.url)?.split('?')[0] || ''
       const value = metrics.response
       if (metrics.status < 400 && (res?.status == 'success' || res?.status >= 0)) return false
-
       const errUid = getErrorUid(`${MechanismType.HP}-${value}-${metrics.statusText}`)
       const errorInfo = {
         // 上报错误归类
@@ -247,5 +280,68 @@ export default class ErrorVitals extends CommonExtends {
       },
     } as ExceptionMetrics
     this.errorSendHandler(errInfo)
+  }
+
+  /**
+   * 录制
+   * @memberof ErrorVitals
+   */
+  startRecord = () => {
+    const self = this
+    record({
+      emit(event, isCheckout) {
+        self.emitRecord(event, isCheckout)
+      },
+      recordCanvas: true, // 是否记录canvas内容。
+      checkoutEveryNth: 200,
+    })
+  }
+
+  /**
+   * 监听录制事件
+   * @param {*} event
+   * @param {boolean} [isCheckout]
+   * @memberof ErrorVitals
+   */
+  emitRecord = (event: any, isCheckout?: boolean) => {
+    if (isCheckout) {
+      this.sendLog.add({
+        category: TransportCategory.RV,
+        events: JSON.stringify(this.eventsMatrix),
+        monitorId: this.curRecordId,
+      })
+      this.eventsMatrix = []
+      this.startRecordId()
+    } else {
+      this.eventsMatrix.push(event)
+      store.setItem(this.curRecordKey, {
+        monitorId: this.curRecordId,
+        events: this.eventsMatrix,
+      })
+    }
+  }
+
+  /**
+   * 存储最近录制10条记录
+   * @param {string} key
+   * @memberof ErrorVitals
+   */
+  pushRecord = (key: string) => {
+    if (this.reordHistoryKeys.length < 10) {
+      this.reordHistoryKeys.push(key)
+    } else {
+      this.reordHistoryKeys.shift()
+      this.reordHistoryKeys.push(key)
+    }
+    store.setItem(this.historyKeys, this.reordHistoryKeys)
+  }
+
+  /**
+   * 重新生成和
+   * @memberof ErrorVitals
+   */
+  startRecordId = () => {
+    this.curRecordId = TransportCategory.RV + uuidv4()
+    this.pushRecord(this.curRecordId)
   }
 }

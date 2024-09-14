@@ -126,7 +126,7 @@ export class SendLog extends LogStore {
    * @memberof SendLog
    */
   handlerCommon() {
-    console.log('触发')
+    // console.log('触发')
   }
 
   /**
