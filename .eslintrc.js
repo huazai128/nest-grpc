@@ -4,6 +4,7 @@ module.exports = {
     project: 'tsconfig.json',
     tsconfigRootDir: __dirname,
     sourceType: 'module',
+    createDefaultProgram: true, // 使用 TypeScript 的默认程序
   },
   parser: '@typescript-eslint/parser',
   extends: [

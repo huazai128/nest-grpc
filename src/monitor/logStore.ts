@@ -46,7 +46,6 @@ export default abstract class LogStore {
     wrHistory()
     this.getInit()
     this.initStore()
-    this.initPageInfo()
   }
 
   /**
@@ -86,6 +85,7 @@ export default abstract class LogStore {
   setConfig = (config: ConfigProps) => {
     this.config = config
     this.url = this.config.url + '/api/log/multi'
+    this.initPageInfo()
   }
 
   /**
@@ -93,7 +93,7 @@ export default abstract class LogStore {
    * @memberof SendLog
    */
   initPageInfo = () => {
-    const userId = getCookie('userId') || getCookie('osudb_uid')
+    const userId = getCookie('userId')
     const { width, height } = window.screen
     const { language } = navigator
     // 网页基础信息，一般都不会变，Redis 存储 3 天
@@ -105,7 +105,7 @@ export default abstract class LogStore {
       }`,
       userId: userId,
       traceId: this.traceId,
-      // mode: this.config.mode,
+      mode: this.config.mode,
       category: TransportCategory.WebInfo,
     })
   }
