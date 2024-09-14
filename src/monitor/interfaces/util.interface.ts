@@ -74,6 +74,8 @@ export enum TransportCategory {
   ERROR = 'error',
   RV = 'video',
   USER = 'user',
+  WebInfo = 'webInfo',
+  PageInfo = 'pageInfo',
 }
 
 export interface HttpMetrics {

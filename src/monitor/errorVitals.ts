@@ -50,6 +50,27 @@ export default class ErrorVitals extends CommonExtends {
   }
 
   /**
+   * 初始化获取缓存数据
+   * @memberof ErrorVitals
+   */
+  initStore = () => {
+    // 获取历史中的录屏记录, 这里无为顺序问题。
+    store.getItem(this.historyKeys).then((list) => {
+      this.reordHistoryKeys = (list || []) as string[]
+    })
+    // 获取历史录屏记录没有上报的数据，如录制时，还没有触发重新快照的数据，进行上报
+    store.getItem(this.curRecordKey).then((value: any) => {
+      if (!!value) {
+        this.sendLog.add({
+          category: TransportCategory.RV,
+          events: JSON.stringify(value.events),
+          monitorId: value.monitorId,
+        })
+      }
+    })
+  }
+
+  /**
    * 等页面加载完成
    * @memberof ErrorVitals
    */
@@ -83,7 +104,7 @@ export default class ErrorVitals extends CommonExtends {
     this.errorUids.push(errorInfo.errorUid)
     // 删除
     delete errorInfo.errorUid
-    // 错误信息
+    // 错误信息 ，recordKeys: 关联最近上报的录屏记录
     errorInfo = { ...errorInfo, meta: meta, stackTrace: stackTrace, monitorId, recordKeys: this.reordHistoryKeys }
     // 发送
     this.sendLog.add(errorInfo)
@@ -337,7 +358,7 @@ export default class ErrorVitals extends CommonExtends {
   }
 
   /**
-   * 重新生成和
+   * 重新生成id，这里的id 是前端生成的，方便后续关联。因为日志上报保存返回204，不会等保存成功在关联。
    * @memberof ErrorVitals
    */
   startRecordId = () => {
