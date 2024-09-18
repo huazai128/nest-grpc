@@ -4,6 +4,8 @@ export interface Pagination {
   total: number
   total_page: number
   dataTotal?: number
+  nextCursor?: number
+  hasNextPage?: boolean
 }
 
 export interface ResponsePaginationData<T> {

@@ -1,0 +1,26 @@
+.st-form-box {
+  margin-bottom: 10px;
+}
+
+.st-space-box {
+  & > :global(.ant-space-item) {
+    &:last-child {
+      flex: 1;
+    }
+  }
+}
+
+.search-table-box {
+  background: #fff;
+  padding: 24px;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: calc(100% - 24px);
+  margin-bottom: 24px;
+
+  & > :global(.ant-space-item) {
+    &:last-child {
+      flex: 1;
+    }
+  }
+}

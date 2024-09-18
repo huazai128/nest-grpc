@@ -14,5 +14,7 @@ export class SiteService implements OnModuleInit {
 
   async saveSite(data: SiteRequest) {
     const res = await lastValueFrom(this.siteService.createSite(data))
+    console.log(res, 'res======')
+    return res
   }
 }
