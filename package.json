@@ -118,7 +118,7 @@
     "ua-parser-js": "^1.0.38",
     "uuid": "^10.0.0",
     "veact": "^1.0.0",
-    "zustand": "^4.5.5"
+    "zustand": "^5.0.0-rc.2"
   },
   "jest": {
     "moduleFileExtensions": [

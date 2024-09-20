@@ -1,7 +1,6 @@
 import React from 'react'
 import { Form, Input, Modal, Radio, message } from 'antd'
 import ErrorBoundaryHoc from '@src/components/ErrorBoundary'
-import {} from 'zustand'
 
 const { TextArea } = Input
 
