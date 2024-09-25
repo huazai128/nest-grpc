@@ -11,10 +11,10 @@ interface SiteStore {
 
 export const useSiteStore = create<SiteStore>()(
   devtools(
-    immer((set, get) => ({
+    immer((set) => ({
       visible: false,
       siteInfo: undefined,
-      // showModal: (data) => set(() => ),
+      showModal: (data) => set(() => ({ visible: true, siteInfo: data })),
     })),
     { name: 'SiteStore' },
   ),

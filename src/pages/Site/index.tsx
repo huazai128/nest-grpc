@@ -10,6 +10,7 @@ import { PageProvider, usePageStore, PageNode } from '@src/components/PageProvid
 import { Button, FormItemProps, Input, Layout, List, Popconfirm, Space, Typography } from 'antd'
 import styles from './style.scss'
 import EditSite from './components/EditSite'
+import { useSiteStore } from './components/EditSite/store'
 
 const { Content } = Layout
 
@@ -27,9 +28,11 @@ const formList: Array<FormItemProps> = [
 
 const Site = observer(() => {
   const siteStore = usePageStore()
+
   onMounted(() => {
     console.log('页面挂载了')
   })
+
   return (
     <Page title="首页" className={styles.siteBox}>
       <Content className={styles.siteLayout} style={{ padding: '24px 50px' }}>
@@ -44,7 +47,7 @@ const Site = observer(() => {
                   <p>{dayjs(item.create_at).format('YYYY-MM-DD HH:mm:ss')}</p>
                 </Link>
                 <Space>
-                  <Typography.Link onClick={() => siteStore.handleModal(item)}>编辑</Typography.Link>
+                  <Typography.Link onClick={() => {}}>编辑</Typography.Link>
                   <Popconfirm title="请和研发确认好后在删除！！！" onConfirm={() => siteStore.delteSiteId(item._id)}>
                     <Typography.Link type="danger">删除</Typography.Link>
                   </Popconfirm>
@@ -53,7 +56,7 @@ const Site = observer(() => {
             ),
           }}
         >
-          <Button type="primary" onClick={() => siteStore.handleModal()}>
+          <Button type="primary" onClick={() => {}}>
             新增站点
           </Button>
         </SearchList>
