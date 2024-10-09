@@ -1,5 +1,5 @@
 import { Suspense } from 'react'
-import { BrowserRouter as Router, Switch, Route, useLocation, useHistory, RouteProps } from 'react-router-dom'
+import { Routes, Route, useNavigate } from 'react-router-dom'
 import { asyncRouteComponents, routesFlat } from '@src/routes'
 import { Layout } from 'antd'
 import Sider from './Sider'
@@ -8,11 +8,10 @@ import styles from './index.scss'
 const { Content } = Layout
 
 const Home = () => {
-  const location = useLocation()
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const goHome = () => {
-    history.push('/')
+    navigate('/')
   }
   return (
     <>
@@ -27,21 +26,27 @@ const Home = () => {
           <Layout>
             <Content className={styles.App}>
               <Suspense fallback={null}>
-                <Router key={location.pathname}>
-                  <Switch>
-                    {routesFlat.map((m) => {
-                      if (!m.component) return null
-                      return (
-                        <Route
-                          key={m.key}
-                          exact={m.exact}
-                          path={m.path}
-                          component={asyncRouteComponents[m.component] as RouteProps['component']}
-                        />
-                      )
-                    })}
-                  </Switch>
-                </Router>
+                <Routes>
+                  {routesFlat.map((m, index) => {
+                    if (!m.component) return null
+                    const Compnent = asyncRouteComponents[m.component]
+                    return (
+                      <Route
+                        key={index}
+                        path={m.path}
+                        loader={({ params }) => {
+                          console.log(params, '====')
+                          return ''
+                        }}
+                        action={({ params }) => {
+                          console.log(params, '====')
+                          return ''
+                        }}
+                        element={<Compnent />}
+                      />
+                    )
+                  })}
+                </Routes>
               </Suspense>
             </Content>
           </Layout>

@@ -1,10 +1,15 @@
 import React from 'react'
 import { Form, Input, Modal, Radio, message } from 'antd'
 import ErrorBoundaryHoc from '@src/components/ErrorBoundary'
+import { observer } from 'mobx-react-lite'
+import * as api from '@src/services/api'
+import { useStore } from '../../store'
+import styles from './style.scss'
 
 const { TextArea } = Input
 
-const EditSite = () => {
+const EditSite = observer(() => {
+  const { isVisible, site, hideModal } = useStore()
   const [form] = Form.useForm()
 
   const onCreateSite = () => {
@@ -18,14 +23,17 @@ const EditSite = () => {
             values.apiRules = []
           }
         }
-
         values.recordWhiteList = values.recordWhiteList
-          .split(',')
-          .map((item: string) => Number(item))
-          .filter((item: number) => item && !isNaN(item))
+          ?.split(',')
+          ?.map((item: string) => Number(item))
+          ?.filter((item: number) => item && !isNaN(item))
+        const newSite = { ...values, state: 1 }
+        const { status } = site?._id
+          ? await api.site.updateSite(site?._id, newSite)
+          : await api.site.createSite({ ...values, state: 1 })
 
         if (Object.is(status, 'success')) {
-          form.resetFields()
+          onCancel()
         }
       } catch (error) {
         message.info('请确定api屏蔽告警配置')
@@ -33,15 +41,19 @@ const EditSite = () => {
     })
   }
 
+  const onCancel = () => {
+    form.resetFields()
+    hideModal()
+  }
+
   return (
     <Modal
-      open={false}
-      title="新增站点"
-      onCancel={() => {
-        form.resetFields()
-      }}
+      open={isVisible}
+      title={site ? '编辑' : '新增'}
+      onCancel={onCancel}
       onOk={onCreateSite}
       width={700}
+      className={styles.siteModal}
     >
       <Form
         form={form}
@@ -87,6 +99,6 @@ const EditSite = () => {
       </Form>
     </Modal>
   )
-}
+})
 
 export default ErrorBoundaryHoc(EditSite, 'EditSite')

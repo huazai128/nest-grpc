@@ -37,12 +37,12 @@
     "@swc/core": "^1.3.102",
     "@types/circular-json": "^0.4.0",
     "@types/express": "^4.17.17",
+    "@types/history": "^5.0.0",
     "@types/jest": "^29.5.2",
     "@types/lodash": "^4.17.6",
     "@types/node": "^20.14.9",
     "@types/react": "^17.0.38",
     "@types/react-dom": "^17.0.11",
-    "@types/react-router-dom": "^5.3.2",
     "@types/supertest": "^2.0.12",
     "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
@@ -109,7 +109,7 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-infinite-scroll-component": "^6.1.0",
-    "react-router-dom": "5",
+    "react-router-dom": "6",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
     "socket.io": "^4.7.5",
@@ -117,8 +117,7 @@
     "typedi": "^0.10.0",
     "ua-parser-js": "^1.0.38",
     "uuid": "^10.0.0",
-    "veact": "^1.0.0",
-    "zustand": "^5.0.0-rc.2"
+    "veact": "^1.0.0"
   },
   "jest": {
     "moduleFileExtensions": [

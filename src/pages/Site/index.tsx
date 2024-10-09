@@ -1,22 +1,16 @@
 import dayjs from 'dayjs'
-import { SiteStore } from './store'
 import { onMounted } from 'veact'
 import { Link } from 'react-router-dom'
 import Page from '@src/components/Page'
 import { observer } from 'mobx-react-lite'
 import SearchList from '@src/components/SearchData/SearchList'
 import { Site as SiteItem } from '@src/interfaces/site.interface'
-import { PageProvider, usePageStore, PageNode } from '@src/components/PageProvider'
 import { Button, FormItemProps, Input, Layout, List, Popconfirm, Space, Typography } from 'antd'
 import styles from './style.scss'
 import EditSite from './components/EditSite'
-import { useSiteStore } from './components/EditSite/store'
+import { useStore, SiteProvider } from './store'
 
 const { Content } = Layout
-
-const Provider = ({ children }: PageNode) => {
-  return <PageProvider<SiteStore> store={new SiteStore()}>{children}</PageProvider>
-}
 
 const formList: Array<FormItemProps> = [
   {
@@ -27,8 +21,7 @@ const formList: Array<FormItemProps> = [
 ]
 
 const Site = observer(() => {
-  const siteStore = usePageStore()
-
+  const siteStore = useStore()
   onMounted(() => {
     console.log('页面挂载了')
   })
@@ -56,7 +49,7 @@ const Site = observer(() => {
             ),
           }}
         >
-          <Button type="primary" onClick={() => {}}>
+          <Button type="primary" onClick={() => siteStore.showModal()}>
             新增站点
           </Button>
         </SearchList>
@@ -67,9 +60,9 @@ const Site = observer(() => {
 
 export default function () {
   return (
-    <Provider>
+    <SiteProvider>
       <Site />
       <EditSite />
-    </Provider>
+    </SiteProvider>
   )
 }

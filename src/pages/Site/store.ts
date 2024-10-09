@@ -2,6 +2,7 @@ import { action, makeObservable, observable } from 'mobx'
 import { ListStore } from '@src/components/SearchData/List/store'
 import { ResponsePaginationData } from '@src/interfaces/response.iterface'
 import { Site } from '@src/interfaces/site.interface'
+import { createStore } from '@src/components/PageProvider'
 
 type SiteResponse = ResponsePaginationData<Site>
 
@@ -11,13 +12,12 @@ export class SiteStore extends ListStore {
     makeObservable(this)
   }
 
+  // 是否显示编辑弹窗
+  @observable isVisible = false
+
   // 编辑site信息
   @observable site!: Site | null
 
-  /**
-   * 重置数据时触发
-   * @memberof SiteStore
-   */
   resetDataCb() {}
 
   /**
@@ -32,6 +32,42 @@ export class SiteStore extends ListStore {
       return { ...res.result }
     }
     return null
+  }
+
+  /**
+   * 站点编辑
+   * @param {Site} values
+   * @memberof SiteStore
+   */
+  @action
+  editSite = async ({ ...values }: Site) => {
+    const newSite = { ...values, state: 1 }
+    const res = this.site?._id
+      ? await this.api.site.updateSite(this.site?._id, newSite)
+      : await this.api.site.createSite({ ...values, state: 1 })
+    if (res.status == 'success') {
+      this.isVisible = false
+      this.loadMoreData()
+    } else {
+      this.$message.error(res.message)
+    }
+    return res.status
+  }
+
+  /**
+   * 是否显示弹出
+   * @memberof SiteStore
+   */
+  @action
+  showModal = (site?: Site) => {
+    this.isVisible = true
+    this.site = site || null
+  }
+
+  @action
+  hideModal = () => {
+    this.isVisible = false
+    this.site = null
   }
 
   /**
@@ -50,3 +86,5 @@ export class SiteStore extends ListStore {
     }
   }
 }
+
+export const { useStore, StoreProvider: SiteProvider } = createStore<SiteStore>(new SiteStore())

@@ -1,5 +1,5 @@
-import { useEffect, Suspense, Fragment } from 'react'
-import { BrowserRouter as Router, Route, Switch, useLocation } from 'react-router-dom'
+import { useEffect, Suspense } from 'react'
+import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom'
 import { RouterCompProps, SwitchRouterProps } from '@src/types'
 import routes, { asyncRouteComponents } from '@src/routes'
 import { ConfigProvider, Layout } from 'antd'
@@ -28,12 +28,27 @@ export const SwitchRouter = ({ routes, onChange }: SwitchRouterProps) => {
   return (
     <Layout className="site-layout">
       <Layout className="site-content">
-        <Switch>
+        <Routes>
           {routes?.map((m, index) => {
             if (!m?.component) return null
-            return <Route key={index} exact={m.exact} path={m.path} component={asyncRouteComponents[m.component]} />
+            const Compnent = asyncRouteComponents[m.component]
+            return (
+              <Route
+                key={index}
+                path={m.path}
+                loader={({ params }) => {
+                  console.log(params, '====')
+                  return ''
+                }}
+                action={({ params }) => {
+                  console.log(params, '====')
+                  return ''
+                }}
+                element={<Compnent />}
+              />
+            )
           })}
-        </Switch>
+        </Routes>
       </Layout>
     </Layout>
   )

@@ -10,7 +10,7 @@
     "useDefineForClassFields": true,
     "allowSyntheticDefaultImports": true,
     "emitDecoratorMetadata": true,
-    "typeRoots": ["node_modules/@types", "./typings"]
+    "typeRoots": ["node_modules/@types", "./typings"],
   },
   "include": ["src", "typings"],
   "exclude": ["node_modules", "test", "dist", "server", "**/*spec.ts", "webpack.config.js"]

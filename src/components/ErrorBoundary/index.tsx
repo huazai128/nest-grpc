@@ -20,11 +20,12 @@ function ErrorBoundaryHoc<T extends object>(WrappedComponent: React.FC<T>, name:
 
     static getDerivedStateFromError(error: any) {
       // 更新 state 使下一次渲染能够显示降级后的 UI
+      console.log(error, 'ErrorBoundaryHoc')
       return { hasError: true }
     }
 
     componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-      console.log(error, '此处可以上报')
+      console.log(error, name, errorInfo, '此处可以上报')
     }
 
     render() {

@@ -2,18 +2,18 @@ import { useEffect } from 'react'
 import { Form, Button, Input } from 'antd'
 import { observer } from 'mobx-react-lite'
 import useRootStore from '@src/stores/useRootStore'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import styles from './style.scss'
 
 function Login() {
   const { authStore } = useRootStore()
-  const history = useHistory()
+  const navigate = useNavigate()
 
   useEffect(() => {}, [])
 
   const onFinish = (values: any) => {
     authStore.login(values, () => {
-      history.push('/')
+      navigate('/')
     })
   }
 

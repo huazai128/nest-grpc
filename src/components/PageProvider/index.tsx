@@ -1,21 +1,22 @@
 import { createContext, useContext } from 'react'
-
-const PageContext = createContext<any>(null)
-
-interface PageNode {
+export interface PageNode {
   children: React.ReactNode
 }
 
-interface IProps<T> extends PageNode {
-  store: T
-}
+export const createStore = <T,>(data: T) => {
+  const Context = createContext<T>({} as T)
 
-const PageProvider = <T,>({ children, store }: IProps<T>) => {
-  return <PageContext.Provider value={store}>{children}</PageContext.Provider>
-}
+  const StoreProvider: React.FC<PageNode> = ({ children }: PageNode) => {
+    return <Context.Provider value={data as unknown as T}>{children}</Context.Provider>
+  }
 
-const usePageStore = () => {
-  return useContext(PageContext)
-}
+  const useStore = () => {
+    const store = useContext(Context)
+    if (!store) {
+      throw new Error('外层没有包裹对应的Provider')
+    }
+    return store
+  }
 
-export { PageProvider, usePageStore, PageNode }
+  return { useStore, StoreProvider }
+}
