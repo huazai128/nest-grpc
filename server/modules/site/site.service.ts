@@ -7,14 +7,20 @@ import { lastValueFrom } from 'rxjs'
 export class SiteService implements OnModuleInit {
   public siteService: SiteServiceT
 
-  constructor(@Inject('AUTHPROTO_PACKAGE') private readonly client: ClientGrpc) {}
+  constructor(@Inject('SITEPROTO_PACKAGE') private client: ClientGrpc) {}
+
   onModuleInit() {
     this.siteService = this.client.getService<SiteServiceT>('SiteService')
   }
 
-  async saveSite(data: SiteRequest) {
-    const res = await lastValueFrom(this.siteService.createSite(data))
-    console.log(res, 'res======')
+  /**
+   * 新增和保存
+   * @param {*} { apiRules, ...data}
+   * @return {*} 
+   * @memberof SiteService
+   */
+  public async saveSite({ apiRules, ...data}: any) {
+    const res = await lastValueFrom(this.siteService.saveSite(data))
     return res
   }
 }
