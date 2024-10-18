@@ -35,7 +35,7 @@ const Site = observer(() => {
           listProps={{
             renderItem: (item: SiteItem) => (
               <List.Item key={item.id}>
-                <Link to={`/admin/${item.id}/home`}>
+                <Link to={`/page/${item.id}/home`}>
                   {item.name}
                   <p>{dayjs(item.create_at).format('YYYY-MM-DD HH:mm:ss')}</p>
                 </Link>

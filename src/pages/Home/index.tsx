@@ -1,6 +1,5 @@
 import { Suspense } from 'react'
-import { Routes, Route, useNavigate } from 'react-router-dom'
-import { asyncRouteComponents, routesFlat } from '@src/routes'
+import { useNavigate, Outlet } from 'react-router-dom'
 import { Layout } from 'antd'
 import Sider from './Sider'
 import styles from './index.scss'
@@ -26,25 +25,7 @@ const Home = () => {
           <Layout>
             <Content className={styles.App}>
               <Suspense fallback={null}>
-                <Routes>
-                  {routesFlat.map((m, index) => {
-                    if (!m.component) return null
-                    const Compnent = asyncRouteComponents[m.component]
-                    return (
-                      <Route
-                        key={index}
-                        path={m.path}
-                        loader={() => {
-                          return ''
-                        }}
-                        action={() => {
-                          return ''
-                        }}
-                        element={<Compnent />}
-                      />
-                    )
-                  })}
-                </Routes>
+                <Outlet />
               </Suspense>
             </Content>
           </Layout>

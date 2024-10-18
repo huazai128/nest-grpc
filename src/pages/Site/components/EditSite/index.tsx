@@ -11,7 +11,7 @@ import { toJS } from 'mobx'
 const { TextArea } = Input
 
 const EditSite = observer(() => {
-  const { isVisible, site, hideModal } = useStore()
+  const { isVisible, site, hideModal, loadMoreData } = useStore()
   const [form] = Form.useForm()
 
   onUpdated(() => {
@@ -62,6 +62,7 @@ const EditSite = observer(() => {
 
         if (Object.is(status, 'success')) {
           onCancel()
+          loadMoreData()
         }
       } catch (error) {
         message.info('请确定api屏蔽告警配置')
