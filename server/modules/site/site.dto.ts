@@ -3,12 +3,10 @@ import {
   IsIn,
   IsInt,
   IsNotEmpty,
-  IsNumberString,
   IsOptional,
   IsString,
   IsUrl,
   Validate,
-  ValidationArguments,
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator'
@@ -23,16 +21,16 @@ export const SITE_PUBLISH_STATES = [PublishState.Draft, PublishState.Published, 
 
 @ValidatorConstraint({ name: 'isValidIsApiValue', async: false })
 export class IsValidIsApiValue implements ValidatorConstraintInterface {
-  validate(value: any, args: ValidationArguments) {
+  validate(value: any) {
     const isApi = value as number
     return isApi === 0 || isApi === 1
   }
-  defaultMessage(args: ValidationArguments) {
+  defaultMessage() {
     return 'isApi 字段值0 或 1'
   }
 }
 
-export class SitoDTO {
+export class SiteDTO {
   @IsString({ message: '必须是字符串' })
   @IsNotEmpty({ message: '不能为空' })
   @IsDefined()

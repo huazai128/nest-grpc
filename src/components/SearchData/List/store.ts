@@ -71,15 +71,15 @@ export abstract class ListStore extends StoreExt {
     this.isLoading = false
     if (res) {
       const { data, pagination } = res
-      if (pagination.current_page >= pagination.total_page) {
+      if (pagination.page >= pagination.totalPages) {
         this.isMore = false
       }
       this.data = data || []
       this.page = {
         ...this.page,
-        page: mode === 'cursor' ? this.page.page : pagination.current_page,
-        total: pagination.total,
-        cursor: pagination.nextCursor,
+        page: mode === 'cursor' ? this.page.page : pagination.page,
+        total: pagination.totalDocs,
+        cursor: pagination.nextPage,
       }
       this.hasMore = !!pagination.hasNextPage
       this.cursorPageDatas.push({ data, hasMore: this.hasMore })

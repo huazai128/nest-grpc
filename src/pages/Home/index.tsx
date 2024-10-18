@@ -34,12 +34,10 @@ const Home = () => {
                       <Route
                         key={index}
                         path={m.path}
-                        loader={({ params }) => {
-                          console.log(params, '====')
+                        loader={() => {
                           return ''
                         }}
-                        action={({ params }) => {
-                          console.log(params, '====')
+                        action={() => {
                           return ''
                         }}
                         element={<Compnent />}

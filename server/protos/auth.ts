@@ -5,35 +5,35 @@
 // source: auth.proto
 
 /* eslint-disable */
-import { Observable } from "rxjs";
+import { Observable } from 'rxjs'
 
-export const protobufPackage = "authproto";
+export const protobufPackage = 'authproto'
 
 export interface LoginRequest {
-  account: string;
-  password: string;
+  account: string
+  password: string
 }
 
 export interface LoginResponse {
-  userId: number;
-  account: string;
+  userId: number
+  account: string
 }
 
 export interface ValidateUserRequest {
-  userId: number;
+  userId: number
 }
 
 export interface UserInfo {
-  userId: number;
-  account: string;
-  avatar: string;
-  role: number[];
-  createAt: string;
-  updateAt: string;
+  userId: number
+  account: string
+  avatar: string
+  role: number[]
+  createAt: string
+  updateAt: string
 }
 
 export interface AuthService {
-  login(request: LoginRequest): Observable<LoginResponse>;
-  validateUser(request: ValidateUserRequest): Observable<LoginResponse>;
-  getUserById(request: ValidateUserRequest): Observable<UserInfo>;
+  login(request: LoginRequest): Observable<LoginResponse>
+  validateUser(request: ValidateUserRequest): Observable<LoginResponse>
+  getUserById(request: ValidateUserRequest): Observable<UserInfo>
 }

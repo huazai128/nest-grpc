@@ -13,7 +13,7 @@ function deleteSiteId<T>(id: string): Promise<ResponseData<T>> {
   return http.deleteId<T>(`/api/site/${id}`, {})
 }
 
-function updateSite<T>(id: string, data: HttpParams): Promise<ResponseData<T>> {
+function updateSite<T>(id: number, data: HttpParams): Promise<ResponseData<T>> {
   return http.put<T>(`/api/site/${id}`, data)
 }
 

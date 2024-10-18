@@ -5,12 +5,42 @@ import { observer } from 'mobx-react-lite'
 import * as api from '@src/services/api'
 import { useStore } from '../../store'
 import styles from './style.scss'
+import { onUpdated } from 'veact'
+import { toJS } from 'mobx'
 
 const { TextArea } = Input
 
 const EditSite = observer(() => {
   const { isVisible, site, hideModal } = useStore()
   const [form] = Form.useForm()
+
+  onUpdated(() => {
+    if (isVisible && !!toJS(site)) {
+      let apiRules = '[]'
+      if (site?.apiRules) {
+        try {
+          apiRules = JSON.stringify(site.apiRules)
+        } catch (e) {
+          apiRules = '[]'
+        }
+      }
+
+      let recordWhiteList = ''
+      if (site?.recordWhiteList) {
+        recordWhiteList = site.recordWhiteList?.join(',')
+      }
+      console.log(site?.isApi, 'site?.isApi ')
+      if (site) {
+        form.setFieldsValue({
+          name: site?.name,
+          reportUrl: site?.reportUrl,
+          apiRules: apiRules,
+          recordWhiteList,
+          isApi: !!site?.isApi ? 1 : 0,
+        })
+      }
+    }
+  })
 
   const onCreateSite = () => {
     form.validateFields().then(async (values) => {
@@ -26,8 +56,8 @@ const EditSite = observer(() => {
           ?.map((item: string) => Number(item))
           ?.filter((item: number) => item && !isNaN(item))
         const newSite = { ...values, state: 1 }
-        const { status } = site?._id
-          ? await api.site.updateSite(site?._id, newSite)
+        const { status } = site?.id
+          ? await api.site.updateSite(site?.id, newSite)
           : await api.site.createSite({ ...values, state: 1, id: 0 })
 
         if (Object.is(status, 'success')) {
@@ -56,7 +86,7 @@ const EditSite = observer(() => {
       <Form
         form={form}
         name="form_in_modal"
-        initialValues={{ isApi: '1' }}
+        initialValues={{ isApi: 1 }}
         labelCol={{ span: 8 }}
         wrapperCol={{ span: 16 }}
       >
@@ -83,6 +113,7 @@ const EditSite = observer(() => {
         <Form.Item name="apiRules" label="api屏蔽告警配置">
           <TextArea
             showCount
+            maxLength={10000}
             style={{ height: 360, marginBottom: 24 }}
             placeholder="请输入api屏蔽告警配置json字符串"
           />
@@ -91,6 +122,7 @@ const EditSite = observer(() => {
           <TextArea
             showCount
             style={{ height: 360, marginBottom: 24 }}
+            maxLength={10000}
             placeholder="请输入录制白名单用户id逗号分隔"
           />
         </Form.Item>

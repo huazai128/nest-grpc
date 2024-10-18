@@ -23,7 +23,7 @@ const formList: Array<FormItemProps> = [
 const Site = observer(() => {
   const siteStore = useStore()
   onMounted(() => {
-    console.log('页面挂载了')
+    siteStore.loadMoreData()
   })
 
   return (
@@ -35,12 +35,12 @@ const Site = observer(() => {
           listProps={{
             renderItem: (item: SiteItem) => (
               <List.Item key={item.id}>
-                <Link to={`/admin/${item._id}/home`}>
+                <Link to={`/admin/${item.id}/home`}>
                   {item.name}
                   <p>{dayjs(item.create_at).format('YYYY-MM-DD HH:mm:ss')}</p>
                 </Link>
                 <Space>
-                  <Typography.Link onClick={() => {}}>编辑</Typography.Link>
+                  <Typography.Link onClick={() => siteStore.showModal(item)}>编辑</Typography.Link>
                   <Popconfirm title="请和研发确认好后在删除！！！" onConfirm={() => siteStore.delteSiteId(item._id)}>
                     <Typography.Link type="danger">删除</Typography.Link>
                   </Popconfirm>
