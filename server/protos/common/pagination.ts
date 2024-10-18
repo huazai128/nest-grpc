@@ -6,25 +6,25 @@
 
 /* eslint-disable */
 
-export const protobufPackage = ''
+export const protobufPackage = "";
 
 export interface Pagination {
   /** 文档总数 */
-  totalDocs: number
+  totalDocs: number;
   /** 每页限制 */
-  limit: number
+  limit: number;
   /** 总页数 */
-  totalPages: number
+  totalPages: number;
   /** 当前页 */
-  page: number
+  page: number;
   /** 分页计数器 */
-  pagingCounter: number
+  pagingCounter: number;
   /** 是否有上一页 */
-  hasPrevPage: boolean
+  hasPrevPage: boolean;
   /** 是否有下一页 */
-  hasNextPage: boolean
+  hasNextPage: boolean;
   /** 上一页编号 */
-  prevPage: number
+  prevPage: number;
   /** 下一页编号 */
-  nextPage: number
+  nextPage: number;
 }

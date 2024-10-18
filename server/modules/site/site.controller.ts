@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Put, Query, UseGuards } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Post, Put, Query, UseGuards } from '@nestjs/common'
 import { SiteService } from './site.service'
 import { ApiGuard } from '@app/guards/api.guard'
 import { Responsor } from '@app/decorators/responsor.decorator'
@@ -51,5 +51,19 @@ export class SiteController {
   @Responsor.handle('更新站点')
   putSite(@QueryParams() { params }: QueryParamsResult, @Body() site: SiteDTO) {
     return this.siteService.updateSiteId({ ...site, id: Number(params.id) } as SiteRequest)
+  }
+
+  /**
+   * 根据ID删除
+   * @param {QueryParamsResult} { params }
+   * @return {*}
+   * @memberof SiteController
+   */
+  @Delete(':id')
+  @UseGuards(ApiGuard)
+  @Responsor.api()
+  @Responsor.handle('删除站点')
+  deleteSiteId(@QueryParams() { params }: QueryParamsResult) {
+    return this.siteService.deleteSiteId(Number(params.id))
   }
 }

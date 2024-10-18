@@ -6,22 +6,23 @@ service SiteService {
   rpc saveSite (SiteRequest) returns (stream SiteResponse);
   rpc getSiteList (SiteQuery) returns (stream SiteListRepeonse);
   rpc updateSite(SiteRequest) returns (stream SiteResponse);
+  rpc deleteSiteId(SiteResponse) returns (stream SiteResponse);
 }
 
 message SiteDocument {
-  string name = 1;                     // 文档名称
-  bool isApi = 2;                      // 是否为API
-  string reportUrl = 3;                // 报告URL
-  int32 state = 4;                     // 状态
-  repeated string apiRules = 5;        // API规则列表
-  string create_at = 6;                // 创建时间
-  string update_at = 7;                // 更新时间
-  int64 id = 8;                        // 文档ID
+  int32 id = 1;                        // 文档ID
+  string name = 2;                     // 文档名称
+  bool isApi = 3;                      // 是否为API
+  string reportUrl = 4;                // 报告URL
+  int32 state = 5;                     // 状态
+  repeated string apiRules = 6;        // API规则列表
+  string create_at = 7;                // 创建时间
+  string update_at = 8;                // 更新时间
   repeated string recordWhiteList = 9; // 白名单记录
 }
 
 message SiteRequest {
-  int32 id = 1;
+  int32 id = 1; // int64 位使用时，传递到client端 会变成Long类型，结构  {"low": 1000000002,"high": 0,"unsigned": false }, 所以在使用时要特别注意
   string name = 2;
   int32 isApi = 3;
   string reportUrl = 4;

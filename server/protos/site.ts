@@ -5,61 +5,62 @@
 // source: site.proto
 
 /* eslint-disable */
-import { Observable } from 'rxjs'
-import { type Pagination } from './common/pagination'
+import { Observable } from "rxjs";
+import { type Pagination } from "./common/pagination";
 
-export const protobufPackage = 'siteproto'
+export const protobufPackage = "siteproto";
 
 export interface SiteDocument {
-  /** 文档名称 */
-  name: string
-  /** 是否为API */
-  isApi: boolean
-  /** 报告URL */
-  reportUrl: string
-  /** 状态 */
-  state: number
-  /** API规则列表 */
-  apiRules: string[]
-  /** 创建时间 */
-  createAt: string
-  /** 更新时间 */
-  updateAt: string
   /** 文档ID */
-  id: number
+  id: number;
+  /** 文档名称 */
+  name: string;
+  /** 是否为API */
+  isApi: boolean;
+  /** 报告URL */
+  reportUrl: string;
+  /** 状态 */
+  state: number;
+  /** API规则列表 */
+  apiRules: string[];
+  /** 创建时间 */
+  createAt: string;
+  /** 更新时间 */
+  updateAt: string;
   /** 白名单记录 */
-  recordWhiteList: string[]
+  recordWhiteList: string[];
 }
 
 export interface SiteRequest {
-  id: number
-  name: string
-  isApi: number
-  reportUrl: string
-  state: number
+  id: number;
+  name: string;
+  isApi: number;
+  reportUrl: string;
+  state: number;
 }
 
 export interface SiteResponse {
-  id: number
+  id: number;
 }
 
 export interface SiteQuery {
-  page: number
-  size: number
-  kw: string
-  startTime: number
-  endTime: number
+  page: number;
+  size: number;
+  kw: string;
+  startTime: number;
+  endTime: number;
 }
 
 export interface SiteListRepeonse {
   /** 文档列表 */
-  data: SiteDocument[]
+  data: SiteDocument[];
   /** 分页信息 */
-  pagination: Pagination | undefined
+  pagination: Pagination | undefined;
 }
 
 export interface SiteService {
-  saveSite(request: SiteRequest): Observable<SiteResponse>
-  getSiteList(request: SiteQuery): Observable<SiteListRepeonse>
-  updateSite(request: SiteRequest): Observable<SiteResponse>
+  saveSite(request: SiteRequest): Observable<SiteResponse>;
+  getSiteList(request: SiteQuery): Observable<SiteListRepeonse>;
+  updateSite(request: SiteRequest): Observable<SiteResponse>;
+  deleteSiteId(request: SiteResponse): Observable<SiteResponse>;
 }

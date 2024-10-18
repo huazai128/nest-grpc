@@ -32,6 +32,7 @@ export class SiteService implements OnModuleInit {
    * @memberof SiteService
    */
   public async getSiteList(data: SitePaginateDTO) {
+    // 确认好id 长度，建议对id 处理成Long 类型，不然随着id 自增后数据，导致传递bug
     const res = await lastValueFrom(this.siteService.getSiteList(data as SiteQuery))
     return res
   }
@@ -43,8 +44,18 @@ export class SiteService implements OnModuleInit {
    * @memberof SiteService
    */
   public async updateSiteId(data: SiteRequest) {
-    console.log(data, 'data')
     const res = await lastValueFrom(this.siteService.updateSite(data as SiteRequest))
+    return res
+  }
+
+  /**
+   * 根据ID删除
+   * @param {number} id
+   * @return {*}
+   * @memberof SiteService
+   */
+  public async deleteSiteId(id: number) {
+    const res = await lastValueFrom(this.siteService.deleteSiteId({ id: id }))
     return res
   }
 }

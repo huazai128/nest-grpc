@@ -6,7 +6,6 @@ interface APIRule {
 }
 
 export interface Site {
-  _id: string
   id: number
   create_at: string
   isApi: ReportStatus

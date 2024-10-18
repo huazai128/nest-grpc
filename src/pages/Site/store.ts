@@ -72,11 +72,12 @@ export class SiteStore extends ListStore {
 
   /**
    * 删除站点
-   * @param {Site['_id']} siteId
+   * @param {Site['id']} siteId
    * @memberof SiteStore
    */
   @action
-  delteSiteId = async (siteId: Site['_id']) => {
+  delteSiteId = async (siteId: Site['id']) => {
+    console.log(siteId, 'siteId')
     const { message: msg, status } = await this.api.site.deleteSiteId(siteId)
     if (status === 'success') {
       this.loadMoreData()

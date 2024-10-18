@@ -41,7 +41,7 @@ const Site = observer(() => {
                 </Link>
                 <Space>
                   <Typography.Link onClick={() => siteStore.showModal(item)}>编辑</Typography.Link>
-                  <Popconfirm title="请和研发确认好后在删除！！！" onConfirm={() => siteStore.delteSiteId(item._id)}>
+                  <Popconfirm title="请和研发确认好后在删除！！！" onConfirm={() => siteStore.delteSiteId(item.id)}>
                     <Typography.Link type="danger">删除</Typography.Link>
                   </Popconfirm>
                 </Space>
