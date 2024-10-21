@@ -14,14 +14,14 @@ export type RouteCompont = keyof typeof asyncRouteComponents
 
 export const menus: Array<IMenu<RouteCompont>> = [
   {
-    path: '/page/:id/home',
+    path: ':id/home',
     component: 'DataVerview',
     title: '总览',
     icon: <AppstoreOutlined />,
     key: '1', // 子集key: 1-1、1-1-1  隐藏page为11 12 递增
   },
   {
-    path: '/page/:id/logs',
+    path: ':id/logs',
     component: 'Logs',
     title: '日志详情',
     icon: <AppstoreOutlined />,
@@ -46,7 +46,7 @@ const routes: Array<IMenu<RouteCompont>> = [
     title: '登录',
   },
   {
-    path: '/page/*',
+    path: '/page',
     component: 'Home',
     title: '首页',
     children: routesFlat,

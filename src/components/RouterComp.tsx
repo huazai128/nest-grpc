@@ -14,59 +14,44 @@ export default function RouterComp(props: RouterCompProps) {
     <ConfigProvider locale={zhCN}>
       <Suspense fallback={props?.fallback ?? null}>
         <Router>
-          <SwitchRouter routes={routes} onChange={props?.onChange} />
+          <SwitchRouter onChange={props?.onChange} />
         </Router>
       </Suspense>
     </ConfigProvider>
   )
 }
 
-const RouteItem = (props: IMenu<RouteCompont>) => {
-  if (!props?.component) return null
-  const Compnent = asyncRouteComponents[props.component]
-  return (
-    <Route
-      path={props.path}
-      loader={() => {
-        return ''
-      }}
-      action={() => {
-        return ''
-      }}
-      element={<Compnent />}
-    />
+// 渲染单个路由项
+const renderRouteItem = (item: IMenu<RouteCompont>) => {
+  const Component = item?.component && asyncRouteComponents[item?.component]
+  if (!Component) return null
+
+  // 如果有子路由，嵌套子路由
+  return item.children?.length ? (
+    <Route path={item.path} element={<Component />}>
+      {renderRoutes(item.children)}
+    </Route>
+  ) : (
+    <Route key={item.path} path={item.path} element={<Component />} />
   )
 }
 
-interface RenderRoutesProps {
-  routeList?: Array<IMenu<RouteCompont>>
+// 递归渲染路由列表
+const renderRoutes = (routeList?: Array<IMenu<RouteCompont>>): React.ReactNode => {
+  return routeList?.map(renderRouteItem)
 }
 
-const RenderRoutes = ({ routeList }: RenderRoutesProps) => {
-  return (
-    <Routes>
-      {routeList?.map((item) =>
-        item.children ? (
-          <RenderRoutes key={item.path} routeList={item.children} />
-        ) : (
-          <RouteItem key={item.path} {...item} />
-        ),
-      )}
-    </Routes>
-  )
-}
-
-export const SwitchRouter = ({ routes, onChange }: SwitchRouterProps) => {
+export const SwitchRouter = ({ onChange }: SwitchRouterProps) => {
   const location = useLocation()
+
   useEffect(() => {
     onChange?.()
   }, [location, onChange])
+
   return (
     <Layout className="site-layout">
       <Layout className="site-content">
-        <Routes>
-          <RenderRoutes routeList={routes} />
-        </Routes>
+        <Routes>{renderRoutes(routes)}</Routes>
       </Layout>
     </Layout>
   )
