@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect } from 'react'
-import { useLocation } from 'react-router-dom'
-import { menus, RouteCompont } from '@src/routes'
+import React, { useEffect } from 'react'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { menus, RouteCompont, routesFlat } from '@src/routes'
 import { IMenu } from '@src/interfaces/router.interface'
 import useRootStore from '@src/stores/useRootStore'
 import { observer } from 'mobx-react-lite'
@@ -48,12 +48,21 @@ const SiderMenu: React.FC = () => {
   const { globalStore } = useRootStore()
   const { sideBarTheme, selectedKeys, menuProps, onSelected, updateSelectKey } = globalStore
   const location = useLocation()
+  const { id } = useParams()
+  const navigate = useNavigate()
 
   useEffect(() => {
     updateSelectKey(location.pathname)
   }, [])
 
-  const goPage: MenuProps['onClick'] = useCallback(() => {}, [])
+  const goPage: MenuProps['onClick'] = (e) => {
+    if (id) {
+      const key = e.key
+      const path = routesFlat.find((item) => item.key === key)?.path
+      const url = path?.replace(':id', id)
+      url && navigate('/page/' + url)
+    }
+  }
 
   return (
     <Menu

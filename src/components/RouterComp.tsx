@@ -28,7 +28,7 @@ const renderRouteItem = (item: IMenu<RouteCompont>) => {
 
   // 如果有子路由，嵌套子路由
   return item.children?.length ? (
-    <Route path={item.path} element={<Component />}>
+    <Route key={item.path} path={item.path} element={<Component />}>
       {renderRoutes(item.children)}
     </Route>
   ) : (
@@ -36,7 +36,7 @@ const renderRouteItem = (item: IMenu<RouteCompont>) => {
   )
 }
 
-// 递归渲染路由列表
+// 递归渲染路由列表， Routes 下子组件只支持Route
 const renderRoutes = (routeList?: Array<IMenu<RouteCompont>>): React.ReactNode => {
   return routeList?.map(renderRouteItem)
 }
