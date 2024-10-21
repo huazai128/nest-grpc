@@ -1,17 +1,17 @@
-import React, { useEffect, useMemo, useCallback } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { Form, Space, FormProps, FormItemProps, Button } from 'antd'
 import { observer } from 'mobx-react-lite'
 import { runInAction } from 'mobx'
 import classNames from 'classnames'
 import { TableStore } from '..'
 
-export interface IFormProps<T> extends Omit<FormProps, 'style'> {
+export interface IFormProps extends Omit<FormProps, 'style'> {
   formItems?: Array<FormItemProps>
   configNode?: React.ReactNode
   tableStore: TableStore
 }
 
-export const FormBox = observer(<T,>({ className, formItems, configNode, tableStore, ...props }: IFormProps<T>) => {
+export const FormBox = observer(({ className, formItems, configNode, tableStore, ...props }: IFormProps) => {
   const form = Form.useForm()[0]
 
   useEffect(() => {

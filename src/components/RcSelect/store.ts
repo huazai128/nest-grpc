@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-types */
 import { SelectProps } from 'antd'
 import { action, autorun, observable, toJS } from 'mobx'
 
