@@ -1,7 +1,10 @@
-.rc-select-box {
-  :global(.ant-select-selector) {
-    max-height: 200px;
-    overflow: hidden;
-    overflow-y: auto;
-  }
+.rc-select-box{
+    .ant-select-selector{
+        max-height: 200px;
+        overflow: hidden;
+        overflow-y: auto;
+        // .ant-select-selection-overflow-item-rest{
+        //     display: none !important;
+        // }
+    }
 }

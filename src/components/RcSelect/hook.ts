@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-types */
 import { toJS } from 'mobx'
 import { useEffect } from 'react'
 import { RcSelectProps, useSelectStore } from '.'
