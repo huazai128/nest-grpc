@@ -1,5 +1,5 @@
 declare const styles: {
-  readonly "st-table-box": string;
+  readonly "totalData": string;
 };
 export = styles;
 

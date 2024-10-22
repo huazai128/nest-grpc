@@ -1,5 +1,5 @@
 declare const styles: {
-  readonly "st-table-box": string;
+  readonly "replayerBox": string;
 };
 export = styles;
 

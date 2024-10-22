@@ -1,0 +1,8 @@
+.logModal {
+  :global(.ant-modal-body) {
+    height: 530px;
+    overflow: hidden;
+    overflow-y: auto;
+    padding: 24px;
+  }
+}
