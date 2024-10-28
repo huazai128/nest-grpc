@@ -73,15 +73,27 @@ export class GlobalStore extends StoreExt {
     localStorage.setItem(STORE_KEY.NAV_OPEN_KEYS, JSON.stringify(openKeys))
   }
 
+  /**
+   * 选择路由
+   * @param {*} { selectedKeys }
+   * @type {MenuProps['onSelect']}
+   * @memberof GlobalStore
+   */
   @action
   onSelected: MenuProps['onSelect'] = ({ selectedKeys }: any) => {
     this.selectedKeys = selectedKeys
     localStorage.setItem(STORE_KEY.SELECTED_KEY, JSON.stringify(selectedKeys))
   }
 
+  /**
+   * 更新选中的路由
+   * @param {string} pathname
+   * @memberof GlobalStore
+   */
   @action
   updateSelectKey = (pathname: string) => {
-    const key = (routesFlat.find((item) => item.path && pathToRegexp(item.path).exec(pathname))?.key || '1') as string
+    const key = (routesFlat.find((item) => item.path && pathToRegexp(`/page/${item.path}`).exec(pathname))?.key ||
+      '1') as string
     this.selectedKeys = [key]
     localStorage.setItem(STORE_KEY.SELECTED_KEY, JSON.stringify(toJS(this.selectedKeys)))
   }
