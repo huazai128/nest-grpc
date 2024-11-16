@@ -121,7 +121,6 @@ export default abstract class LogStore {
     }
     this.curHref = href
     this.pageId = 'pageId:' + uuidv4()
-    // 用于发送页面信息，存储在redis 中 3天
     this.logList.push({
       path: pathname,
       referrer: document.referrer,
@@ -196,7 +195,7 @@ export default abstract class LogStore {
     const logs: IMetrics[] = []
     const list = this.logList.filter((item, index: number) => {
       if (index < this.len) {
-        logs.push(logs)
+        logs.push(item)
       }
       return index >= this.len
     })

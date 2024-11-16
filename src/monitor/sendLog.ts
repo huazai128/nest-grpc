@@ -1,3 +1,4 @@
+import { set } from 'lodash'
 import { IMetrics } from './interfaces/util.interface'
 import LogStore from './logStore'
 import CircularJSON from 'circular-json'
@@ -10,6 +11,7 @@ import CircularJSON from 'circular-json'
  */
 export class SendLog extends LogStore {
   private timer?: number
+  private time: number = 1500
   constructor() {
     super()
   }
@@ -22,7 +24,9 @@ export class SendLog extends LogStore {
   handlerCommon() {
     if (this.isOver) {
       this.isOver = false
-      this.handleRoutineReport()
+      setTimeout(() => {
+        this.handleRoutineReport()
+      }, this.time)
     }
   }
 
@@ -35,11 +39,11 @@ export class SendLog extends LogStore {
     this.timer && clearTimeout(this.timer)
     const list = this.getLog()
     this.sendMultiLog(list)
-    if (!!this.logList.length) {
-      // 控制在每秒上次一次
+    if (!!list.length) {
+      // 控制在每秒上传一次
       this.timer = setTimeout(() => {
         this.handleRoutineReport()
-      }, 1000)
+      }, this.time)
     } else {
       this.isOver = true
       this.timer && clearTimeout(this.timer)
