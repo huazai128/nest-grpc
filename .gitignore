@@ -9,7 +9,6 @@ pnpm-debug.log
 config.env
 
 # Logs
-logs
 npm-debug.log*
 pnpm-debug.log*
 yarn-debug.log*
