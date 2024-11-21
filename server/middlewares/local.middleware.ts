@@ -1,9 +1,7 @@
 import { Injectable, NestMiddleware } from '@nestjs/common'
 import { Request, Response, NextFunction } from 'express'
 import { AuthService } from '@app/modules/auth/auth.service'
-import { AuthInfo } from '@app/interfaces/auth.interface'
 import { isDevEnv } from '@app/app.env'
-import { get } from 'lodash'
 
 /**
  * 用于本地开发登录
@@ -39,8 +37,6 @@ export class LocalMiddleware implements NestMiddleware {
       // 强制注入cookie
       request.cookies['jwt'] = token.accessToken
       request.session.user = userInfo
-    } else {
-      const user = get(request, 'session.user') as AuthInfo
     }
     return next()
   }

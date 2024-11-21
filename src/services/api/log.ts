@@ -2,7 +2,7 @@ import { ResponseData } from '@src/interfaces/response.iterface'
 import http, { HttpParams } from '@src/services/http'
 
 function getLogs<T>(data: HttpParams): Promise<ResponseData<T>> {
-  return http.get<T>('/api/log', data)
+  return http.get<T>('/api/log/list', data)
 }
 
 function getLogsByCursor<T>(data: HttpParams): Promise<ResponseData<T>> {

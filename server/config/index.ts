@@ -18,7 +18,7 @@ export const CROSS_DOMAIN = {
   // 可以做redis 缓存
   // 允许访问的域名
   allowedOrigins: [''],
-  allowedReferer: '',
+  allowedReferer: ['a.com', 'b.com'],
 }
 
 // export const REDIS = {
