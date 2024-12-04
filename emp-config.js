@@ -5,6 +5,7 @@ const InlineCodePlugin = require('html-inline-code-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const { TypedCssModulesPlugin } = require('typed-css-modules-webpack-plugin')
 const { join, resolve } = require('path')
+const { UploadSourceMapPlugin } = require('./build/sourcemap-upload-plugin')
 
 module.exports = defineConfig(({ mode, env }) => {
   process.env.EMP_ENV = env || 'dev'
@@ -40,7 +41,8 @@ module.exports = defineConfig(({ mode, env }) => {
       title: '基础架构框架',
     },
     webpackChain: (chain) => {
-      if (env !== 'dev') {
+      console.log(env, 'env')
+      if (env !== 'dev' && !!env) {
         chain.devtool('source-map')
         chain.plugin('SourcemapUploadPlugin').use(
           new UploadSourceMapPlugin({
@@ -93,7 +95,7 @@ module.exports = defineConfig(({ mode, env }) => {
         .loader('css-loader')
         .tap((options) => {
           options.modules = {
-            localIdentName: '[local]',
+            localIdentName: '[name]__[local]__[hash:base64:8]',
           }
           return options
         })
