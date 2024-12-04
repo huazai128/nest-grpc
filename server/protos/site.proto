@@ -22,7 +22,7 @@ message SiteDocument {
 }
 
 message SiteRequest {
-  int32 id = 1; // int64 位使用时，传递到client端 会变成Long类型，结构  {"low": 1000000002,"high": 0,"unsigned": false }, 所以在使用时要特别注意
+  int32 id = 1;
   string name = 2;
   int32 isApi = 3;
   string reportUrl = 4;
