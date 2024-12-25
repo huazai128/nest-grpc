@@ -24,12 +24,13 @@ export class TransformInterceptor<T> implements NestInterceptor<T, T | HttpRespo
     const isApiRequest = request && request.url && request.url.startsWith('/api/')
     // 如果是 API 请求，则进行转换
     if (isApiRequest) {
-      const { successMessage } = getResponsorOptions(target)
+      const { successMessage, successCode, errorMessage } = getResponsorOptions(target)
       return next.handle().pipe(
         map((data: any) => {
+          console.log(data, 'dasdad=')
           return {
-            status: ResponseStatus.Success,
-            message: successMessage || '请求成功',
+            status: successCode ? ResponseStatus.Success : ResponseStatus.Error,
+            message: successCode ? successMessage || '请求成功' : errorMessage,
             result: data,
           }
         }),

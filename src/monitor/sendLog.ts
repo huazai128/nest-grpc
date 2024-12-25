@@ -1,4 +1,3 @@
-import { set } from 'lodash'
 import { IMetrics } from './interfaces/util.interface'
 import LogStore from './logStore'
 import CircularJSON from 'circular-json'

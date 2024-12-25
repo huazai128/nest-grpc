@@ -4,11 +4,13 @@ import { Controller, Get, Post } from '@nestjs/common'
 export class LogController {
   @Get('list')
   getLogList() {
-    console.log()
+    console.log('')
+    return { msg: '成功' }
   }
 
   @Post('multi')
   saveLogs() {
     console.log('=====')
+    return {}
   }
 }
