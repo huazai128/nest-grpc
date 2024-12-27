@@ -1,6 +1,6 @@
 import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common'
-import { Observable } from 'rxjs'
-import { map } from 'rxjs/operators'
+import { Observable, throwError } from 'rxjs'
+import { map, catchError } from 'rxjs/operators'
 import { HttpResponseSuccess, ResponseStatus } from '@app/interfaces/response.interface'
 import { getResponsorOptions } from '@app/decorators/responsor.decorator'
 
@@ -24,15 +24,20 @@ export class TransformInterceptor<T> implements NestInterceptor<T, T | HttpRespo
     const isApiRequest = request && request.url && request.url.startsWith('/api/')
     // 如果是 API 请求，则进行转换
     if (isApiRequest) {
-      const { successMessage, successCode, errorMessage } = getResponsorOptions(target)
+      const { successMessage } = getResponsorOptions(target)
       return next.handle().pipe(
         map((data: any) => {
-          console.log(data, 'dasdad=')
           return {
-            status: successCode ? ResponseStatus.Success : ResponseStatus.Error,
-            message: successCode ? successMessage || '请求成功' : errorMessage,
+            status: ResponseStatus.Success,
+            message: successMessage || '请求成功',
             result: data,
           }
+        }),
+        catchError((error) => {
+          return throwError({
+            status: ResponseStatus.Error,
+            message: error.message || '发生错误',
+          })
         }),
       )
     }

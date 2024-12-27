@@ -37,8 +37,8 @@ export class SendLog extends LogStore {
   handleRoutineReport = () => {
     this.timer && clearTimeout(this.timer)
     const list = this.getLog()
-    this.sendMultiLog(list)
     if (!!list.length) {
+      this.sendMultiLog(list)
       // 控制在每秒上传一次
       this.timer = setTimeout(() => {
         this.handleRoutineReport()

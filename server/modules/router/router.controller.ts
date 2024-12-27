@@ -30,7 +30,7 @@ export class RouterController {
   @Header('content-type', 'text/html')
   @Render('error')
   getError() {
-    return { msg: '1212' }
+    return { data: { msg: ' 122' } }
   }
 
   /**
@@ -45,7 +45,7 @@ export class RouterController {
   @Render('index')
   homePage(@Req() req: Request) {
     const data = this.routeService.getCommonData(req)
-    return { data: { name: '首页' } }
+    return { data: { ...data } }
   }
 
   /**
@@ -59,6 +59,7 @@ export class RouterController {
   @Header('content-type', 'text/html')
   @Render('index')
   allPage(@Req() req: Request) {
-    return { data: { name: '首页' } }
+    const data = this.routeService.getCommonData(req)
+    return { data: { ...data } }
   }
 }
