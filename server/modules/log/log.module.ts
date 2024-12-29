@@ -9,7 +9,7 @@ import { join } from 'path'
   imports: [
     ClientsModule.register([
       {
-        name: 'AUTHPROTO_PACKAGE', // name 属性的值作为注入标记
+        name: 'LOGPROTO_PACKAGE', // name 属性的值作为注入标记
         transport: Transport.GRPC,
         options: {
           url: CONFIG.grpcUrl,

@@ -5,9 +5,9 @@
 // source: log.proto
 
 /* eslint-disable */
-import { Observable } from "rxjs";
+import { Observable } from 'rxjs'
 
-export const protobufPackage = "logproto";
+export const protobufPackage = 'logproto'
 
 export enum TransportCategory {
   /** PV - 页面浏览 */
@@ -87,73 +87,61 @@ export enum RefType {
 
 export interface LogRequest {
   /** 唯一索引 */
-  id: number;
+  id: number
   /** 报告类型 */
-  reportsType: MetricsName;
+  reportsType: MetricsName
   /** 错误 UUID */
-  errorUUid: string;
+  errorUUid: string
   /** 站点 ID */
-  siteId: string;
+  siteId: string
   /** 模型引用类型 */
-  onModel: RefType;
+  onModel: RefType
   /** 内容引用 */
-  doce:
-    | { [key: string]: any }
-    | undefined;
+  doce: { [key: string]: any } | undefined
   /** 日志类别 */
-  category: TransportCategory;
+  category: TransportCategory
   /** 用户 ID */
-  userId: string;
+  userId: string
   /** 标题 */
-  title: string;
+  title: string
   /** 路径 */
-  path: string;
+  path: string
   /** URL */
-  href: string;
+  href: string
   /** 方法 */
-  method: string;
+  method: string
   /** 请求 URL */
-  url: string;
+  url: string
   /** 请求体参数 */
-  body:
-    | { [key: string]: any }
-    | undefined;
+  body: { [key: string]: any } | undefined
   /** 请求参数 */
-  params:
-    | { [key: string]: any }
-    | undefined;
+  params: { [key: string]: any } | undefined
   /** 响应 */
-  response:
-    | Response
-    | undefined;
+  response: Response | undefined
   /** 错误信息 */
-  value: string;
+  value: string
   /** IP 地址 */
-  ip: string;
+  ip: string
   /** 创建时间 */
-  createAt:
-    | Date
-    | undefined;
+  createAt: Date | undefined
   /** 更新时间 */
-  updateAt:
-    | Date
-    | undefined;
+  updateAt: Date | undefined
   /** 追踪 ID */
-  traceId: string;
+  traceId: string
 }
 
 /** 响应消息定义 */
 export interface Response {
-  code: number;
-  msg: string;
-  data: { [key: string]: any } | undefined;
+  code: number
+  msg: string
+  data: { [key: string]: any } | undefined
 }
 
 export interface LogResponse {
-  id: number;
+  id: number
 }
 
 export interface LogService {
   /** 保存走kafka, 不过两种都支持==== */
-  saveLog(request: LogRequest): Observable<LogResponse>;
+  saveLog(request: LogRequest): Observable<LogResponse>
 }

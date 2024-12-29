@@ -4,9 +4,12 @@ import { Responsor } from '@app/decorators/responsor.decorator'
 import { LogRequest } from '@app/protos/log'
 import { Controller, Get, Post, Res } from '@nestjs/common'
 import { Response } from 'express'
+import { LogService } from './log.service'
 
 @Controller('/api/log')
 export class LogController {
+  constructor(private readonly logService: LogService) {}
+
   @Get('list')
   getLogList() {
     console.log('=====')
@@ -22,7 +25,9 @@ export class LogController {
     @Res() res: Response,
   ) {
     const { logs } = body
-    logs.forEach(() => {})
+    logs.forEach((item: LogRequest) => {
+      this.logService.saveLog(item)
+    })
     return res.status(204).json()
   }
 }
