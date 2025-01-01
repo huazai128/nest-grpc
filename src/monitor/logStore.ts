@@ -35,7 +35,7 @@ export default abstract class LogStore {
   private prevHref!: string
   // 每次页面发生变化都会重新生成一个pageId,可以根据这个pageId统计每个页面的操作
   private pageId!: string
-  // 每次初始化都会产生一个，方便用于查询用户交互、操作流程。
+  // 每次初始化都会产生一个，方便用于查询用户交互、操作流程，这个可以处理成流程图查看用户操作过程。
   public traceId!: string
   // 当前日志上报是否发生完成
   public isOver: boolean = false
@@ -174,7 +174,6 @@ export default abstract class LogStore {
    * @memberof LogStore
    */
   add = (value: IMetrics): void => {
-    console.log(value, 'value')
     // 排除不能作为用户行为的数据
     if (!noList.includes(value.category) && !!value.monitorId) {
       this.push({
