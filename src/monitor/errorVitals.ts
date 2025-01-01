@@ -19,6 +19,21 @@ const store = localForage.createInstance({
 })
 
 /**
+ * 判断是否存在
+ * @param {Record<string, any>} obj
+ * @return {*}  {boolean}
+ */
+function hasHtmlAndBodyTags(obj: Record<string, any>): boolean {
+  const values = Object.values(obj)
+  return (
+    (values.some((value) => typeof value === 'string' && value.includes('<html>')) ||
+      values.some((value) => typeof value === 'object' && value !== null && hasHtmlAndBodyTags(value))) &&
+    (values.some((value) => typeof value === 'string' && value.includes('<body>')) ||
+      values.some((value) => typeof value === 'object' && value !== null && hasHtmlAndBodyTags(value)))
+  )
+}
+
+/**
  * 错误采集上报
  * @export
  * @class ErrorVitals
@@ -33,12 +48,14 @@ export default class ErrorVitals extends CommonExtends {
   private curRecordId!: string
   // 是否开始录制
   private isStartRecord: boolean = false
-  // 保存最近5个录制数据
+  // 保存最近10个录制数据
   private reordHistoryKeys: string[] = []
-  // 缓存
+  // 缓存历史的keys
   private historyKeys: string = 'historyKeys'
-  // 缓存
+  // 缓存录制key
   private curRecordKey: string = 'curRecordKey'
+  // 每个错误记录10个录屏
+  private keysLen = 10
   constructor() {
     super()
     this.initJsError()
@@ -95,8 +112,11 @@ export default class ErrorVitals extends CommonExtends {
     let errorInfo: any = {
       ...error,
       category: TransportCategory.ERROR,
+      behaviorList: this.sendLog.getList(),
     }
+    // 记录用户行为id，用于查看用户操作行为，减少传递数据过大问题。
     const monitorId = TransportCategory.ERROR + uuidv4()
+    // 防止错误重复上报
     const hasStatus = this.errorUids.includes(errorInfo.errorUid)
     // 处理重复错误上报
     if (hasStatus) return false
@@ -171,7 +191,7 @@ export default class ErrorVitals extends CommonExtends {
         // 其他信息
         meta: {
           url: target.src,
-          html: target.outerHTML,
+          // html: target.outerHTML, // 剔除过大
           type: target.tagName,
         },
       } as ExceptionMetrics
@@ -219,15 +239,20 @@ export default class ErrorVitals extends CommonExtends {
    */
   initHttpError = () => {
     const loadHandler = (metrics: HttpMetrics) => {
-      const res = metrics.response
-      const value = metrics.response
+      let res = metrics.response
       if (metrics.status < 400 && (res?.status == 'success' || res?.status >= 0)) return false
-      const errUid = getErrorUid(`${MechanismType.HP}-${value}-${metrics.statusText}`)
+      const errUid = getErrorUid(`${MechanismType.HP}-${res}-${metrics.statusText}`)
+      if (hasHtmlAndBodyTags(res)) {
+        res = {
+          ...res,
+          result: '[-Body内容为HTML已过滤-]',
+        }
+      }
       const errorInfo = {
         // 上报错误归类
         reportsType: MechanismType.HP,
         // 错误信息
-        value: JSON.stringify(value),
+        value: JSON.stringify(res),
         // 错误类型
         errorType: 'HttpError',
         // 用户行为追踪 breadcrumbs 在 errorSendHandler 中统一封装
@@ -348,7 +373,7 @@ export default class ErrorVitals extends CommonExtends {
    * @memberof ErrorVitals
    */
   pushRecord = (key: string) => {
-    if (this.reordHistoryKeys.length < 10) {
+    if (this.reordHistoryKeys.length < this.keysLen) {
       this.reordHistoryKeys.push(key)
     } else {
       this.reordHistoryKeys.shift()

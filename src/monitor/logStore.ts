@@ -33,7 +33,7 @@ export default abstract class LogStore {
   private curHref!: string
   // 上个页面路径
   private prevHref!: string
-  // 每次页面发生变化都会重新生成一个pageId
+  // 每次页面发生变化都会重新生成一个pageId,可以根据这个pageId统计每个页面的操作
   private pageId!: string
   // 每次初始化都会产生一个，方便用于查询用户交互、操作流程。
   public traceId!: string
@@ -41,6 +41,8 @@ export default abstract class LogStore {
   public isOver: boolean = false
   // 每次上传的个数
   protected len: number = 10
+  // 存储最大用户行为数
+  protected maxBehaviorLen = 200
 
   constructor() {
     wrHistory()
@@ -53,7 +55,7 @@ export default abstract class LogStore {
    * @memberof SendLog
    */
   getInit() {
-    // 如果是刷新页面还是使用来的traceId
+    // 如果是刷新页面还是使用来的traceId，唯一的id， 可以查看用户进入流程
     const traceId = sessionStorage.getItem('traceId')
     // 做了简单的判断
     if (traceId && traceId.length > 40) {
@@ -172,6 +174,7 @@ export default abstract class LogStore {
    * @memberof LogStore
    */
   add = (value: IMetrics): void => {
+    console.log(value, 'value')
     // 排除不能作为用户行为的数据
     if (!noList.includes(value.category) && !!value.monitorId) {
       this.push({
@@ -204,12 +207,12 @@ export default abstract class LogStore {
   }
 
   /**
-   * 添加用户行为并保存最大长度为200 可以配置
+   * 添加用户行为
    * @param {BehaviorItem} value
    * @memberof LogStore
    */
   push(value: BehaviorItem) {
-    if (this.behaviorList.length < 200) {
+    if (this.behaviorList.length < this.maxBehaviorLen) {
       this.behaviorList.push(value)
     } else {
       this.behaviorList.shift() // 删除数组第一个元素

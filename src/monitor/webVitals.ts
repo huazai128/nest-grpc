@@ -20,11 +20,13 @@ import { CommonExtends } from './commonExtends'
  */
 export class WebVitals extends CommonExtends {
   private startTime: number
-  private diffTime!: number
+  private diffTime: number = 0
   constructor() {
     super()
-    this.startTime = Date.now()
+    this.startTime = performance.now()
     this.initResourceFlow()
+    this.initFCP()
+    this.initFP()
     this.initFMP()
     afterLoad(() => {
       this.initFCP()
@@ -57,7 +59,7 @@ export class WebVitals extends CommonExtends {
   private async initFCP() {
     try {
       const entry = (await getFCP()) as IMetrics
-      const time = Date.now() - this.startTime
+      const time = performance.now() - this.startTime
       if (entry) {
         this.diffTime = Number((entry.startTime - time).toFixed(2))
         const { name, ...metrics } = normalizePerformanceRecord(entry)
@@ -83,7 +85,7 @@ export class WebVitals extends CommonExtends {
           entries.forEach((entry) => {
             if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
               if (!isOnce) {
-                const t = Date.now() - time + this.diffTime
+                const t = performance.now() - time + this.diffTime
                 this.sendLog.add({
                   fmpTime: t,
                   reportsType: MetricsName.FMP,
