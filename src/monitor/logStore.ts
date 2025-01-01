@@ -195,7 +195,7 @@ export default abstract class LogStore {
     const logs: IMetrics[] = []
     const list = this.logList.filter((item, index: number) => {
       if (index < this.len) {
-        logs.push(item)
+        logs.push({ ...item, siteId: this.config.appKey })
       }
       return index >= this.len
     })

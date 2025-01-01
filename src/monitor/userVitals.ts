@@ -68,7 +68,7 @@ export class UserVitals extends CommonExtends {
       const value = target.value
       // 获取包含id、class、innerTextde字符串的标签
       const nodeDom = !!value
-        ? `<${tagName} ${id} ${classNames !== '' ? classNames : ''}>${innerText} ${!!value ? '输入框值为：' + value : null}</${tagName}>`
+        ? `<${tagName} ${id} ${classNames !== '' ? classNames : ''}>${innerText} ${!!value && e.type === 'blur' ? '输入框值为：' + value : null}</${tagName}>`
         : null
       const monitorId = TransportCategory.EVENT + uuidv4()
       const metrice = {
