@@ -56,14 +56,15 @@ const EditSite = observer(() => {
           ?.map((item: string) => Number(item))
           ?.filter((item: number) => item && !isNaN(item))
         const newSite = { ...values, state: 1 }
-        console.log(toJS(site), 'sites')
-        const { status } = site?._id
+        const { status, message: msg } = site?._id
           ? await api.site.updateSite(site?._id, newSite)
-          : await api.site.createSite({ ...values, state: 1, id: 0 })
+          : await api.site.createSite({ ...values, state: 1, })
 
         if (Object.is(status, 'success')) {
           onCancel()
           loadMoreData()
+        } else {
+          message.error(msg || '保存失败')
         }
       } catch (error) {
         message.info('请确定api屏蔽告警配置')

@@ -26,5 +26,6 @@ import { SiteController } from './site.controller'
   ],
   controllers: [SiteController],
   providers: [SiteService],
+  exports: [SiteService],
 })
 export class SiteModule {}

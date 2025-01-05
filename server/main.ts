@@ -14,8 +14,9 @@ import morgan from 'morgan'
 import { get } from 'lodash'
 import ejs from 'ejs'
 import { MicroserviceOptions, Transport } from '@nestjs/microservices'
-import { LoggingInterceptor } from './interceptors/logging.interceptor'
-import { TransformInterceptor } from './interceptors/transform.interceptor'
+import { LoggingInterceptor } from '@app/interceptors/logging.interceptor'
+import { TransformInterceptor } from '@app/interceptors/transform.interceptor'
+import { ErrorInterceptor } from '@app/interceptors/error.interceptor'
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule)
@@ -52,7 +53,7 @@ async function bootstrap() {
     ),
   )
 
-  app.useGlobalInterceptors(new TransformInterceptor(), new LoggingInterceptor())
+  app.useGlobalInterceptors(new TransformInterceptor(), new ErrorInterceptor(), new LoggingInterceptor())
 
   const redisIoAdapter = new RedisIoAdapter(app)
   await redisIoAdapter.connectToRedis()

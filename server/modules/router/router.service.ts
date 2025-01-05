@@ -4,6 +4,7 @@ import { PageInfo } from './router.interface'
 import { isDevEnv } from '@app/app.env'
 import { getServerIp } from '@app/utils/util'
 import { APP } from '@app/config'
+import { SiteService } from '../site/site.service'
 
 /**
  * 处理路由下各种数据
@@ -12,6 +13,7 @@ import { APP } from '@app/config'
  */
 @Injectable()
 export class RouterSercive {
+  constructor(private readonly siteService: SiteService) {}
   public getCommonData(req: Request): PageInfo {
     const user = req.session?.user
 
@@ -25,5 +27,10 @@ export class RouterSercive {
       data.apiHost = `http://${getServerIp()}:${APP.PORT}`
     }
     return data
+  }
+
+  async getSiteInfo(id: string) {
+    const res = await this.siteService.getByIdSiteInfo(id)
+    return res
   }
 }

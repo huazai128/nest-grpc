@@ -1,4 +1,4 @@
-import { Controller, Get, Render, Req, UseGuards, Header } from '@nestjs/common'
+import { Controller, Get, Render, Req, UseGuards, Header, Param } from '@nestjs/common'
 import { RouterGuard } from '@app/guards/router.guard'
 import { Request } from 'express'
 import { SessionPipe } from '@app/pipes/session.pipe'
@@ -39,13 +39,14 @@ export class RouterController {
    * @return {*}
    * @memberof AppController
    */
-  @Get('/page/*')
+  @Get('/page/:id/*')
   @UseGuards(RouterGuard)
   @Header('content-type', 'text/html')
   @Render('index')
-  homePage(@Req() req: Request) {
+  async homePage(@Req() req: Request, @Param('id') id: string) {
     const data = this.routeService.getCommonData(req)
-    return { data: { ...data } }
+    const siteInfo = await this.routeService.getSiteInfo(id)
+    return { data: { ...data, ...siteInfo } }
   }
 
   /**

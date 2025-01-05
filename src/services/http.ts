@@ -60,8 +60,12 @@ function httpCommon<T>(method: Method, { data, otherConfig, apiUrl }: HttpReq): 
       return resFormat(rdata)
     },
     (error) => {
+      console.log(error, 'error')
+      const msg = Array.isArray(error.response.data?.message)
+        ? error.response.data?.message[0]
+        : error.response.data?.message
       return Promise.reject({
-        message: error.response.data.error || error.response.statusText || error.message || 'network error',
+        message: msg || error.response.data.error || error.response.statusText || error.message || 'network error',
         result: /^timeout of/.test(error.message)
           ? HTTPERROR[HTTPERROR.TIMEOUTERROR]
           : HTTPERROR[HTTPERROR.NETWORKERROR],

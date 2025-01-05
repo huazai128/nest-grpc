@@ -10,7 +10,7 @@ import config from './config'
 const monitor = new Monitor({
   url: `${config.apiHost}` || 'http://172.26.130.15:5001',
   isExposure: true,
-  appKey: '67122829c5dfb68a17cb7ce4', //上报map 存储位置
+  appKey: '677a8c554e96c1ebff6622e5', //上报map 存储位置
   mode: 'test', // 环境
   isOnRecord: true,
 })

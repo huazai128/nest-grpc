@@ -21,7 +21,6 @@ export class SiteService implements OnModuleInit {
    * @memberof SiteService
    */
   public async saveSite(data: SiteDTO) {
-    console.log(data, 'data=====')
     const res = await lastValueFrom(this.siteService.saveSite(data as SiteRequest))
     return res
   }
@@ -60,5 +59,13 @@ export class SiteService implements OnModuleInit {
     return res
   }
 
-  public async getByIdSiteInfo(id: number) {}
+  /**
+   * 通过自增id获取站点信息
+   * @param {string} id
+   * @memberof SiteService
+   */
+  public async getByIdSiteInfo(id: string) {
+    const res = await lastValueFrom(this.siteService.getByIdSiteInfo({ id: id }))
+    return res
+  }
 }
