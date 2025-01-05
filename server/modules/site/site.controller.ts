@@ -50,7 +50,7 @@ export class SiteController {
   @Responsor.api()
   @Responsor.handle('更新站点')
   putSite(@QueryParams() { params }: QueryParamsResult, @Body() site: SiteDTO) {
-    return this.siteService.updateSiteId({ ...site, id: Number(params.id) } as SiteRequest)
+    return this.siteService.updateSiteId({ ...site, id: params.id } as SiteRequest)
   }
 
   /**
@@ -64,6 +64,6 @@ export class SiteController {
   @Responsor.api()
   @Responsor.handle('删除站点')
   deleteSiteId(@QueryParams() { params }: QueryParamsResult) {
-    return this.siteService.deleteSiteId(Number(params.id))
+    return this.siteService.deleteSiteId(params.id)
   }
 }

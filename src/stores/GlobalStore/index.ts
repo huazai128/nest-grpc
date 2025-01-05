@@ -97,6 +97,16 @@ export class GlobalStore extends StoreExt {
     this.selectedKeys = [key]
     localStorage.setItem(STORE_KEY.SELECTED_KEY, JSON.stringify(toJS(this.selectedKeys)))
   }
+
+  /**
+   * 更新站点
+   * @param {string} siteId
+   * @memberof GlobalStore
+   */
+  @action
+  updateSite = (siteId: string) => {
+    this.siteId = siteId
+  }
 }
 
 export default new GlobalStore()

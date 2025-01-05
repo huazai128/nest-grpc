@@ -21,6 +21,7 @@ export class SiteService implements OnModuleInit {
    * @memberof SiteService
    */
   public async saveSite(data: SiteDTO) {
+    console.log(data, 'data=====')
     const res = await lastValueFrom(this.siteService.saveSite(data as SiteRequest))
     return res
   }
@@ -54,8 +55,10 @@ export class SiteService implements OnModuleInit {
    * @return {*}
    * @memberof SiteService
    */
-  public async deleteSiteId(id: number) {
+  public async deleteSiteId(id: string) {
     const res = await lastValueFrom(this.siteService.deleteSiteId({ id: id }))
     return res
   }
+
+  public async getByIdSiteInfo(id: number) {}
 }

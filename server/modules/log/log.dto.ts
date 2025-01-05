@@ -1,12 +1,12 @@
 import { MetricsName, TransportCategory } from '@app/constants/enum.contant'
 import { PaginateSortDTO } from '@app/models/paginate.model'
 import { DateQueryDTO, KeyIdQueryDTO, KeywordDTO, SiteIdQueryDTO, TimeSlotQueryDTO } from '@app/models/query.model'
-import { LogRequest } from '@app/protos/log'
+import { SaveLogRequest } from '@app/protos/log'
 import { LOG_CATEGORY, MechanismTypes, MetricsTypes } from '@app/constants/report.contant'
 import { IntersectionType } from '@nestjs/mapped-types'
 import { IsNotEmpty, IsOptional, IsString, IsIn } from 'class-validator'
 
-export interface LogData extends Partial<LogRequest> {}
+export interface LogData extends Partial<SaveLogRequest> {}
 
 export class LogSearchDTO {
   @IsIn(LOG_CATEGORY)

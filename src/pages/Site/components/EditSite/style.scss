@@ -1,6 +1,6 @@
 .siteModal {
-  .ant-modal-body{
-    max-height: 580px;
+  :global(.ant-modal-body) {
+    max-height: 480px;
     overflow: hidden;
     overflow-y: auto;
   }

@@ -1,5 +1,18 @@
 export const NULL = null
 export const UNDEFINED = void 0
+export const KW_KEYS: Array<string> = [
+  'title',
+  'path',
+  'href',
+  'method',
+  'url',
+  'body',
+  'params',
+  'value',
+  'response',
+]
+
+export const ONLY_KEYS: Array<string> = ['userId', 'ip']
 
 // 判断是否为null   value is null: 指示函数返回的布尔类型是一个类型保护
 export const isNull = (value: any): value is null => value === NULL

@@ -9,11 +9,11 @@ function getSiteList<T>(data: HttpParams): Promise<ResponseData<T>> {
   return http.get<T>('/api/site', data)
 }
 
-function deleteSiteId<T>(id: number): Promise<ResponseData<T>> {
+function deleteSiteId<T>(id: string): Promise<ResponseData<T>> {
   return http.deleteId<T>(`/api/site/${id}`, {})
 }
 
-function updateSite<T>(id: number, data: HttpParams): Promise<ResponseData<T>> {
+function updateSite<T>(id: string, data: HttpParams): Promise<ResponseData<T>> {
   return http.put<T>(`/api/site/${id}`, data)
 }
 

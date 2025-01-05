@@ -49,15 +49,16 @@ const EditSite = observer(() => {
         if (!!apiRules) {
           try {
             values.apiRules = JSON.parse(apiRules)
-          } catch (e) {}
+          } catch (e) { }
         }
         values.recordWhiteList = values.recordWhiteList
           ?.split(',')
           ?.map((item: string) => Number(item))
           ?.filter((item: number) => item && !isNaN(item))
         const newSite = { ...values, state: 1 }
-        const { status } = site?.id
-          ? await api.site.updateSite(site?.id, newSite)
+        console.log(toJS(site), 'sites')
+        const { status } = site?._id
+          ? await api.site.updateSite(site?._id, newSite)
           : await api.site.createSite({ ...values, state: 1, id: 0 })
 
         if (Object.is(status, 'success')) {

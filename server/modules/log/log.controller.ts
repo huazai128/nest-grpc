@@ -1,12 +1,13 @@
 import { PlainBody } from '@app/decorators/body.decorator'
 import { QueryParams, QueryVisitor } from '@app/decorators/params.decorator'
 import { Responsor } from '@app/decorators/responsor.decorator'
-import { LogRequest } from '@app/protos/log'
-import { Controller, Get, Post, Res } from '@nestjs/common'
+import { LogList, SaveLogRequest } from '@app/protos/log'
+import { Controller, Get, Post, Query, Res, UseGuards } from '@nestjs/common'
 import { Response } from 'express'
 import { LogService } from './log.service'
 import { RedisService } from '@app/processors/redis/redis.service'
-import { LogData } from './log.dto'
+import { LogData, LogPaginateQueryDTO } from './log.dto'
+import { ApiGuard } from '@app/guards/api.guard'
 
 const WEB_INFO = 'webInfo'
 
@@ -18,8 +19,12 @@ export class LogController {
   ) {}
 
   @Get('list')
-  getLogList() {
-    return { msg: '成功' }
+  @UseGuards(ApiGuard)
+  @Responsor.api()
+  @Responsor.paginate()
+  @Responsor.handle('获取日志列表')
+  getLogs(@Query() query: LogPaginateQueryDTO): Promise<LogList> {
+    return this.logService.getLogs(query)
   }
 
   /**
@@ -47,10 +52,10 @@ export class LogController {
       const traceId = logs[0]?.traceId
       webInfo = await this.cacheService.get(traceId)
     }
-    logs.forEach((item: LogRequest) => {
+    logs.forEach((item: SaveLogRequest) => {
       if (item.category !== WEB_INFO) {
         // 要覆盖这里的类型category=WEB_INFO, 因为这里只是用于存储公共的上报基础信息
-        const nData = { ...webInfo, ...item, ip: visitor.ip, ua_result: visitor.ua_result } as LogRequest
+        const nData = { ...webInfo, ...item, ip: visitor.ip, ua_result: visitor.ua_result } as SaveLogRequest
         this.logService.saveLog(nData)
       }
     })

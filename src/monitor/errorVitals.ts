@@ -255,7 +255,6 @@ export default class ErrorVitals extends CommonExtends {
         value: JSON.stringify(res),
         // 错误类型
         errorType: 'HttpError',
-        // 用户行为追踪 breadcrumbs 在 errorSendHandler 中统一封装
         // 错误的标识码
         errorUid: errUid,
         // 附带信息

@@ -42,8 +42,8 @@ export class SiteStore extends ListStore {
   @action
   editSite = async ({ ...values }: Site) => {
     const newSite = { ...values, state: 1 }
-    const res = this.site?.id
-      ? await this.api.site.updateSite(this.site?.id, newSite)
+    const res = this.site?._id
+      ? await this.api.site.updateSite(this.site?._id, newSite)
       : await this.api.site.createSite({ ...values, state: 1 })
     if (res.status == 'success') {
       this.isVisible = false
@@ -76,7 +76,7 @@ export class SiteStore extends ListStore {
    * @memberof SiteStore
    */
   @action
-  delteSiteId = async (siteId: Site['id']) => {
+  delteSiteId = async (siteId: Site['_id']) => {
     const { message: msg, status } = await this.api.site.deleteSiteId(siteId)
     if (status === 'success') {
       this.loadMoreData()

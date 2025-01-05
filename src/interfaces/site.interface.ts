@@ -15,6 +15,7 @@ export interface Site {
   reportUrl: string
   apiRules: APIRule[]
   recordWhiteList: number[]
+  _id: string
 }
 
 export interface SiteDTO {

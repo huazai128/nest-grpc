@@ -33,12 +33,6 @@ export class TransformInterceptor<T> implements NestInterceptor<T, T | HttpRespo
             result: data,
           }
         }),
-        catchError((error) => {
-          return throwError({
-            status: ResponseStatus.Error,
-            message: error.message || '发生错误',
-          })
-        }),
       )
     }
     // 如果不是 API 请求，直接返回原始数据

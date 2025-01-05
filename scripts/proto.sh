@@ -1,6 +1,5 @@
 
 
-复制
 #!/bin/bash
 
 PROTO_DIR="./server/protos" 

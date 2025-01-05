@@ -42,7 +42,7 @@ export class SiteDTO {
   isApi: number
 
   @IsNotEmpty({ message: '不能为空' })
-  @IsUrl()
+  @IsUrl({}, { message: '请输入有效的 URL 地址' })
   reportUrl: string
 }
 

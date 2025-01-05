@@ -103,14 +103,14 @@ export class UserVitals extends CommonExtends {
           const att = nodeRef.getAttribute('data-visible')
           if (entry.isIntersecting && entry.intersectionRatio >= 0.55 && !att) {
             const data: any = nodeRef.dataset || {} // 曝光埋点日志数据
-            const monitorId = TransportCategory.EVENT + uuidv4()
+            // const monitorId = TransportCategory.EVENT + uuidv4()
             const metrice = {
               reportsType: MetricsName.CE,
               classList: Array.from(nodeRef.classList),
               tagName: nodeRef.tagName,
               text: nodeRef.textContent,
               category: TransportCategory.EVENT,
-              monitorId,
+              // monitorId,
               ...data,
             }
             this.sendLog.add(metrice)
@@ -132,7 +132,7 @@ export class UserVitals extends CommonExtends {
       itOberser?.observe(child)
     })
 
-    // 监听元素变化后，判断是否存在曝光买点
+    // 监听元素变化后，判断是否存在曝光埋点
     mOberver(function (mutation: MutationRecord) {
       const addedNodes = mutation.addedNodes
       if (!!addedNodes.length) {
