@@ -1,19 +1,13 @@
-import { Suspense, useEffect } from 'react'
-import { useNavigate, Outlet, useParams } from 'react-router-dom'
+import { Suspense } from 'react'
+import { useNavigate, Outlet } from 'react-router-dom'
 import { Layout } from 'antd'
 import Sider from './Sider'
 import styles from './index.scss'
-import useRootStore from '@src/stores/useRootStore'
 
 const { Content } = Layout
 
 const Home = () => {
-  const { globalStore } = useRootStore()
   const navigate = useNavigate()
-  const params = useParams() as { id: string }
-  useEffect(() => {
-    globalStore.updateSite(params.id)
-  }, [params.id])
 
   const goHome = () => {
     navigate('/')

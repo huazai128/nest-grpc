@@ -1,4 +1,4 @@
-import { IsIn, IsInt, IsNotEmpty, IsOptional, Max, Min } from 'class-validator'
+import { IsIn, IsInt, IsNotEmpty, IsOptional, IsString, Max, Min } from 'class-validator'
 import { Transform } from 'class-transformer'
 import { unknownToNumber } from '@app/transformers/value.transform'
 import { SortType } from '@app/constants/enum.contant'
@@ -17,6 +17,11 @@ export class PaginateBaseDTO {
   @IsOptional()
   @Transform(({ value }) => unknownToNumber(value))
   size: number
+
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  cursor: string
 }
 
 export class PaginateSortDTO extends PaginateBaseDTO {

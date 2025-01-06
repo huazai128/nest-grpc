@@ -72,6 +72,7 @@ export class LogStore extends ListStore {
   async requestUrl({ time, page, size, cursor, paginateMode, ...params }: LogSearch): Promise<LogResponse | null> {
     const { timeSlot, format } = time?.selectInfo || {}
     const nParams = this.handleCommonParams({ ...params, time })
+    console.log(page, 'page====')
     if (paginateMode === 'page') {
       if (page === 1) {
         this.getLogsChartData({ ...nParams, timeSlot, format })

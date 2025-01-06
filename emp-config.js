@@ -41,7 +41,6 @@ module.exports = defineConfig(({ mode, env }) => {
       title: '基础架构框架',
     },
     webpackChain: (chain) => {
-      console.log(env, 'env')
       if (env !== 'dev' && !!env) {
         chain.devtool('source-map')
         chain.plugin('SourcemapUploadPlugin').use(

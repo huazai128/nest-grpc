@@ -9,6 +9,7 @@ import { Button, FormItemProps, Input, Layout, List, Popconfirm, Space, Typograp
 import styles from './style.scss'
 import EditSite from './components/EditSite'
 import { useStore, SiteProvider } from './store'
+import useRootStore from '@src/stores/useRootStore'
 
 const { Content } = Layout
 
@@ -21,6 +22,7 @@ const formList: Array<FormItemProps> = [
 ]
 
 const Site = observer(() => {
+  const { globalStore } = useRootStore()
   const siteStore = useStore()
   onMounted(() => {
     siteStore.loadMoreData()
@@ -35,7 +37,7 @@ const Site = observer(() => {
           listProps={{
             renderItem: (item: SiteItem) => (
               <List.Item key={item.id}>
-                <Link to={`/page/${item.id}/home`}>
+                <Link to={`/page/${item.id}/home`} onClick={() => globalStore.updateSite(item._id)}>
                   {item.name}
                   <p>{dayjs(item.create_at).format('YYYY-MM-DD HH:mm:ss')}</p>
                 </Link>

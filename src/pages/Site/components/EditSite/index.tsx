@@ -29,7 +29,6 @@ const EditSite = observer(() => {
       if (site?.recordWhiteList) {
         recordWhiteList = site.recordWhiteList?.join(',')
       }
-      console.log(site?.isApi, 'site?.isApi ')
       if (site) {
         form.setFieldsValue({
           name: site?.name,
@@ -49,7 +48,7 @@ const EditSite = observer(() => {
         if (!!apiRules) {
           try {
             values.apiRules = JSON.parse(apiRules)
-          } catch (e) { }
+          } catch (e) {}
         }
         values.recordWhiteList = values.recordWhiteList
           ?.split(',')
@@ -58,7 +57,7 @@ const EditSite = observer(() => {
         const newSite = { ...values, state: 1 }
         const { status, message: msg } = site?._id
           ? await api.site.updateSite(site?._id, newSite)
-          : await api.site.createSite({ ...values, state: 1, })
+          : await api.site.createSite({ ...values, state: 1 })
 
         if (Object.is(status, 'success')) {
           onCancel()

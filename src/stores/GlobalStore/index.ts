@@ -9,6 +9,9 @@ export class GlobalStore extends StoreExt {
   constructor() {
     super()
     makeObservable(this)
+    if (window.INIT_DATA._id) {
+      this.updateSite(window.INIT_DATA._id)
+    }
   }
 
   private curTheme = localStorage.getItem(STORE_KEY.SIDE_BAR_THEME) as IGlobalStore.SideBarTheme

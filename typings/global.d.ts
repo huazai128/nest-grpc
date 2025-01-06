@@ -6,6 +6,7 @@ declare interface Window {
       userId: number
     }
     apiHost?: string
+    _id?: string
     [key: string]: any
   }
 }

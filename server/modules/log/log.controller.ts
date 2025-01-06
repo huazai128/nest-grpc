@@ -6,7 +6,7 @@ import { Controller, Get, Post, Query, Res, UseGuards } from '@nestjs/common'
 import { Response } from 'express'
 import { LogService } from './log.service'
 import { RedisService } from '@app/processors/redis/redis.service'
-import { LogData, LogPaginateQueryDTO } from './log.dto'
+import { LogChartQueryDTO, LogData, LogPaginateQueryDTO } from './log.dto'
 import { ApiGuard } from '@app/guards/api.guard'
 
 const WEB_INFO = 'webInfo'
@@ -18,12 +18,19 @@ export class LogController {
     private readonly cacheService: RedisService,
   ) {}
 
+  /**
+   * 获取日志
+   * @param {LogPaginateQueryDTO} query
+   * @return {*}  {Promise<LogList>}
+   * @memberof LogController
+   */
   @Get('list')
   @UseGuards(ApiGuard)
   @Responsor.api()
   @Responsor.paginate()
   @Responsor.handle('获取日志列表')
   getLogs(@Query() query: LogPaginateQueryDTO): Promise<LogList> {
+    console.log(query, 'query=======')
     return this.logService.getLogs(query)
   }
 
@@ -45,6 +52,7 @@ export class LogController {
   ) {
     const { logs } = body
     let webInfo = logs.find((item) => item.category === WEB_INFO)
+    // 这里存在traceId 肯能不一致的问题，需要优化
     if (webInfo && webInfo.traceId) {
       // 缓存页面基础信息，防止重复传递占用请求资源
       this.cacheService.set(webInfo.traceId, webInfo, 3 * 24 * 60 * 60)
@@ -60,5 +68,31 @@ export class LogController {
       }
     })
     return res.status(204).json()
+  }
+
+  /**
+   * 通过游标获取日志
+   * @param {LogPaginateQueryDTO} query
+   * @memberof LogController
+   */
+  @Get('/cursor')
+  @UseGuards(ApiGuard)
+  @Responsor.api()
+  @Responsor.handle('获取日志列表游标分页')
+  getLogsByCursor(@Query() query: LogPaginateQueryDTO) {
+    console.log(query, 'query=====')
+  }
+
+  /**
+   * 获取统计数据
+   * @param {LogChartQueryDTO} query
+   * @memberof LogController
+   */
+  @Get('chart')
+  @UseGuards(ApiGuard)
+  @Responsor.api()
+  @Responsor.handle('获取图表数据')
+  getLogsChart(@Query() query: LogChartQueryDTO) {
+    console.log(query)
   }
 }

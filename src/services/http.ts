@@ -60,7 +60,6 @@ function httpCommon<T>(method: Method, { data, otherConfig, apiUrl }: HttpReq): 
       return resFormat(rdata)
     },
     (error) => {
-      console.log(error, 'error')
       const msg = Array.isArray(error.response.data?.message)
         ? error.response.data?.message[0]
         : error.response.data?.message

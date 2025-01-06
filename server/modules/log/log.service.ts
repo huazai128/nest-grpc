@@ -41,4 +41,8 @@ export class LogService implements OnModuleInit {
   public async getLogs(paginateQuery: LogPaginateQueryDTO): Promise<LogList> {
     return await lastValueFrom(this.logService.getLogs(paginateQuery as unknown as QueryDTO))
   }
+
+  public async cursorPaginate(paginateQuery: LogPaginateQueryDTO): Promise<LogList> {
+    return await lastValueFrom(this.logService.getLogs(paginateQuery as unknown as QueryDTO))
+  }
 }
