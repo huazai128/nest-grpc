@@ -5,204 +5,189 @@
 // source: log.proto
 
 /* eslint-disable */
-import { Observable } from "rxjs";
-import { type ChartItem } from "./common/chart_item";
-import { type Pagination } from "./common/pagination";
-import { type QueryDTO } from "./common/query_dto";
+import { Observable } from 'rxjs'
+import { type ChartItem } from './common/chart_item'
+import { type Pagination } from './common/pagination'
+import { type QueryDTO } from './common/query_dto'
 
-export const protobufPackage = "logproto";
+export const protobufPackage = 'logproto'
 
 export interface SaveLogRequest {
   /** 唯一索引 */
-  id: number;
+  id: number
   /** 报告类型 */
-  reportsType: string;
+  reportsType: string
   /** 站点 ID */
-  siteId: string;
+  siteId: string
   /** 模型引用类型 */
-  onModel: string;
+  onModel: string
   /** 内容引用 */
-  doce:
-    | { [key: string]: any }
-    | undefined;
+  doce: { [key: string]: any } | undefined
   /** 日志类别 */
-  category: string;
+  category: string
   /** 用户 ID */
-  userId: string;
+  userId: string
   /** 标题 */
-  title: string;
+  title: string
   /** 路径 */
-  path: string;
+  path: string
   /** URL */
-  href: string;
+  href: string
   /** 方法 */
-  method: string;
+  method: string
   /** 请求 URL */
-  url: string;
+  url: string
   /** 请求体参数 */
-  body:
-    | { [key: string]: any }
-    | undefined;
+  body: { [key: string]: any } | undefined
   /** 请求参数 */
-  params:
-    | { [key: string]: any }
-    | undefined;
+  params: { [key: string]: any } | undefined
   /** 响应 */
-  response:
-    | Response
-    | undefined;
+  response: Response | undefined
   /** 错误信息 */
-  value: string;
+  value: string
   /** IP 地址 */
-  ip: string;
+  ip: string
   /** 创建时间 */
-  createAt:
-    | Date
-    | undefined;
+  createAt: Date | undefined
   /** 更新时间 */
-  updateAt:
-    | Date
-    | undefined;
+  updateAt: Date | undefined
   /** 追踪 ID */
-  traceId: string;
+  traceId: string
   /**  */
-  monitorId: string;
+  monitorId: string
   /** 标签id */
-  nodeId: string;
+  nodeId: string
   /**  */
-  duration: number;
+  duration: number
   /**  */
-  entryType: string;
+  entryType: string
   /**  */
-  startTime: number;
+  startTime: number
   /**  */
-  fmpTime: number;
+  fmpTime: number
   /**  */
-  cacheRate: string;
+  cacheRate: string
   /** 请求信息 */
-  requestInfo:
-    | RequestInfo
-    | undefined;
+  requestInfo: RequestInfo | undefined
   /** DNS 时间 */
-  dns: number;
+  dns: number
   /** DOM 解析时间 */
-  domParse: number;
+  domParse: number
   /** DOM 准备时间 */
-  domReady: number;
+  domReady: number
   /** 首字节时间 */
-  firstByte: number;
+  firstByte: number
   /** 首次图像可见时间 */
-  fp: number;
+  fp: number
   /** 加载时间 */
-  load: number;
+  load: number
   /** 资源时间 */
-  res: number;
+  res: number
   /** 是否使用 SSL */
-  ssl: boolean;
+  ssl: boolean
   /** TCP 时间 */
-  tcp: number;
+  tcp: number
   /** 传输时间 */
-  trans: number;
+  trans: number
   /** TTFB（首次字节时间） */
-  ttfb: number;
+  ttfb: number
   /** 总时间 */
-  total: number;
+  total: number
   /** 结束时间 */
-  endTime: number;
+  endTime: number
   /** 交互时间 */
-  interactionTime: number;
+  interactionTime: number
   /** 加载时间 */
-  loadedTime: number;
+  loadedTime: number
   /** 正在加载时间 */
-  loadingTime: number;
+  loadingTime: number
   /** 查询 URL */
-  queryUrl: string;
+  queryUrl: string
   /** 请求时间 */
-  requestTime: number;
+  requestTime: number
   /** 响应时间 */
-  responseTime: number;
+  responseTime: number
   /** 状态 */
-  status: number;
+  status: number
   /** 状态文本 */
-  statusText: string;
+  statusText: string
   /** 错误类型 */
-  errorType: string;
+  errorType: string
   /** 内容 */
-  content: string;
+  content: string
   /** 元数据 */
-  meta: Meta | undefined;
+  meta: Meta | undefined
 }
 
 export interface Meta {
-  body: { [key: string]: any } | undefined;
-  endTime: number;
-  interactionTime: number;
-  loadedTime: number;
-  loadingTime: number;
-  method: string;
-  params: { [key: string]: any } | undefined;
-  queryUrl: string;
-  requestTime: number;
-  response: Response | undefined;
-  responseTime: number;
-  status: number;
-  statusText: string;
-  url: string;
+  body: { [key: string]: any } | undefined
+  endTime: number
+  interactionTime: number
+  loadedTime: number
+  loadingTime: number
+  method: string
+  params: { [key: string]: any } | undefined
+  queryUrl: string
+  requestTime: number
+  response: Response | undefined
+  responseTime: number
+  status: number
+  statusText: string
+  url: string
 }
 
 export interface RequestInfo {
   /** 内容下载 */
-  contentDownload: number;
+  contentDownload: number
   /** DNS 查找 */
-  dnsLookup: number;
+  dnsLookup: number
   /** 初始连接 */
-  initialConnect: number;
+  initialConnect: number
   /** 发起者类型 */
-  initiatorType: string;
+  initiatorType: string
   /** 是否缓存 */
-  isCache: boolean;
+  isCache: boolean
   /** 请求 URL */
-  name: string;
+  name: string
   /** 请求时长 */
-  requestDuration: number;
+  requestDuration: number
   /** 响应结束时间 */
-  responseEnd: number;
+  responseEnd: number
   /** 是否使用 SSL */
-  ssl: boolean;
+  ssl: boolean
   /** 开始时间 */
-  startTime: number;
+  startTime: number
   /** TTFB（首次字节时间） */
-  timeToFirstByte: number;
+  timeToFirstByte: number
   /** 传输大小 */
-  transferSize: number;
+  transferSize: number
 }
 
 /** 响应消息定义 */
 export interface Response {
-  status: number;
-  message: string;
-  result: { [key: string]: any } | undefined;
+  status: number
+  message: string
+  result: { [key: string]: any } | undefined
 }
 
-export interface LogResponse {
-}
+export interface LogResponse {}
 
 export interface LogList {
   /** 文档列表 */
-  data: SaveLogRequest[];
+  data: SaveLogRequest[]
   /** 分页信息 */
-  pagination: Pagination | undefined;
+  pagination: Pagination | undefined
 }
 
 export interface ChartList {
   /** 文档列表 */
-  data: ChartItem[];
+  data: ChartItem[]
 }
 
 export interface LogService {
   /** 保存走kafka, 不过两种都支持==== */
-  saveLog(request: SaveLogRequest): Observable<LogResponse>;
-  getLogs(request: QueryDTO): Observable<LogList>;
-  cursorPaginate(request: QueryDTO): Observable<LogList>;
-  getLogsChart(request: QueryDTO): Observable<ChartList>;
+  saveLog(request: SaveLogRequest): Observable<LogResponse>
+  getLogs(request: QueryDTO): Observable<LogList>
+  cursorPaginate(request: QueryDTO): Observable<LogList>
+  getLogsChart(request: QueryDTO): Observable<ChartList>
 }

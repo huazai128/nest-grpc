@@ -69,7 +69,7 @@ export abstract class ListStore extends StoreExt {
     const mode = this.paginateMode
     const res = await this.requestUrl({ ...parmas, ...page, paginateMode: mode, cursor })
     this.isLoading = false
-    if (res) {
+    if (res && res.data) {
       const { data, pagination } = res
       if (pagination.page >= pagination.totalPages) {
         this.isMore = false

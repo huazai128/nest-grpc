@@ -30,7 +30,6 @@ export class LogController {
   @Responsor.paginate()
   @Responsor.handle('获取日志列表')
   getLogs(@Query() query: LogPaginateQueryDTO): Promise<LogList> {
-    console.log(query, 'query=======')
     return this.logService.getLogs(query)
   }
 
@@ -80,7 +79,7 @@ export class LogController {
   @Responsor.api()
   @Responsor.handle('获取日志列表游标分页')
   getLogsByCursor(@Query() query: LogPaginateQueryDTO) {
-    console.log(query, 'query=====')
+    return this.logService.cursorPaginate(query)
   }
 
   /**
@@ -93,6 +92,6 @@ export class LogController {
   @Responsor.api()
   @Responsor.handle('获取图表数据')
   getLogsChart(@Query() query: LogChartQueryDTO) {
-    console.log(query)
+    return this.logService.getLogsChart(query)
   }
 }

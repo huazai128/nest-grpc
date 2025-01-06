@@ -1,10 +1,11 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common'
 import { ClientGrpc } from '@nestjs/microservices'
-import { SaveLogRequest, LogService as LogServiceT, LogList } from '@app/protos/log'
+import { SaveLogRequest, LogService as LogServiceT, LogList, ChartList } from '@app/protos/log'
 import { lastValueFrom } from 'rxjs'
 import { createLogger } from '@app/utils/logger'
 import { QueryDTO } from '@app/protos/common/query_dto'
-import { LogPaginateQueryDTO } from './log.dto'
+import { LogChartQueryDTO, LogPaginateQueryDTO } from './log.dto'
+import { ChartItem } from '@app/protos/common/chart_item'
 
 const Logger = createLogger({ scope: 'LogService', time: true })
 
@@ -42,7 +43,23 @@ export class LogService implements OnModuleInit {
     return await lastValueFrom(this.logService.getLogs(paginateQuery as unknown as QueryDTO))
   }
 
+  /**
+   * 通过游标获取数据
+   * @param {LogPaginateQueryDTO} paginateQuery
+   * @return {*}  {Promise<LogList>}
+   * @memberof LogService
+   */
   public async cursorPaginate(paginateQuery: LogPaginateQueryDTO): Promise<LogList> {
-    return await lastValueFrom(this.logService.getLogs(paginateQuery as unknown as QueryDTO))
+    return await lastValueFrom(this.logService.cursorPaginate(paginateQuery as unknown as QueryDTO))
+  }
+
+  /**
+   * 查询统计数据
+   * @param {LogChartQueryDTO} paginateQuery
+   * @return {*}  {Promise<ChartList>}
+   * @memberof LogService
+   */
+  public async getLogsChart(paginateQuery: LogChartQueryDTO): Promise<ChartList> {
+    return await lastValueFrom(this.logService.getLogsChart(paginateQuery as unknown as QueryDTO))
   }
 }
