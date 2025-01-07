@@ -92,7 +92,6 @@ export class LogController {
   @Responsor.api()
   @Responsor.handle('获取图表数据')
   getLogsChart(@Query() query: LogChartQueryDTO) {
-    console.log(query, 'query=========')
     return this.logService.getLogsChart(query)
   }
 }

@@ -16,7 +16,7 @@ export class ApiGuard extends LoggedInGuard {
     if (!error && (validToken || emptyToken)) {
       return authInfo || {}
     } else {
-      throw error || new HttpUnauthorizedError()
+      throw error || new HttpUnauthorizedError('没有权限访问')
     }
   }
 }

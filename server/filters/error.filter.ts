@@ -1,9 +1,3 @@
-/**
- * @file HttpException filter
- * @module filter/error
- * @author Surmon <https://github.com/surmon-china>
- */
-
 import _isString from 'lodash/isString'
 import { ExceptionFilter, Catch, HttpException, ArgumentsHost, HttpStatus } from '@nestjs/common'
 import { ResponseStatus, HttpResponseError, ExceptionInfo } from '@app/interfaces/response.interface'

@@ -26,7 +26,7 @@ export class RouterGuard extends LoggedInGuard {
     if (authInfo && !error && !errInfo) {
       return authInfo
     } else {
-      throw error || new HttpUnauthorizedError(errInfo?.message)
+      throw error || new HttpUnauthorizedError(errInfo?.message || '没有权限访问')
     }
   }
 }
