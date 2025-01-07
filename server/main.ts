@@ -1,6 +1,10 @@
 import { NestExpressApplication } from '@nestjs/platform-express'
 import { RedisIoAdapter } from '@app/adapters/redis-io.adapter'
 import { APP, CONFIG, COOKIE_KEY, environment } from '@app/config'
+import { MicroserviceOptions, Transport } from '@nestjs/microservices'
+import { LoggingInterceptor } from '@app/interceptors/logging.interceptor'
+import { TransformInterceptor } from '@app/interceptors/transform.interceptor'
+import { HttpExceptionFilter } from '@app/filters/error.filter'
 import { NestFactory } from '@nestjs/core'
 import { AppModule } from '@app/app.module'
 import logger from '@app/utils/logger'
@@ -13,10 +17,6 @@ import { join } from 'path'
 import morgan from 'morgan'
 import { get } from 'lodash'
 import ejs from 'ejs'
-import { MicroserviceOptions, Transport } from '@nestjs/microservices'
-import { LoggingInterceptor } from '@app/interceptors/logging.interceptor'
-import { TransformInterceptor } from '@app/interceptors/transform.interceptor'
-import { ErrorInterceptor } from '@app/interceptors/error.interceptor'
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule)
@@ -52,8 +52,8 @@ async function bootstrap() {
       ':remote-addr - [:userId] - :remote-user ":method :url HTTP/:http-version" ":referrer" ":user-agent" :status :res[content-length] :requestParameters :requestBody --- :response-time ms',
     ),
   )
-
-  app.useGlobalInterceptors(new TransformInterceptor(), new ErrorInterceptor(), new LoggingInterceptor())
+  app.useGlobalFilters(new HttpExceptionFilter())
+  app.useGlobalInterceptors(new TransformInterceptor(), new LoggingInterceptor())
 
   const redisIoAdapter = new RedisIoAdapter(app)
   await redisIoAdapter.connectToRedis()

@@ -1,8 +1,11 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common'
-import { ClientGrpc } from '@nestjs/microservices'
+import { ClientGrpc, RpcException } from '@nestjs/microservices'
 import { SiteQuery, SiteRequest, SiteService as SiteServiceT } from '@app/protos/site'
 import { lastValueFrom } from 'rxjs'
 import { SiteDTO, SitePaginateDTO } from './site.dto'
+import { createLogger } from '@app/utils/logger'
+
+const Logger = createLogger({ scope: 'LogService', time: true })
 
 @Injectable()
 export class SiteService implements OnModuleInit {
@@ -21,8 +24,13 @@ export class SiteService implements OnModuleInit {
    * @memberof SiteService
    */
   public async saveSite(data: SiteDTO) {
-    const res = await lastValueFrom(this.siteService.saveSite(data as SiteRequest))
-    return res
+    try {
+      const res = await lastValueFrom(this.siteService.saveSite(data as SiteRequest))
+      return res
+    } catch (error) {
+      Logger.error('saveSite grpc错误信息:', error.code, error.message)
+      throw new RpcException({ code: error.code })
+    }
   }
 
   /**
