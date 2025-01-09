@@ -43,7 +43,7 @@ export class LogService implements OnModuleInit {
       return await lastValueFrom(this.logService.getLogs(paginateQuery as unknown as QueryDTO))
     } catch (error) {
       Logger.error('getLogs grpc错误信息:', error.code, error.message)
-      throw new BadRequestException({ code: error.code, message: 'getLogs grpc获取出错了' })
+      throw new BadRequestException({ code: error.code, message: '调用getLogs grpc方法获取出错了' })
     }
   }
 
@@ -55,10 +55,10 @@ export class LogService implements OnModuleInit {
    */
   public async cursorPaginate(paginateQuery: LogPaginateQueryDTO): Promise<LogList> {
     try {
-      return await lastValueFrom(this.logService.cursorPaginate(paginateQuery as unknown as QueryDTO))
+      return await lastValueFrom(this.logService.getLogsByCursor(paginateQuery as unknown as QueryDTO))
     } catch (error) {
       Logger.error('cursorPaginate grpc错误信息:', error.code, error.message)
-      throw new BadRequestException({ code: error.code, message: 'cursorPaginate grpc获取出错了' })
+      throw new BadRequestException({ code: error.code, message: '调用cursorPaginate grpc方法获取出错了' })
     }
   }
 
@@ -73,7 +73,7 @@ export class LogService implements OnModuleInit {
       return await lastValueFrom(this.logService.getLogsChart(paginateQuery as unknown as QueryDTO))
     } catch (error) {
       Logger.error('getLogsChart grpc错误信息:', error.code, error.message)
-      throw new BadRequestException({ code: error.code, message: 'getLogsChart grpc获取出错了' })
+      throw new BadRequestException({ code: error.code, message: '调用getLogsChart grpc方法获取出错了' })
     }
   }
 }

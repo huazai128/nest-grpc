@@ -50,22 +50,20 @@ export class LogController {
     @Res() res: Response,
   ) {
     const { logs } = body
-    let webInfo = logs.find((item) => item.category === WEB_INFO)
-    // 这里存在traceId 肯能不一致的问题，需要优化
-    if (webInfo && webInfo.traceId) {
-      // 缓存页面基础信息，防止重复传递占用请求资源
-      this.cacheService.set(webInfo.traceId, webInfo, 3 * 24 * 60 * 60)
-    } else if (logs[0]?.traceId) {
-      const traceId = logs[0]?.traceId
-      webInfo = await this.cacheService.get(traceId)
-    }
-    logs.forEach((item: SaveLogRequest) => {
-      if (item.category !== WEB_INFO) {
-        // 要覆盖这里的类型category=WEB_INFO, 因为这里只是用于存储公共的上报基础信息
-        const nData = { ...webInfo, ...item, ip: visitor.ip, ua_result: visitor.ua_result } as SaveLogRequest
-        this.logService.saveLog(nData)
-      }
-    })
+
+    // 遍历日志并处理
+    Promise.all(
+      logs.map(async (item) => {
+        if (item.category === WEB_INFO && item.traceId) {
+          this.cacheService.set(item.traceId, item, 3 * 24 * 60 * 60)
+        } else {
+          const cacheKey = `WEB_INFO:${item.traceId}` // 使用组合键确保唯一性
+          const webInfo = (await this.cacheService.get(cacheKey)) || {}
+          const nData = { ...webInfo, ...item, ip: visitor.ip, ua_result: visitor.ua_result } as SaveLogRequest
+          this.logService.saveLog(nData)
+        }
+      }),
+    )
     return res.status(204).json()
   }
 
@@ -92,6 +90,7 @@ export class LogController {
   @Responsor.api()
   @Responsor.handle('获取图表数据')
   getLogsChart(@Query() query: LogChartQueryDTO) {
+    console.log(query, 'query=====')
     return this.logService.getLogsChart(query)
   }
 }
