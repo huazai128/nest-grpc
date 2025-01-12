@@ -4,12 +4,12 @@ import { observer } from 'mobx-react-lite'
 import SearchList from '@src/components/SearchData/SearchList'
 import LogDetail from './components/LogDetail'
 import CategorySelect from '@src/components/CategorySelect'
-// import CardChart from './components/CardChart'
 import LogModal from '@src/components/LogModal'
 import AggregationData from '@src/components/AggregationData'
 import { Site } from '@src/interfaces/site.interface'
 import { LogsProvider, useLogStore } from './store'
 import DateSelect from '@src/components/DateSelect'
+import CardChart from './components/CardChart'
 
 const formList: Array<FormItemProps> = [
   {
@@ -40,7 +40,8 @@ const formList: Array<FormItemProps> = [
 ]
 
 const TableAggregation = observer(() => {
-  const { isLoaddingAgg, aggData, aggPage, onPageChange } = {} as any
+  const logStore = useLogStore()
+  const { isLoaddingAgg, aggData, aggPage, onPageChange } = logStore
   return (
     <AggregationData
       pagination={{
@@ -74,6 +75,7 @@ const Logs = observer(() => {
           listStore={logStore}
           isPagination
           formProps={{ formItems: formList }}
+          centerChildren={<CardChart />}
           listProps={{
             isScrollData: false,
             renderItem: (item: Site, index: number) => (

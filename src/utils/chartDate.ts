@@ -57,6 +57,7 @@ export function chartDate<T>(...arg: ChartDateProps<T>[]): Array<T> {
             endTime: eTime.format(format),
             type: type,
             value: curData?.[type] || 0,
+            count: Number(curData?.count || 0),
           }) as unknown as T,
       )
       list = [...list, ...curList]
@@ -65,6 +66,7 @@ export function chartDate<T>(...arg: ChartDateProps<T>[]): Array<T> {
         ...curData,
         startTime: sTime.format(format),
         endTime: eTime.format(format),
+        count: Number(curData?.count || 0),
       } as unknown as T)
     }
   })
@@ -130,8 +132,6 @@ export interface HourCategoryItem extends HourChartItem {
 export type HourChartObj = DateSingle<Array<HourChartItem>>
 
 export type CategoryType = keyof DateSingle<HourCategoryItem>
-
-const categoryList: Array<CategoryType> = ['today', 'yesterday', 'lastWeek']
 
 const categoryType: Map<CategoryType, string> = new Map([
   ['today', '今日'],

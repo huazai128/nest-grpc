@@ -1,10 +1,11 @@
 import { BadRequestException, Inject, Injectable, OnModuleInit } from '@nestjs/common'
 import { ClientGrpc } from '@nestjs/microservices'
-import { SaveLogRequest, LogService as LogServiceT, LogList, ChartList } from '@app/protos/log'
+import { SaveLogRequest, LogService as LogServiceT, LogList } from '@app/protos/log'
 import { lastValueFrom } from 'rxjs'
 import { createLogger } from '@app/utils/logger'
 import { QueryDTO } from '@app/protos/common/query_dto'
 import { LogChartQueryDTO, LogPaginateQueryDTO } from './log.dto'
+import { ChartItem } from '@app/protos/common/chart_item'
 
 const Logger = createLogger({ scope: 'LogService', time: true })
 
@@ -68,9 +69,10 @@ export class LogService implements OnModuleInit {
    * @return {*}  {Promise<ChartList>}
    * @memberof LogService
    */
-  public async getLogsChart(paginateQuery: LogChartQueryDTO): Promise<ChartList> {
+  public async getLogsChart(paginateQuery: LogChartQueryDTO): Promise<ChartItem[]> {
     try {
-      return await lastValueFrom(this.logService.getLogsChart(paginateQuery as unknown as QueryDTO))
+      const data = await lastValueFrom(this.logService.getLogsChart(paginateQuery as unknown as QueryDTO))
+      return data.data
     } catch (error) {
       Logger.error('getLogsChart grpc错误信息:', error.code, error.message)
       throw new BadRequestException({ code: error.code, message: '调用getLogsChart grpc方法获取出错了' })

@@ -27,4 +27,5 @@ export interface Pagination {
   prevPage: number;
   /** 下一页编号 */
   nextPage: number;
+  nextCursor: string;
 }

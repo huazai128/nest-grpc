@@ -8,6 +8,7 @@ import { LogService } from './log.service'
 import { RedisService } from '@app/processors/redis/redis.service'
 import { LogChartQueryDTO, LogData, LogPaginateQueryDTO } from './log.dto'
 import { ApiGuard } from '@app/guards/api.guard'
+import { ChartItem } from '@app/protos/common/chart_item'
 
 const WEB_INFO = 'webInfo'
 
@@ -86,8 +87,7 @@ export class LogController {
   @UseGuards(ApiGuard)
   @Responsor.api()
   @Responsor.handle('获取图表数据')
-  getLogsChart(@Query() query: LogChartQueryDTO) {
-    console.log(query, 'query=====')
+  getLogsChart(@Query() query: LogChartQueryDTO): Promise<ChartItem[]> {
     return this.logService.getLogsChart(query)
   }
 }
