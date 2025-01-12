@@ -50,20 +50,17 @@ export class LogController {
     @Res() res: Response,
   ) {
     const { logs } = body
-
     // 遍历日志并处理
-    Promise.all(
-      logs.map(async (item) => {
-        if (item.category === WEB_INFO && item.traceId) {
-          this.cacheService.set(item.traceId, item, 3 * 24 * 60 * 60)
-        } else {
-          const cacheKey = `WEB_INFO:${item.traceId}` // 使用组合键确保唯一性
-          const webInfo = (await this.cacheService.get(cacheKey)) || {}
-          const nData = { ...webInfo, ...item, ip: visitor.ip, ua_result: visitor.ua_result } as SaveLogRequest
-          this.logService.saveLog(nData)
-        }
-      }),
-    )
+    logs.map(async (item) => {
+      if (item.category === WEB_INFO && item.traceId) {
+        this.cacheService.set(item.traceId, item, 3 * 24 * 60 * 60)
+      } else {
+        const cacheKey = `WEB_INFO:${item.traceId}` // 使用组合键确保唯一性
+        const webInfo = (await this.cacheService.get(cacheKey)) || {}
+        const nData = { ...webInfo, ...item, ip: visitor.ip, ua_result: visitor.ua_result } as SaveLogRequest
+        this.logService.saveLog(nData)
+      }
+    })
     return res.status(204).json()
   }
 

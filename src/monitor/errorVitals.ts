@@ -111,8 +111,8 @@ export default class ErrorVitals extends CommonExtends {
   errorSendHandler = async ({ meta, stackTrace, ...error }: ExceptionMetrics) => {
     let errorInfo: any = {
       ...error,
-      category: TransportCategory.ERROR,
-      behaviorList: this.sendLog.getList(),
+      category: TransportCategory.ERROR, // 错误类型
+      breadcrumbs: this.sendLog.getList(), // 用户行为记录
     }
     // 记录用户行为id，用于查看用户操作行为，减少传递数据过大问题。
     const monitorId = TransportCategory.ERROR + uuidv4()

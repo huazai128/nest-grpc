@@ -1,0 +1,61 @@
+.dateSelect {
+  padding: 6px 11px;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.menuBox {
+  :global(.ant-menu-overflow-item) {
+    flex: 33.33%;
+    text-align: center;
+  }
+}
+
+.menuList {
+  padding: 10px 16px;
+
+  :global(.ant-card-body) {
+    padding: 0;
+  }
+}
+
+.dateList {
+  gap: 0 !important;
+
+  :global(.ant-space-item) {
+    flex-basis: 33.33%;
+  }
+}
+
+.dateItem {
+  padding: 4px 0;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: center;
+  cursor: pointer;
+
+  &.select {
+    background: #e6f7ff;
+    color: #1890ff;
+  }
+
+  &:hover {
+    background: #e6f7ff;
+  }
+}
+
+:global {
+  .popover {
+    .ant-popover-arrow {
+      display: none;
+    }
+
+    .ant-popover-inner {
+      margin-top: -12px;
+      padding: 0;
+      border-radius: 0 !important;
+    }
+  }
+}

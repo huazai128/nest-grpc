@@ -9,6 +9,7 @@ import LogModal from '@src/components/LogModal'
 import AggregationData from '@src/components/AggregationData'
 import { Site } from '@src/interfaces/site.interface'
 import { LogsProvider, useLogStore } from './store'
+import DateSelect from '@src/components/DateSelect'
 
 const formList: Array<FormItemProps> = [
   {
@@ -31,11 +32,11 @@ const formList: Array<FormItemProps> = [
       />
     ),
   },
-  // {
-  //   name: 'time',
-  //   label: '日期',
-  //   children: <DateSelect />,
-  // },
+  {
+    name: 'time',
+    label: '日期',
+    children: <DateSelect />,
+  },
 ]
 
 const TableAggregation = observer(() => {
@@ -73,7 +74,6 @@ const Logs = observer(() => {
           listStore={logStore}
           isPagination
           formProps={{ formItems: formList }}
-          // centerChildren={}
           listProps={{
             isScrollData: false,
             renderItem: (item: Site, index: number) => (
