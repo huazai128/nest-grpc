@@ -98,26 +98,29 @@ export interface ChangeItem {
  * @return {*}  {*}
  */
 export function calculateChanges<T>(data: DateSingle<T>, keys: Array<string>): Array<ChangeItem> {
-  const list: Array<ChangeItem> = []
-  keys.forEach((key: string) => {
-    const result: any = {}
-    const tData = data.today as Record<string, number>
-    const yData = data.yesterday as Record<string, number>
-    const lData = data.lastWeek as Record<string, number>
+  return keys.map((key: string) => {
+    const {
+      today: tData,
+      yesterday: yData,
+      lastWeek: lData,
+    } = data as Record<keyof DateSingle<T>, Record<string, number>>
+
     const tNumb = tData[key] || 0
     const yNumb = yData[key] || 0
     const lNumb = lData[key] || 0
+
     const changeYesterday = tNumb - yNumb
     const changeLastWeek = tNumb - lNumb
-    result.changePercentageYesterday = yNumb !== 0 ? Number(((changeYesterday / yNumb) * 100).toFixed(2)) : 0
-    result.changePercentageLastWeek = lNumb !== 0 ? Number(((changeLastWeek / lNumb) * 100).toFixed(2)) : 0
-    result.isIncreasedYesterday = changeYesterday > 0
-    result.isIncreasedLastWeek = changeLastWeek > 0
-    result.value = tNumb
-    result.type = key
-    list.push(result)
+
+    return {
+      changePercentageYesterday: yNumb !== 0 ? Number(((changeYesterday / yNumb) * 100).toFixed(2)) : 0,
+      changePercentageLastWeek: lNumb !== 0 ? Number(((changeLastWeek / lNumb) * 100).toFixed(2)) : 0,
+      isIncreasedYesterday: changeYesterday > 0,
+      isIncreasedLastWeek: changeLastWeek > 0,
+      value: tNumb,
+      type: key,
+    }
   })
-  return list
 }
 
 export interface HourChartItem {
@@ -133,40 +136,57 @@ export type HourChartObj = DateSingle<Array<HourChartItem>>
 
 export type CategoryType = keyof DateSingle<HourCategoryItem>
 
+const categoryList: Array<CategoryType> = ['today', 'yesterday', 'lastWeek']
+
 const categoryType: Map<CategoryType, string> = new Map([
   ['today', '今日'],
   ['yesterday', '昨日'],
   ['lastWeek', '七天前'],
 ])
 
+/**
+ * 处理单个时间段的图表数据
+ * @param {HourChartObj} data
+ * @return {*}  {Array<HourCategoryItem>}
+ */
 export function singleHourChartData(data: HourChartObj): Array<HourCategoryItem> {
   // 结束时间，为当前时间 处理成小时
   const endHour = dayjs().hour()
   const startOfDay = dayjs().startOf('day')
   const reulstList: Array<HourCategoryItem> = []
+
+  // 处理数据,将数据按category分组并添加category字段
   const processedData: Array<HourCategoryItem> = Object.keys(data).flatMap((category: string) =>
     data[category as keyof HourChartObj].map((item: any) => ({
       ...item,
       category,
     })),
   )
+
   const len = 24
   Array.from({ length: len }).forEach((_, index) => {
     // 获取当前时间下的数据
     const curList: Array<HourCategoryItem> = processedData.filter((item) => {
-      return dayjs(item.startTime).hour() === index
+      // 修复跨年问题:使用dayjs解析时间并获取小时,不受年份影响
+      const itemHour = dayjs(item.startTime).hour()
+      return itemHour === index
     })
-    // 遍历key
+
+    // 遍历分类
     categoryList.forEach((category) => {
-      // 根据category 获取数据
+      // 根据category获取数据
       const { count = 0 }: Partial<HourCategoryItem> =
         curList.find((item) => Object.is(item.category, category)) || {}
-      // 如果是为today 并且当前时间的小时大于下标了，就不添加进去
+
+      // 如果是today且当前小时大于index,则跳过(未来时间不显示)
       if (!(Object.is(category, 'today') && index > endHour)) {
+        // 使用startOfDay作为基准时间,添加小时偏移,保证时间点正确
+        const timePoint = startOfDay.add(index, 'hour')
         reulstList.push({
           category: categoryType.get(category) || '其他',
           count: count,
-          startTime: startOfDay.add(index, 'hour').format('HH:mm'),
+          // 只格式化时分,避免年月日的影响
+          startTime: timePoint.format('HH:mm'),
         })
       }
     })

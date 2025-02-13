@@ -4,7 +4,7 @@ import RedisStore from 'connect-redis'
 import { APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core'
 
 // config
-import { CONFIG, SESSION } from './config'
+import { CONFIG, SESSION } from '@app/config'
 
 // modules
 import modules from '@app/modules/index'
@@ -23,7 +23,7 @@ import { MicroserviceModule } from '@app/processors/microservices/microservice.m
 import { WebsocketModule } from '@app/processors/websocket/websocket.module'
 
 // interceptor
-import { LoggingInterceptor } from './interceptors/logging.interceptor'
+import { LoggingInterceptor } from '@app/interceptors/logging.interceptor'
 
 @Module({
   imports: [RedisCoreModule.forRoot(CONFIG.redis), MicroserviceModule, WebsocketModule, ...modules],

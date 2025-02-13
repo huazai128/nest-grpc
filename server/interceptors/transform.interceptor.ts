@@ -1,6 +1,6 @@
 import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common'
-import { Observable, throwError } from 'rxjs'
-import { map, catchError } from 'rxjs/operators'
+import { Observable } from 'rxjs'
+import { map } from 'rxjs/operators'
 import { HttpResponseSuccess, ResponseStatus } from '@app/interfaces/response.interface'
 import { getResponsorOptions } from '@app/decorators/responsor.decorator'
 
