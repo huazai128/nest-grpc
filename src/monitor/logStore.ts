@@ -72,12 +72,60 @@ export default abstract class LogStore {
    * @memberof SendLog
    */
   initRouterChange = () => {
-    const handler = (e: Event) => {
-      this.dynamicInfo(e)
+    // 记录上一次的路径,用于对比是否发生变化
+    let lastPathname = window.location.pathname
+
+    // 统一的路由变化处理函数
+    const handleRouteChange = (event: Event) => {
+      const currentPathname = window.location.pathname
+      // 只在路径发生变化时触发
+      if (currentPathname === lastPathname) {
+        return
+      }
+
+      // 更新lastPathname并记录动态信息
+      lastPathname = currentPathname
+      this.dynamicInfo(event)
     }
-    window.addEventListener('pageshow', handler, { once: true, capture: true })
-    proxyHash(handler)
-    proxyHistory(handler)
+
+    // 监听页面显示事件,包括页面加载和从bfcache恢复
+    window.addEventListener('pageshow', handleRouteChange, { capture: true })
+
+    // 监听hash路由变化
+    proxyHash(handleRouteChange)
+
+    // 监听history路由变化
+    proxyHistory(handleRouteChange)
+  }
+
+  /**
+   * 动态获取当前页面path和referrer
+   * @memberof SendLog
+   */
+  dynamicInfo = (e?: Event) => {
+    const { pathname, href } = window.location
+    if (this.curHref != href) {
+      this.prevHref = this.curHref
+    }
+    this.curHref = href
+    this.pageId = 'pageId:' + uuidv4()
+    this.logList.splice(1, 0, {
+      path: pathname,
+      referrer: document.referrer,
+      prevHref: this.prevHref,
+      title: document.title,
+      href,
+      jumpType: e?.type || '',
+      type: performance?.navigation?.type,
+      pageId: this.pageId,
+      category: TransportCategory.PageInfo,
+      traceId: this.traceId,
+      // 用户来源
+      // 0: 点击链接、地址栏输入、表单提交、脚本操作等。
+      // 1: 点击重新加载按钮、location.reload。
+      // 2: 点击前进或后退按钮。
+      // 255: 任何其他来源。即非刷新/ 非前进后退、非点击链接 / 地址栏输入 / 表单提交 / 脚本操作等。
+    })
   }
 
   /**
@@ -110,36 +158,6 @@ export default abstract class LogStore {
       traceId: this.traceId,
       mode: this.config.mode,
       category: TransportCategory.WebInfo,
-    })
-  }
-
-  /**
-   * 动态获取当前页面path和referrer
-   * @memberof SendLog
-   */
-  dynamicInfo = (e?: Event) => {
-    const { pathname, href } = window.location
-    if (this.curHref != href) {
-      this.prevHref = this.curHref
-    }
-    this.curHref = href
-    this.pageId = 'pageId:' + uuidv4()
-    this.logList.splice(1, 0, {
-      path: pathname,
-      referrer: document.referrer,
-      prevHref: this.prevHref,
-      title: document.title,
-      href,
-      jumpType: e?.type || '',
-      type: performance?.navigation?.type,
-      pageId: this.pageId,
-      category: TransportCategory.PageInfo,
-      traceId: this.traceId,
-      // 用户来源
-      // 0: 点击链接、地址栏输入、表单提交、脚本操作等。
-      // 1: 点击重新加载按钮、location.reload。
-      // 2: 点击前进或后退按钮。
-      // 255: 任何其他来源。即非刷新/ 非前进后退、非点击链接 / 地址栏输入 / 表单提交 / 脚本操作等。
     })
   }
 

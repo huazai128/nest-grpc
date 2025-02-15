@@ -81,15 +81,14 @@ export enum TransportCategory {
 export interface HttpMetrics {
   method: string
   url: string
-  body: Document | XMLHttpRequestBodyInit | null | undefined | ReadableStream
+  queryUrl: string
+  body: any
+  params: Record<string, string>
   requestTime: number
   responseTime: number
   status: number
   statusText: string
-  response?: any
-  params?: any
-  queryUrl?: string | URL
-  traceId?: string
+  response: any
   zeroTime: number
   loadingTime: number
   loadedTime: number
@@ -122,6 +121,7 @@ export interface ExceptionMetrics {
   stackTrace?: Object
   breadcrumbs?: Array<string>
   meta?: any
+  errorUid: string
 }
 
 export interface ErrorInfo {

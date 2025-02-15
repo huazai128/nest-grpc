@@ -14,341 +14,330 @@ import { v4 as uuidv4 } from 'uuid'
 import { record } from '@rrweb/record'
 import localForage from 'localforage'
 
+// 创建本地存储实例,用于存储录制的日志
 const store = localForage.createInstance({
   name: 'recordLog',
 })
 
 /**
- * 判断是否存在
- * @param {Record<string, any>} obj
- * @return {*}  {boolean}
+ * 检查对象是否包含HTML和BODY标签
+ * @param obj 要检查的对象
+ * @returns 是否同时包含HTML和BODY标签
  */
 function hasHtmlAndBodyTags(obj: Record<string, any>): boolean {
   const values = Object.values(obj)
-  return (
-    (values.some((value) => typeof value === 'string' && value.includes('<html>')) ||
-      values.some((value) => typeof value === 'object' && value !== null && hasHtmlAndBodyTags(value))) &&
-    (values.some((value) => typeof value === 'string' && value.includes('<body>')) ||
-      values.some((value) => typeof value === 'object' && value !== null && hasHtmlAndBodyTags(value)))
+  const hasHtml = values.some(
+    (value) =>
+      (typeof value === 'string' && value.includes('<html>')) ||
+      (typeof value === 'object' && value && hasHtmlAndBodyTags(value)),
   )
+  const hasBody = values.some(
+    (value) =>
+      (typeof value === 'string' && value.includes('<body>')) ||
+      (typeof value === 'object' && value && hasHtmlAndBodyTags(value)),
+  )
+  return hasHtml && hasBody
 }
 
 /**
- * 错误采集上报
- * @export
- * @class ErrorVitals
- * @extends {CommonExtend}
+ * 错误采集上报类
+ * 主要监控以下行为:
+ * - 错误上报，需要关联页面信息，所以需要记录页面信息
+ * - 错误上报，需要关联行为信息，所以需要记录行为信息
+ * - 错误上报，需要关联性能信息，所以需要记录性能信息
+ * - 错误上报，需要关联用户信息，所以需要记录用户信息
+ * - 错误上报，需要关联自定义信息，所以需要记录自定义信息
+ * - 错误上报，需要关联请求信息，所以需要记录请求信息
+ * - 错误上报，需要关联响应信息，所以需要记录响应信息
  */
 export default class ErrorVitals extends CommonExtends {
-  // 用于存储错误ID，防止重复提交错误
-  private errorUids: Array<string> = []
-  // 用于存储录制数据
+  // 本地存储的key常量
+  private readonly HISTORY_KEYS = 'historyKeys'
+  private readonly CURRENT_RECORD_KEY = 'curRecordKey'
+  // 最大记录数量
+  private readonly MAX_RECORD_KEYS = 10
+
+  // 已处理的错误ID集合
+  private errorUids: string[] = []
+  // 录制的事件矩阵
   private eventsMatrix: any[] = []
   // 当前录制ID
   private curRecordId!: string
-  // 是否开始录制
-  private isStartRecord: boolean = false
-  // 保存最近10个录制数据
+  // 是否开始录制标志
+  private isStartRecord = false
+  // 录制历史key列表
   private reordHistoryKeys: string[] = []
-  // 缓存历史的keys
-  private historyKeys: string = 'historyKeys'
-  // 缓存录制key
-  private curRecordKey: string = 'curRecordKey'
-  // 每个错误记录10个录屏
-  private keysLen = 10
+
   constructor() {
     super()
+    this.initializeErrorHandlers()
+    this.onPageLoad()
+  }
+
+  /**
+   * 初始化所有错误处理器
+   */
+  private initializeErrorHandlers() {
     this.initJsError()
     this.initResourceError()
     this.initPromiseError()
     this.initHttpError()
     this.initCorsError()
-    this.onPageLoad()
   }
 
   /**
-   * 初始化获取缓存数据
-   * @memberof ErrorVitals
+   * 初始化本地存储
    */
-  initStore = () => {
-    // 获取历史中的录屏记录, 这里无为顺序问题。
-    store.getItem(this.historyKeys).then((list) => {
-      this.reordHistoryKeys = (list || []) as string[]
-    })
-    // 获取历史录屏记录没有上报的数据，如录制时，还没有触发重新快照的数据，进行上报
-    store.getItem(this.curRecordKey).then((value: any) => {
-      if (!!value) {
+  private async initStore() {
+    try {
+      // 获取历史记录列表
+      const historyList = await store.getItem(this.HISTORY_KEYS)
+      this.reordHistoryKeys = (historyList || []) as string[]
+
+      // 获取当前记录
+      const currentRecord = (await store.getItem(this.CURRENT_RECORD_KEY)) as any
+      if (currentRecord) {
         this.sendLog.add({
           category: TransportCategory.RV,
-          events: JSON.stringify(value.events),
-          monitorId: value.monitorId,
+          events: JSON.stringify(currentRecord.events),
+          monitorId: currentRecord.monitorId,
         })
       }
-    })
+    } catch (error) {
+      console.error('Failed to initialize store:', error)
+    }
   }
 
   /**
-   * 等页面加载完成
-   * @memberof ErrorVitals
+   * 页面加载时的处理
    */
-  onPageLoad = () => {
-    // 只允许触发一次，后面不在触发录屏
+  private onPageLoad() {
     const handler = () => {
-      if (!this.isStartRecord) {
-        this.isStartRecord = true
-        this.startRecordId()
-        this.startRecord()
-      }
+      window.addEventListener('load', () => {
+        if (!this.isStartRecord) {
+          this.isStartRecord = true
+          this.startRecordId()
+          this.startRecord()
+        }
+      })
     }
     window.addEventListener('pageshow', handler, { once: true, capture: true })
   }
 
   /**
-   * 所有的错误信息上报
-   * @param {ExceptionMetrics} error
-   * @memberof ErrorVitals
+   * 错误发送处理器
+   * @param error 错误信息
    */
-  errorSendHandler = async ({ meta, stackTrace, ...error }: ExceptionMetrics) => {
-    let errorInfo: any = {
-      ...error,
-      category: TransportCategory.ERROR, // 错误类型
-      breadcrumbs: this.sendLog.getList(), // 用户行为记录
+  private async errorSendHandler({ meta, stackTrace, ...error }: ExceptionMetrics) {
+    const monitorId = `${TransportCategory.ERROR}${uuidv4()}`
+
+    // 避免重复发送相同错误
+    if (this.errorUids.includes(error.errorUid)) {
+      return false
     }
-    // 记录用户行为id，用于查看用户操作行为，减少传递数据过大问题。
-    const monitorId = TransportCategory.ERROR + uuidv4()
-    // 防止错误重复上报
-    const hasStatus = this.errorUids.includes(errorInfo.errorUid)
-    // 处理重复错误上报
-    if (hasStatus) return false
-    // 保存上报错误uid， 防止同一个用户重复上报
-    this.errorUids.push(errorInfo.errorUid)
-    // 删除
-    delete errorInfo.errorUid
-    // 错误信息 ，recordKeys: 关联最近上报的录屏记录
-    errorInfo = { ...errorInfo, meta: meta, stackTrace: stackTrace, monitorId, recordKeys: this.reordHistoryKeys }
-    // 发送
+
+    this.errorUids.push(error.errorUid)
+
+    const errorInfo = {
+      ...error,
+      category: TransportCategory.ERROR,
+      breadcrumbs: this.sendLog.getList(),
+      meta,
+      stackTrace,
+      monitorId,
+      recordKeys: this.reordHistoryKeys,
+    }
     this.sendLog.add(errorInfo)
   }
 
   /**
-   * 初始化监听JS异常
-   * @memberof ErrorVitals
+   * 初始化JS错误监听
    */
-  initJsError = () => {
+  private initJsError() {
     const handler = (event: ErrorEvent) => {
       event.preventDefault()
-      // 这里只搜集js 错误
+
       if (getErrorKey(event) !== MechanismType.JS) return false
+
       const errUid = getErrorUid(`${MechanismType.JS}-${event.message}-${event.filename}`)
-      const errInfo = {
-        // 上报错误归类
+      const errInfo: ExceptionMetrics = {
         reportsType: MechanismType.JS,
-        // 错误信息
         value: event.message,
-        // 错误类型
-        errorType: event?.error?.name || 'UnKnowun',
-        // 解析后的错误堆栈
+        errorType: event?.error?.name || 'Unknown',
         stackTrace: parseStackFrames(event.error),
-        // 用户行为追踪 breadcrumbs 在 errorSendHandler 中统一封装
-        // 错误的标识码
         errorUid: errUid,
-        // 其他信息
         meta: {
-          // file 错误所处的文件地址
           file: event.filename,
-          // col 错误列号
           col: event.colno,
-          // row 错误行号
           row: event.lineno,
         },
-      } as ExceptionMetrics
+      }
+
       this.errorSendHandler(errInfo)
     }
-    window.addEventListener('error', (e) => handler(e), true)
+
+    window.addEventListener('error', handler, true)
   }
 
   /**
-   * 初始化监听静态资源异常上报
-   * @memberof ErrorVitals
+   * 初始化资源加载错误监听
    */
-  initResourceError = () => {
+  private initResourceError() {
     const handler = (e: Event) => {
       e.preventDefault()
-      // 只采集静态资源错误信息
+
       if (getErrorKey(e) !== MechanismType.RS) return false
+
       const target = e.target as any
       const errUid = getErrorUid(`${MechanismType.RS}-${target.src}-${target.tagName}`)
-      const errInfo = {
-        // 上报错误归类
+
+      const errInfo: ExceptionMetrics = {
         reportsType: MechanismType.RS,
-        // 错误信息
         value: '',
-        // 错误类型
         errorType: 'ResourceError',
-        // 用户行为追踪 breadcrumbs 在 errorSendHandler 中统一封装
-        // 错误的标识码
         errorUid: errUid,
-        // 其他信息
         meta: {
           url: target.src,
-          // html: target.outerHTML, // 剔除过大
           type: target.tagName,
         },
-      } as ExceptionMetrics
+      }
+
       this.errorSendHandler(errInfo)
     }
-    window.addEventListener('error', (e) => handler(e), true)
+
+    window.addEventListener('error', handler, true)
   }
 
   /**
-   * 初始化监听promise 错误， 但是HTTP请求时报错，不清楚是那个接口报错了。
-   * @memberof ErrorVitals
+   * 初始化Promise错误监听
    */
-  initPromiseError = () => {
+  private initPromiseError() {
     const handler = (e: PromiseRejectionEvent) => {
       e.preventDefault()
+
       let value = e.reason.message || e.reason
       if (Object.prototype.toString.call(value) === '[Object Object]') {
         value = JSON.stringify(value)
       }
-      const type = e.reason.name || 'UnKnowun'
+
+      const type = e.reason.name || 'Unknown'
       const errUid = getErrorUid(`${MechanismType.UJ}-${value}-${type}`)
-      const errorInfo = {
-        // 上报错误归类
+
+      const errorInfo: ExceptionMetrics = {
         reportsType: MechanismType.UJ,
-        // 错误信息
-        value: value,
-        // 错误类型
+        value,
         errorType: type,
-        // 解析后的错误堆栈
         stackTrace: parseStackFrames(e.reason),
-        // 用户行为追踪 breadcrumbs 在 errorSendHandler 中统一封装
-        // 错误的标识码
         errorUid: errUid,
-        // 附带信息
         meta: {},
-      } as ExceptionMetrics
+      }
+
       this.errorSendHandler(errorInfo)
     }
-    window.addEventListener('unhandledrejection', (e) => handler(e), true)
+
+    window.addEventListener('unhandledrejection', handler, true)
   }
 
   /**
-   * 用于处理promise 错误中，无法获取是那个接口报错
-   * @memberof ErrorVitals
+   * 初始化HTTP错误监听
    */
-  initHttpError = () => {
+  private initHttpError() {
     const loadHandler = (metrics: HttpMetrics) => {
       let res = metrics.response
-      if (metrics.status < 400 && (res?.status == 'success' || res?.status >= 0)) return false
+      if (metrics.status < 400 && (res?.status === 'success' || res?.status >= 0)) {
+        return false
+      }
+
       const errUid = getErrorUid(`${MechanismType.HP}-${res}-${metrics.statusText}`)
+
       if (hasHtmlAndBodyTags(res)) {
         res = {
           ...res,
           result: '[-Body内容为HTML已过滤-]',
         }
       }
-      const errorInfo = {
-        // 上报错误归类
+
+      const errorInfo: ExceptionMetrics = {
         reportsType: MechanismType.HP,
-        // 错误信息
         value: JSON.stringify(res),
-        // 错误类型
         errorType: 'HttpError',
-        // 错误的标识码
         errorUid: errUid,
-        // 附带信息
         meta: {
           ...metrics,
           body: typeof metrics.body === 'string' && isHtml(metrics.body) ? '[-Body内容为HTML已过滤-]' : metrics.body,
         },
-      } as ExceptionMetrics
+      }
+
       this.errorSendHandler(errorInfo)
     }
+
     proxyXmlHttp(null, loadHandler)
     proxyFetch(null, loadHandler)
   }
 
   /**
-   * 监听跨域报错
-   * @memberof ErrorVitals
+   * 初始化跨域错误监听
    */
-  initCorsError = (): void => {
+  private initCorsError() {
     const handler = (event: ErrorEvent) => {
-      // 阻止向上抛出控制台报错
       event.preventDefault()
-      // 如果不是跨域脚本异常,就结束
+
       if (getErrorKey(event) !== MechanismType.CS) return
-      const exception = {
-        // 上报错误归类
+
+      const exception: ExceptionMetrics = {
         reportsType: MechanismType.CS,
-        // 错误信息
         value: event.message,
-        // 错误类型
         errorType: 'CorsError',
-        // 错误的标识码
         errorUid: getErrorUid(`${MechanismType.CS}-${event.message}`),
-        // 附带信息
         meta: {},
-      } as ExceptionMetrics
-      // 自行上报异常，也可以跨域脚本的异常都不上报;
+      }
+
       this.errorSendHandler(exception)
     }
-    window.addEventListener('error', (event) => handler(event), true)
+
+    window.addEventListener('error', handler, true)
   }
 
   /**
-   * react 组件错误上报
-   * @param {*} error
-   * @memberof ErrorVitals
+   * 初始化React错误处理
+   * @param error Error对象
+   * @param errorInfo 错误信息
    */
-  initReactError = (error: Error, errorInfo: ErrorInfo) => {
+  public initReactError(error: Error, errorInfo: ErrorInfo) {
     const errUid = getErrorUid(`${MechanismType.REACT}-${error.name}-${error.message}`)
-    const errInfo = {
-      // 上报错误归类
+
+    const errInfo: ExceptionMetrics = {
       reportsType: MechanismType.REACT,
-      // 错误信息
       value: error.message,
-      // 错误类型
-      errorType: error?.name || 'UnKnowun',
-      // 解析后的错误堆栈
+      errorType: error?.name || 'Unknown',
       stackTrace: parseStackFrames(error),
-      // 用户行为追踪 breadcrumbs 在 errorSendHandler 中统一封装
-      // 错误的标识码
       errorUid: errUid,
-      // 其他信息
       meta: {
-        // 错误所在的组件
         file: parseStackFrames({ stack: errorInfo.componentStack } as any),
-        // 组件名称
-        conponentName: errorInfo.componentName,
+        componentName: errorInfo.componentName,
       },
-    } as ExceptionMetrics
+    }
+
     this.errorSendHandler(errInfo)
   }
 
   /**
-   * 录制
-   * @memberof ErrorVitals
+   * 开始录制
    */
-  startRecord = () => {
-    const self = this
+  private startRecord() {
     record({
-      emit(event, isCheckout) {
-        self.emitRecord(event, isCheckout)
-      },
-      recordCanvas: true, // 是否记录canvas内容。
+      emit: (event, isCheckout) => this.emitRecord(event, isCheckout),
+      recordCanvas: true,
       checkoutEveryNth: 200,
     })
   }
 
   /**
-   * 监听录制事件
-   * @param {*} event
-   * @param {boolean} [isCheckout]
-   * @memberof ErrorVitals
+   * 录制事件处理
+   * @param event 录制的事件
+   * @param isCheckout 是否检查点
    */
-  emitRecord = (event: any, isCheckout?: boolean) => {
+  private emitRecord(event: any, isCheckout?: boolean) {
     if (isCheckout) {
       this.sendLog.add({
         category: TransportCategory.RV,
@@ -359,7 +348,7 @@ export default class ErrorVitals extends CommonExtends {
       this.startRecordId()
     } else {
       this.eventsMatrix.push(event)
-      store.setItem(this.curRecordKey, {
+      store.setItem(this.CURRENT_RECORD_KEY, {
         monitorId: this.curRecordId,
         events: this.eventsMatrix,
       })
@@ -367,26 +356,24 @@ export default class ErrorVitals extends CommonExtends {
   }
 
   /**
-   * 存储最近录制10条记录
-   * @param {string} key
-   * @memberof ErrorVitals
+   * 添加录制记录
+   * @param key 记录的key
    */
-  pushRecord = (key: string) => {
-    if (this.reordHistoryKeys.length < this.keysLen) {
+  private pushRecord(key: string) {
+    if (this.reordHistoryKeys.length < this.MAX_RECORD_KEYS) {
       this.reordHistoryKeys.push(key)
     } else {
       this.reordHistoryKeys.shift()
       this.reordHistoryKeys.push(key)
     }
-    store.setItem(this.historyKeys, this.reordHistoryKeys)
+    store.setItem(this.HISTORY_KEYS, this.reordHistoryKeys)
   }
 
   /**
-   * 重新生成id，这里的id 是前端生成的，方便后续关联。因为日志上报保存返回204，不会等保存成功在关联。
-   * @memberof ErrorVitals
+   * 开始新的录制ID
    */
-  startRecordId = () => {
-    this.curRecordId = TransportCategory.RV + uuidv4()
+  private startRecordId() {
+    this.curRecordId = `${TransportCategory.RV}${uuidv4()}`
     this.pushRecord(this.curRecordId)
   }
 }

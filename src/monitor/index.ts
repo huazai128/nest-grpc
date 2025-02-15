@@ -4,6 +4,11 @@ import { ConfigProps } from './interfaces/config.interface'
 import ErrorVitals from './errorVitals'
 import sendLog from './sendLog'
 
+/**
+ * 监控类
+ * @export
+ * @class Monitor
+ */
 export class Monitor {
   constructor(data: ConfigProps) {
     const { url, appKey } = data

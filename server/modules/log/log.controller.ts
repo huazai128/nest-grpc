@@ -13,7 +13,11 @@ import { createLogger } from '@app/utils/logger'
 
 const logger = createLogger({ scope: 'LogController', time: true })
 
+const WEB_INFO_TIME = 3 * 24 * 60 * 60
+
 const WEB_INFO = 'webInfo'
+
+const PAGE_INFO = 'pageInfo'
 
 @Controller('/api/log')
 export class LogController {
@@ -54,19 +58,40 @@ export class LogController {
     @Res() res: Response,
   ) {
     const { logs } = body
-    // 遍历日志并处理
-    logs.map(async (item) => {
-      logger.info('批量上传日志:', item)
-      if (item.category === WEB_INFO && item.traceId) {
-        this.cacheService.set(item.traceId, item, 3 * 24 * 60 * 60)
-      } else {
-        const cacheKey = `WEB_INFO:${item.traceId}` // 使用组合键确保唯一性
-        const webInfo = (await this.cacheService.get(cacheKey)) || {}
-        logger.info('批量上传日志通用信息:', webInfo)
-        const nData = { ...webInfo, ...item, ip: visitor.ip, ua_result: visitor.ua_result } as SaveLogRequest
-        this.logService.saveLog(nData)
-      }
-    })
+
+    // 使用Promise.all等待所有日志处理完成
+    await Promise.all(
+      logs.map(async (item) => {
+        const cacheKey = `WEB_INFO:${item.traceId}`
+        const pageCacheKey = `PAGE_INFO:${item.traceId}`
+        logger.info('处理日志:', item)
+
+        if (item.category === WEB_INFO && item.traceId) {
+          // 缓存基础网页信息3天
+          await this.cacheService.set(cacheKey, item, WEB_INFO_TIME)
+        } else if (item.category === PAGE_INFO && item.traceId) {
+          // 缓存页面信息3天
+          await this.cacheService.set(pageCacheKey, item, WEB_INFO_TIME)
+        } else {
+          // 获取缓存的基础信息并合并
+          const webInfo = (await this.cacheService.get(cacheKey)) || {}
+          const pageInfo = (await this.cacheService.get(pageCacheKey)) || {}
+          logger.info('获取到基础信息:', webInfo)
+
+          // 合并日志数据
+          const logData = {
+            ...webInfo,
+            ...item,
+            ...pageInfo,
+            ip: visitor.ip || '',
+            ua_result: visitor.ua_result,
+          }
+
+          await this.logService.saveLog(logData as SaveLogRequest)
+        }
+      }),
+    )
+
     return res.status(204).json()
   }
 
