@@ -6,26 +6,43 @@ import isHtml from 'is-html'
 import { v4 as uuidv4 } from 'uuid'
 
 /**
- * 监听用户行为
- * @export
- * @class UserVitals
+ * UserVitals 类 - 用于监控用户行为
+ * 继承自 CommonExtends 基类
+ * 主要监控以下行为:
+ * - 点击事件
+ * - 输入框失去焦点事件
+ * - 触摸结束事件
+ * - 路由变化事件
+ * - 页面加载事件
  */
 export class UserVitals extends CommonExtends {
-  private events: Array<string> = ['click', 'blur', 'touchend']
+  // 定义需要监听的事件类型
+  private readonly events: Array<keyof WindowEventMap> = ['click', 'blur', 'touchend']
+
+  /**
+   * 构造函数 - 初始化监控器
+   */
   constructor() {
     super()
+    this.initializeHandlers()
+  }
+
+  /**
+   * 初始化所有事件处理器
+   */
+  private initializeHandlers(): void {
     this.initClickHandler()
     this.initHttpHandler()
     this.initRouterChange()
   }
 
   /**
-   * 处理路由监听变化 初始化相关逻辑
-   * @memberof UserVitals
+   * 初始化路由变化监听
+   * 当路由变化时触发 PV 统计和曝光检测
    */
-  initRouterChange = () => {
-    const handler = () => {
-      this.initPV()
+  private initRouterChange = (): void => {
+    const handler = (): void => {
+      void this.initPV()
       this.initExposure()
     }
     window.addEventListener('pageshow', handler, { once: true, capture: true })
@@ -34,90 +51,100 @@ export class UserVitals extends CommonExtends {
   }
 
   /**
-   * 上报pv,在上报pv 时，会获取网络速度
-   * @memberof UserVitals
+   * 初始化页面访问(PV)统计
+   * 包含网络速度测试
    */
-  initPV = async () => {
-    const url = 'https://biu-cn.dwstatic.com/upload/1726199407972.jpg'
-    const res = await downloadSpeed({ url, size: 103.13 })
-    const monitorId = TransportCategory.PV + uuidv4()
-    const metrice = {
-      reportsType: MetricsName.RCR,
-      category: TransportCategory.PV,
-      monitorId: monitorId,
-      ...res,
+  private initPV = async (): Promise<void> => {
+    try {
+      const url = 'https://biu-cn.dwstatic.com/upload/1726199407972.jpg'
+      const res = await downloadSpeed({ url, size: 103.13 })
+      const monitorId = `${TransportCategory.PV}${uuidv4()}`
+
+      this.sendLog.add({
+        reportsType: MetricsName.RCR,
+        category: TransportCategory.PV,
+        monitorId,
+        ...res,
+      })
+    } catch (error) {
+      console.error('Failed to initialize PV:', error)
     }
-    this.sendLog.add(metrice)
   }
 
   /**
-   * 点击、输入失去焦点、触发相关事件
-   * @memberof UserVitals
+   * 初始化点击事件监听
+   * 监听用户的点击、失焦和触摸事件
    */
-  initClickHandler = () => {
-    const handle = (e: MouseEvent | any) => {
+  private initClickHandler = (): void => {
+    const handle = (e: Event): void => {
+      if (!(e.target instanceof HTMLElement)) return
+
       const target = e.target
       const tagName = target.tagName?.toLowerCase()
-      if (tagName === 'body' || tagName === 'html' || !tagName) {
-        return null
+
+      if (!this.isValidTarget(tagName)) {
+        return
       }
-      const data = target.dataset || {} // 点击事件上报参数
-      const classNames = target.classList?.value
-      const id = target.id ? ` id="${target.id}"` : ''
-      const innerText = target.innerText
-      const value = target.value
-      // 获取包含id、class、innerTextde字符串的标签
-      const nodeDom = !!value
-        ? `<${tagName} ${id} ${classNames !== '' ? classNames : ''}>${innerText} ${!!value && e.type === 'blur' ? '输入框值为：' + value : null}</${tagName}>`
-        : null
-      const monitorId = TransportCategory.EVENT + uuidv4()
-      const metrice = {
-        reportsType: MetricsName.CBR,
-        nodeId: target.id,
-        classList: Array.from(target.classList),
-        tagName: tagName,
-        tagText: innerText || target.textContent,
-        category: TransportCategory.EVENT,
-        nodeDom: nodeDom,
-        monitorId,
-        ...data,
-      }
-      this.sendLog.add(metrice)
+
+      const eventData = this.buildEventData(target, e)
+      this.sendLog.add(eventData)
     }
+
     this.events.forEach((event) => {
-      window.addEventListener(event, handle, true)
+      window.addEventListener(event, handle as EventListener)
     })
   }
 
   /**
-   * 曝光上报
-   * @memberof UserVitals
+   * 验证目标元素是否需要被监听
    */
-  initExposure = () => {
-    // 针对曝光监控
-    const itOberser = new IntersectionObserver(
+  private isValidTarget(tagName: string | undefined): boolean {
+    return Boolean(tagName && !['body', 'html'].includes(tagName))
+  }
+
+  /**
+   * 构建事件数据对象
+   */
+  private buildEventData(target: HTMLElement, event: Event): Record<string, unknown> {
+    const data = target.dataset || {}
+    const classNames = target.classList?.value || ''
+    const id = target.id ? ` id="${target.id}"` : ''
+    const innerText = target.innerText
+    const value = (target as HTMLInputElement).value
+
+    const nodeDom = value
+      ? `<${target.tagName.toLowerCase()} ${id} ${classNames}>${innerText} ${value && event.type === 'blur' ? '输入框值为：' + value : ''}</${target.tagName.toLowerCase()}>`
+      : null
+
+    return {
+      reportsType: MetricsName.CBR,
+      nodeId: target.id,
+      classList: Array.from(target.classList),
+      tagName: target.tagName.toLowerCase(),
+      tagText: innerText || target.textContent,
+      category: TransportCategory.EVENT,
+      nodeDom,
+      monitorId: `${TransportCategory.EVENT}${uuidv4()}`,
+      ...data,
+    }
+  }
+
+  /**
+   * 初始化元素曝光监控
+   */
+  private initExposure = (): void => {
+    const observer = this.createIntersectionObserver()
+    this.observeVisibleElements(observer)
+    this.observeDOMChanges(observer)
+  }
+
+  /**
+   * 创建交叉观察器实例
+   */
+  private createIntersectionObserver(): IntersectionObserver {
+    return new IntersectionObserver(
       (entries) => {
-        entries.forEach((entry) => {
-          // 检查元素发生了碰撞
-          const nodeRef = entry.target as HTMLElement
-          const att = nodeRef.getAttribute('data-visible')
-          if (entry.isIntersecting && entry.intersectionRatio >= 0.55 && !att) {
-            const data: any = nodeRef.dataset || {} // 曝光埋点日志数据
-            // const monitorId = TransportCategory.EVENT + uuidv4()
-            const metrice = {
-              reportsType: MetricsName.CE,
-              classList: Array.from(nodeRef.classList),
-              tagName: nodeRef.tagName,
-              text: nodeRef.textContent,
-              category: TransportCategory.EVENT,
-              // monitorId,
-              ...data,
-            }
-            this.sendLog.add(metrice)
-            // 曝光不是用户行为，可以不作为采集信息
-            nodeRef.setAttribute('data-visible', 'y')
-          }
-        })
+        entries.forEach((entry) => this.handleIntersection(entry))
       },
       {
         root: null,
@@ -125,73 +152,111 @@ export class UserVitals extends CommonExtends {
         threshold: [0.1, 0.55],
       },
     )
+  }
 
-    // 在class 元素上添加 on-visible  用于监听曝光
-    const nodes = (document as Document).querySelectorAll('.on-visible') || []
-    nodes?.forEach((child) => {
-      itOberser?.observe(child)
-    })
+  /**
+   * 处理元素可见性变化
+   */
+  private handleIntersection(entry: IntersectionObserverEntry): void {
+    const nodeRef = entry.target as HTMLElement
+    const att = nodeRef.getAttribute('data-visible')
 
-    // 监听元素变化后，判断是否存在曝光埋点
-    mOberver(function (mutation: MutationRecord) {
-      const addedNodes = mutation.addedNodes
-      if (!!addedNodes.length) {
-        try {
-          addedNodes?.forEach((node: any) => {
-            if (node instanceof HTMLElement) {
-              const isS = node.classList?.contains('on-visible')
-              isS && itOberser.observe(node)
-              const nodes = node?.querySelectorAll?.('.on-visible') as unknown as Array<HTMLElement>
-              nodes?.forEach((child: HTMLElement) => {
-                itOberser.observe(child)
-              })
-            }
-          })
-        } catch (error) {
-          console.log(error)
-        }
+    if (entry.isIntersecting && entry.intersectionRatio >= 0.55 && !att) {
+      const data = nodeRef.dataset || {}
+
+      this.sendLog.add({
+        reportsType: MetricsName.CE,
+        classList: Array.from(nodeRef.classList),
+        tagName: nodeRef.tagName,
+        text: nodeRef.textContent,
+        category: TransportCategory.EVENT,
+        ...data,
+      })
+
+      nodeRef.setAttribute('data-visible', 'y')
+    }
+  }
+
+  /**
+   * 观察可见元素
+   */
+  private observeVisibleElements(observer: IntersectionObserver): void {
+    const nodes = document.querySelectorAll('.on-visible')
+    nodes.forEach((node) => observer.observe(node))
+  }
+
+  /**
+   * 观察 DOM 变化
+   */
+  private observeDOMChanges(observer: IntersectionObserver): void {
+    mOberver((mutation: MutationRecord) => {
+      if (mutation.addedNodes.length) {
+        this.handleAddedNodes(mutation.addedNodes, observer)
       }
     })
   }
 
   /**
-   * 用户自定义埋点
-   * @memberof UserVitals
+   * 处理新增的 DOM 节点
    */
-  initCustomerHandler = (): FN1 => {
-    return (options: CustomAnalyticsData) => {
-      const monitorId = TransportCategory.CUSTOM + uuidv4()
-      const metrice = {
+  private handleAddedNodes(nodes: NodeList, observer: IntersectionObserver): void {
+    try {
+      nodes.forEach((node) => {
+        if (node instanceof HTMLElement) {
+          if (node.classList?.contains('on-visible')) {
+            observer.observe(node)
+          }
+
+          const visibleChildren = node.querySelectorAll('.on-visible')
+          visibleChildren.forEach((child) => observer.observe(child))
+        }
+      })
+    } catch (error) {
+      console.error('Error handling added nodes:', error)
+    }
+  }
+
+  /**
+   * 初始化自定义埋点处理器
+   */
+  public initCustomerHandler = (): FN1 => {
+    return (options: CustomAnalyticsData): void => {
+      const monitorId = `${TransportCategory.CUSTOM}${uuidv4()}`
+
+      this.sendLog.add({
         reportsType: MetricsName.CDR,
         category: TransportCategory.CUSTOM,
         monitorId,
         ...options,
-      }
-      this.sendLog.add(metrice)
-      // 记录到用户行为追踪队列
+      })
     }
   }
 
   /**
-   * http请求上报
-   * @memberof UserVitals
+   * 初始化 HTTP 请求监控
    */
-  initHttpHandler = (): void => {
-    const handler = (metrics: HttpMetrics) => {
-      const monitorId = TransportCategory.API + uuidv4()
-      const metrice = {
+  private initHttpHandler = (): void => {
+    const handler = (metrics: HttpMetrics): void => {
+      const monitorId = `${TransportCategory.API}${uuidv4()}`
+      const response = this.formatResponse(metrics.response)
+
+      this.sendLog.add({
         reportsType: MetricsName.HT,
         category: TransportCategory.API,
         monitorId,
         ...metrics,
-        response:
-          typeof metrics.response === 'string' && isHtml(metrics.response)
-            ? '[-Body内容为HTML已过滤-]'
-            : metrics.response,
-      }
-      this.sendLog.add(metrice)
+        response,
+      })
     }
+
     proxyXmlHttp(null, handler)
     proxyFetch(null, handler)
+  }
+
+  /**
+   * 格式化响应数据
+   */
+  private formatResponse(response: unknown): unknown {
+    return typeof response === 'string' && isHtml(response) ? '[-Body内容为HTML已过滤-]' : response
   }
 }

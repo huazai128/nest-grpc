@@ -5,6 +5,13 @@ import { UNDEFINED } from '@app/constants/value.constant'
 import { isDevEnv } from '@app/app.env'
 
 /**
+ *
+ * 1. 全局异常捕获器
+ * 2. 捕获所有异常，并格式化错误消息为 <HttpErrorResponse>
+ * 3. 仅处理 API 请求
+ * 4. 非 API 请求直接返回
+ * 5. 捕获 HTTP 异常
+ * 6. 捕获所有异常
  * @class HttpExceptionFilter
  * @classdesc catch globally exceptions & formatting error message to <HttpErrorResponse>
  */

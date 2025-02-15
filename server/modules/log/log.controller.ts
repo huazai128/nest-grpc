@@ -9,6 +9,9 @@ import { RedisService } from '@app/processors/redis/redis.service'
 import { LogChartQueryDTO, LogData, LogPaginateQueryDTO } from './log.dto'
 import { ApiGuard } from '@app/guards/api.guard'
 import { ChartItem } from '@app/protos/common/chart_item'
+import { createLogger } from '@app/utils/logger'
+
+const logger = createLogger({ scope: 'LogController', time: true })
 
 const WEB_INFO = 'webInfo'
 
@@ -53,11 +56,13 @@ export class LogController {
     const { logs } = body
     // 遍历日志并处理
     logs.map(async (item) => {
+      logger.info('批量上传日志:', item)
       if (item.category === WEB_INFO && item.traceId) {
         this.cacheService.set(item.traceId, item, 3 * 24 * 60 * 60)
       } else {
         const cacheKey = `WEB_INFO:${item.traceId}` // 使用组合键确保唯一性
         const webInfo = (await this.cacheService.get(cacheKey)) || {}
+        logger.info('批量上传日志通用信息:', webInfo)
         const nData = { ...webInfo, ...item, ip: visitor.ip, ua_result: visitor.ua_result } as SaveLogRequest
         this.logService.saveLog(nData)
       }

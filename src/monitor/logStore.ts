@@ -48,6 +48,7 @@ export default abstract class LogStore {
     wrHistory()
     this.getInit()
     this.initStore()
+    this.initRouterChange()
   }
 
   /**
@@ -99,7 +100,7 @@ export default abstract class LogStore {
     const { width, height } = window.screen
     const { language } = navigator
     // 网页基础信息，一般都不会变，Redis 存储 3 天
-    this.logList.push({
+    this.logList.unshift({
       lang: language.substr(0, 2),
       winScreen: `${width}x${height}`,
       docScreen: `${document.documentElement.clientWidth || document.body.clientWidth}x${
@@ -123,7 +124,7 @@ export default abstract class LogStore {
     }
     this.curHref = href
     this.pageId = 'pageId:' + uuidv4()
-    this.logList.push({
+    this.logList.splice(1, 0, {
       path: pathname,
       referrer: document.referrer,
       prevHref: this.prevHref,
@@ -133,6 +134,7 @@ export default abstract class LogStore {
       type: performance?.navigation?.type,
       pageId: this.pageId,
       category: TransportCategory.PageInfo,
+      traceId: this.traceId,
       // 用户来源
       // 0: 点击链接、地址栏输入、表单提交、脚本操作等。
       // 1: 点击重新加载按钮、location.reload。
