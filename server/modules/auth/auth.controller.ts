@@ -1,14 +1,14 @@
-import { Body, Controller, Get, Post, Req, Res, Session } from '@nestjs/common'
-import { AuthService } from './auth.service'
-import { AuthDTO } from './auth.dto'
-import { Request, Response } from 'express'
-import { SessionInfo } from '@app/interfaces/session.interfave'
-import { AuthInfo } from '@app/interfaces/auth.interface'
 import { RedisMicroserviceService } from '@app/processors/microservices/redis.microservice.service'
-import { createLogger } from '@app/utils/logger'
-import { isDevEnv } from '@app/config'
+import { SessionInfo } from '@app/interfaces/session.interfave'
 import { MessagePattern } from '@nestjs/microservices'
+import { AuthInfo } from '@app/interfaces/auth.interface'
+import { Body, Controller, Get, Post, Req, Res, Session } from '@nestjs/common'
+import { createLogger } from '@app/utils/logger'
 import { USER_LOGIN } from '@app/constants/pattern.constant'
+import { AuthService } from './auth.service'
+import { Request, Response } from 'express'
+import { isDevEnv } from '@app/config'
+import { AuthDTO } from './auth.dto'
 
 const Logger = createLogger({ scope: 'AuthController', time: isDevEnv })
 

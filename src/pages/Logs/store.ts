@@ -93,7 +93,6 @@ export class LogStore extends ListStore {
         cursor,
         size,
       })
-      console.log(res, '====dasda')
 
       if (!Object.is(this.menuType, 'default')) {
         this.aggregationPathOrUrlData()

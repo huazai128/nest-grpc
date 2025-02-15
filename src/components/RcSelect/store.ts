@@ -186,7 +186,6 @@ export abstract class SelectCommonStore {
   onPopupScroll = (e: any) => {
     const curTop = e.target.scrollTop + e.target.offsetHeight
     const targetHei = e.target.scrollHeight - 100
-    console.log(this.isMore && curTop >= targetHei, this.curPage, this.parmas.index)
     if (this.isMore && curTop >= targetHei && this.curPage !== this.parmas.index) {
       this.getListData()
       if (this.isSelectAll) {
@@ -203,7 +202,6 @@ export abstract class SelectCommonStore {
   @action
   onSearch = (value: string) => {
     if (!!value) {
-      // console.log(this.showSelectAll, 'showSelectAll')
       this.isSearchAll = false
       this.indeterminateBoo = false
       if (!this.isSearch) {

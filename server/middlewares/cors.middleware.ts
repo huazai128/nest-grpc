@@ -4,6 +4,12 @@ import { isDevEnv } from '@app/app.env'
 import { CROSS_DOMAIN } from '@app/config'
 import logger from '@app/utils/logger'
 
+/**
+ * 跨域中间件
+ * @export
+ * @class CorsMiddleware
+ * @implements {NestMiddleware}
+ */
 @Injectable()
 export class CorsMiddleware implements NestMiddleware {
   use(req: Request, response: Response, next: NextFunction) {

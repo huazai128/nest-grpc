@@ -9,6 +9,11 @@ import { ChartItem } from '@app/protos/common/chart_item'
 
 const Logger = createLogger({ scope: 'LogService', time: true })
 
+/**
+ * 日志服务
+ * @class LogService
+ * @implements {OnModuleInit}
+ */
 @Injectable()
 export class LogService implements OnModuleInit {
   public logService: LogServiceT

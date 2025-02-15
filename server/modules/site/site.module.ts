@@ -9,16 +9,19 @@ import { SiteController } from './site.controller'
   imports: [
     ClientsModule.register([
       {
-        name: 'SITEPROTO_PACKAGE', // name 属性的值作为注入标记
+        name: 'SITEPROTO_PACKAGE',
         transport: Transport.GRPC,
         options: {
           url: CONFIG.grpcUrl,
           package: 'siteproto',
           protoPath: ['site.proto'],
-          //loader api： https://github.com/grpc/grpc-node/blob/master/packages/proto-loader/README.md
           loader: {
             includeDirs: [join(__dirname, '../../protos')],
-            // keepCase: true, // 默认是更改为驼峰式大小写。
+            keepCase: true,
+            longs: String,
+            enums: String,
+            defaults: true,
+            oneofs: true,
           },
         },
       },

@@ -7,6 +7,11 @@ import { createLogger } from '@app/utils/logger'
 
 const Logger = createLogger({ scope: 'LogService', time: true })
 
+/**
+ * 站点服务
+ * @class SiteService
+ * @implements {OnModuleInit}
+ */
 @Injectable()
 export class SiteService implements OnModuleInit {
   public siteService: SiteServiceT

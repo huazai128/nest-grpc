@@ -5,25 +5,37 @@ import logger from '@app/utils/logger'
 import { get } from 'lodash'
 
 /**
- * 拦截登录和未登录
+ * 路由中间件 - 处理登录状态和路由拦截
  * @export
  * @class RouterMiddleware
  * @implements {NestMiddleware}
  */
 @Injectable()
 export class RouterMiddleware implements NestMiddleware {
+  // API路径标识
+  private readonly API_PATH = '/api/'
+  // 登录页路径
+  private readonly LOGIN_PATH = '/login'
+  // 首页路径
+  private readonly HOME_PATH = '/'
+
   constructor(private readonly authService: AuthService) {}
+
   async use(request: Request, response: Response, next: NextFunction) {
+    const { baseUrl } = request
     const userInfo = get(request, 'session.user')
-    const url = request.baseUrl
+
+    // 设置登录状态
     request.isLogin = !!userInfo?.userId
-    // 所有页面路由中不能包含/api/, 如果不没有登录，访问直接返回登录页面, 此处也可以加入白名单页面
-    request.isRouter = !url.includes('/api/')
-    // 如果登录了，访问登录页就重定向到首页
-    if (request.isLogin && url === '/login' && !url.includes('/api/')) {
-      return response.redirect('/')
+    // 判断是否为页面路由
+    request.isRouter = !baseUrl.includes(this.API_PATH)
+
+    // 已登录用户访问登录页时重定向到首页
+    if (request.isLogin && baseUrl === this.LOGIN_PATH && !baseUrl.includes(this.API_PATH)) {
+      return response.redirect(this.HOME_PATH)
     }
-    logger.info(userInfo, 'userInfo')
+
+    logger.info('当前用户信息:', userInfo)
     return next()
   }
 }

@@ -4,10 +4,19 @@ import { Request } from 'express'
 import { SessionPipe } from '@app/pipes/session.pipe'
 import { QueryParams } from '@app/decorators/params.decorator'
 import { RouterSercive } from './router.service'
+import { createLogger } from '@app/utils/logger'
 
+const logger = createLogger({ scope: 'RouterController', time: true })
+
+/**
+ * 路由控制器
+ * @class RouterController
+ * @implements {OnModuleInit}
+ */
 @Controller()
 export class RouterController {
   constructor(private readonly routeService: RouterSercive) {}
+
   /**
    * 渲染页面
    * @param {Request} req
@@ -18,6 +27,7 @@ export class RouterController {
   @Header('content-type', 'text/html')
   @Render('index')
   login(@QueryParams('request', new SessionPipe()) req: Request) {
+    logger.info('login', req.url)
     return { data: { name: '登录页面' } }
   }
 

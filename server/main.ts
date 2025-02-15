@@ -67,7 +67,9 @@ async function bootstrap() {
   })
   await app.startAllMicroservices()
   await app.listen(APP.PORT).then(() => {
-    logger.info(`Application is running on: http://${getServerIp()}:${APP.PORT}, env: ${environment}}`)
+    const url = `http://${getServerIp()}:${APP.PORT}`
+
+    logger.info(`Application is running on: ${url}, env: ${environment}}`)
   })
 }
 bootstrap()
