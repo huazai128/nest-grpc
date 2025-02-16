@@ -157,7 +157,6 @@ export interface PageInfo {
   // 页面切换都会产生UUID
   pageId?: string
 }
-
 export interface BehaviorItem {
   type: TransportCategory
   monitorId: string

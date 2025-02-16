@@ -73,8 +73,7 @@ export default abstract class LogStore {
    */
   initRouterChange = () => {
     // 记录上一次的路径,用于对比是否发生变化
-    let lastPathname = window.location.pathname
-
+    let lastPathname = ''
     // 统一的路由变化处理函数
     const handleRouteChange = (event: Event) => {
       const currentPathname = window.location.pathname
@@ -82,18 +81,14 @@ export default abstract class LogStore {
       if (currentPathname === lastPathname) {
         return
       }
-
       // 更新lastPathname并记录动态信息
       lastPathname = currentPathname
       this.dynamicInfo(event)
     }
-
     // 监听页面显示事件,包括页面加载和从bfcache恢复
     window.addEventListener('pageshow', handleRouteChange, { capture: true })
-
     // 监听hash路由变化
     proxyHash(handleRouteChange)
-
     // 监听history路由变化
     proxyHistory(handleRouteChange)
   }

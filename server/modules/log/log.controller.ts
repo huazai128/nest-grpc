@@ -59,39 +59,41 @@ export class LogController {
   ) {
     const { logs } = body
 
-    // 使用Promise.all等待所有日志处理完成
-    await Promise.all(
-      logs.map(async (item) => {
-        const cacheKey = `WEB_INFO:${item.traceId}`
-        const pageCacheKey = `PAGE_INFO:${item.traceId}`
-        logger.info('处理日志:', item)
+    // 如果日志数组长度超过10，直接返回, 这里存在问题，就是数据量多，且日志数据量很大，导致内存占用过高. 所以约定上报日志数量不超过10条
+    // 还可以继续优化，使用队列来处理，或者使用批量处理
+    if (logs.length > 10) {
+      return res.status(204).json()
+    }
 
-        if (item.category === WEB_INFO && item.traceId) {
-          // 缓存基础网页信息3天
-          await this.cacheService.set(cacheKey, item, WEB_INFO_TIME)
-        } else if (item.category === PAGE_INFO && item.traceId) {
-          // 缓存页面信息3天
-          await this.cacheService.set(pageCacheKey, item, WEB_INFO_TIME)
-        } else {
-          // 获取缓存的基础信息并合并
-          const webInfo = (await this.cacheService.get(cacheKey)) || {}
-          const pageInfo = (await this.cacheService.get(pageCacheKey)) || {}
-          logger.info('获取到基础信息:', webInfo)
+    // 不需要等所有的日志处理完成，直接返回
+    logs.map(async (item) => {
+      const cacheKey = `WEB_INFO:${item.traceId}`
+      const pageCacheKey = `PAGE_INFO:${item.traceId}`
 
-          // 合并日志数据
-          const logData = {
-            ...webInfo,
-            ...item,
-            ...pageInfo,
-            ip: visitor.ip || '',
-            ua_result: visitor.ua_result,
-          }
-
-          await this.logService.saveLog(logData as SaveLogRequest)
+      if (item.category === WEB_INFO && item.traceId) {
+        // 缓存基础网页信息3天
+        await this.cacheService.set(cacheKey, item, WEB_INFO_TIME)
+      } else if (item.category === PAGE_INFO && item.traceId) {
+        // 缓存页面信息3天
+        await this.cacheService.set(pageCacheKey, item, WEB_INFO_TIME)
+      } else {
+        // 获取缓存的基础信息并合并
+        const webInfo = (await this.cacheService.get(cacheKey)) || {}
+        const pageInfo = (await this.cacheService.get(pageCacheKey)) || {}
+        // 合并日志数据
+        const logData = {
+          ...webInfo,
+          ...pageInfo,
+          ...item,
+          ip: visitor.ip || '',
+          ua: visitor.ua,
         }
-      }),
-    )
 
+        logger.info(`合并日志数据${item.reportsType}:`, logData)
+
+        await this.logService.saveLog(logData as SaveLogRequest)
+      }
+    })
     return res.status(204).json()
   }
 
