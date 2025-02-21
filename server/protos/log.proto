@@ -89,6 +89,9 @@ message SaveLogRequest {
   repeated google.protobuf.Struct stackTrace = 73;
   repeated BehaviorItem breadcrumbs = 74;
   string errorUid = 75;
+  string pageId = 76; 
+  string speed = 77;
+  string costTime = 78;
 }
 
 
