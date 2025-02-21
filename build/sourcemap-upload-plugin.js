@@ -1,8 +1,8 @@
-import fs from 'fs'
-import path from 'path'
-import axios from 'axios'
-import FormData from 'form-data'
-import archiver from 'archiver'
+const fs = require('fs')
+const path = require('path')
+const axios = require('axios')
+const FormData = require('form-data')
+const archiver = require('archiver')
 
 const PLUGIN_NAME = 'UploadSourceMapPlugin'
 const DEFAULT_PATTERNS = [/\.map$/]

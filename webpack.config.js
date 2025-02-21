@@ -1,24 +1,39 @@
-const path = require('path');
-const {
-  IgnorePlugin
-} = require('webpack');
-const {
-  swcDefaultsFactory,
-} = require('@nestjs/cli/lib/compiler/defaults/swc-defaults');
+const path = require('path')
+const { IgnorePlugin } = require('webpack')
+const { swcDefaultsFactory } = require('@nestjs/cli/lib/compiler/defaults/swc-defaults')
 
 /** @type { import('webpack').Configuration } */
 module.exports = {
   entry: './server/main',
   externals: {},
   module: {
-    rules: [{
-      exclude: /node_modules/,
-      test: /\.ts$/,
-      use: {
-        loader: 'swc-loader',
-        options: swcDefaultsFactory().swcOptions,
+    rules: [
+      {
+        exclude: /node_modules/,
+        test: /\.ts$/,
+        use: {
+          loader: 'swc-loader',
+          options: swcDefaultsFactory().swcOptions,
+        },
       },
-    }, ],
+      {
+        test: /\.s[ac]ss$/i,
+        use: [
+          'style-loader',
+          'css-loader',
+          'postcss-loader',
+          {
+            loader: 'sass-loader',
+            options: {
+              implementation: require('sass'), // 使用 Dart Sass
+              sassOptions: {
+                fiber: false,
+              },
+            },
+          },
+        ],
+      },
+    ],
   },
   node: {
     __dirname: false,
@@ -40,18 +55,18 @@ module.exports = {
           'cache-manager/package.json',
           'class-transformer/storage',
           'class-validator',
-        ];
+        ]
         if (!lazyImports.includes(resource)) {
-          return false;
+          return false
         }
         try {
           require.resolve(resource, {
-            paths: [process.cwd()]
-          });
+            paths: [process.cwd()],
+          })
         } catch (err) {
-          return true;
+          return true
         }
-        return false;
+        return false
       },
     }),
   ],
@@ -59,9 +74,9 @@ module.exports = {
     extensions: ['.js', '.json', '.ts'],
     mainFields: ['main'],
     alias: {
-      "@app": ["./"],
-      "@app/*": ["./*"]
-    }
+      '@app': ['./'],
+      '@app/*': ['./*'],
+    },
   },
   target: 'node',
-};
+}
