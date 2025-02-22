@@ -5,7 +5,7 @@ import { isDevEnv } from '@app/app.env'
 import { getServerIp } from '@app/utils/util'
 import { APP } from '@app/config'
 import { SiteService } from '../site/site.service'
-import { measureAsyncTime } from '@app/decorators/async.decorator'
+import { MeasureAsyncTime } from '@app/decorators/async.decorator'
 
 /**
  * 处理路由下各种数据
@@ -47,7 +47,7 @@ export class RouterSercive {
    * @returns {Promise<any>} 站点信息
    * @memberof RouterSercive
    */
-  @measureAsyncTime
+  @MeasureAsyncTime
   async getSiteInfo(id: string) {
     const res = await this.siteService.getByIdSiteInfo(id)
     return res

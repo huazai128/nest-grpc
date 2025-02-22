@@ -6,7 +6,7 @@ import { createLogger } from '@app/utils/logger'
 import { QueryDTO } from '@app/protos/common/query_dto'
 import { LogChartQueryDTO, LogPaginateQueryDTO } from './log.dto'
 import { ChartItem } from '@app/protos/common/chart_item'
-import { measureAsyncTime } from '@app/decorators/async.decorator'
+import { MeasureAsyncTime } from '@app/decorators/async.decorator'
 
 const Logger = createLogger({ scope: 'LogService', time: true })
 
@@ -30,7 +30,7 @@ export class LogService implements OnModuleInit {
    * @param {SaveLogRequest} data
    * @memberof LogService
    */
-  @measureAsyncTime
+  @MeasureAsyncTime
   async saveLog(data: SaveLogRequest) {
     try {
       Logger.info('saveLog grpc请求数据:', data)
@@ -47,7 +47,7 @@ export class LogService implements OnModuleInit {
    * @return {*}  {Promise<LogList>}
    * @memberof LogService
    */
-  @measureAsyncTime
+  @MeasureAsyncTime
   public async getLogs(paginateQuery: LogPaginateQueryDTO): Promise<LogList> {
     try {
       return await lastValueFrom(this.logService.getLogs(paginateQuery as unknown as QueryDTO))

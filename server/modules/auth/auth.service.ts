@@ -7,7 +7,7 @@ import { JwtService } from '@nestjs/jwt'
 import { AUTH, isDevEnv } from '@app/config'
 import { TokenInfo } from '@app/interfaces/auth.interface'
 import { createLogger } from '@app/utils/logger'
-import { measureAsyncTime } from '@app/decorators/async.decorator'
+import { MeasureAsyncTime } from '@app/decorators/async.decorator'
 
 // 创建日志记录器实例
 const Logger = createLogger({ scope: 'AuthController', time: isDevEnv })
@@ -57,7 +57,7 @@ export class AuthService implements OnModuleInit {
    * @return {Promise<LoginResponse & TokenInfo>} 登录响应和令牌信息
    * @memberof AuthService
    */
-  @measureAsyncTime
+  @MeasureAsyncTime
   public async login(data: AuthDTO): Promise<LoginResponse & TokenInfo> {
     // 调用gRPC登录服务
     const { userId, account } = await lastValueFrom(this.authService.login(data))
@@ -82,7 +82,7 @@ export class AuthService implements OnModuleInit {
    * @return {Promise<LoginResponse>} 验证响应
    * @memberof AuthService
    */
-  @measureAsyncTime
+  @MeasureAsyncTime
   public async validateUser(data: ValidateUserRequest): Promise<LoginResponse> {
     return lastValueFrom(this.authService.validateUser(data))
   }
@@ -93,7 +93,7 @@ export class AuthService implements OnModuleInit {
    * @return {Promise<any>} 解码后的令牌载荷
    * @memberof AuthService
    */
-  @measureAsyncTime
+  @MeasureAsyncTime
   public async verifyAsync(jwt: string): Promise<any> {
     const payload = await this.jwtService.verifyAsync(jwt, {
       secret: AUTH.jwtTokenSecret,

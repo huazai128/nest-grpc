@@ -26,7 +26,7 @@ const Logger = createLogger({ scope: 'AsyncDecorator' })
  * @param methodName 方法名
  * @param descriptor 属性描述符
  */
-export function measureAsyncTime(target: any, methodName: string, descriptor: PropertyDescriptor) {
+export function MeasureAsyncTime(target: any, methodName: string, descriptor: PropertyDescriptor) {
   const originalMethod = descriptor.value
 
   descriptor.value = async function (...args: any[]) {

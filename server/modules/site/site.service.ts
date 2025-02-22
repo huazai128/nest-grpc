@@ -4,7 +4,7 @@ import { SiteQuery, SiteRequest, SiteService as SiteServiceT } from '@app/protos
 import { lastValueFrom } from 'rxjs'
 import { SiteDTO, SitePaginateDTO } from './site.dto'
 import { createLogger } from '@app/utils/logger'
-import { measureAsyncTime } from '@app/decorators/async.decorator'
+import { MeasureAsyncTime } from '@app/decorators/async.decorator'
 
 const Logger = createLogger({ scope: 'LogService', time: true })
 
@@ -29,7 +29,7 @@ export class SiteService implements OnModuleInit {
    * @return {*}
    * @memberof SiteService
    */
-  @measureAsyncTime
+  @MeasureAsyncTime
   public async saveSite(data: SiteDTO) {
     try {
       const res = await lastValueFrom(this.siteService.saveSite(data as SiteRequest))
@@ -46,7 +46,7 @@ export class SiteService implements OnModuleInit {
    * @return {*}
    * @memberof SiteService
    */
-  @measureAsyncTime
+  @MeasureAsyncTime
   public async getSiteList(data: SitePaginateDTO) {
     // 确认好id 长度，建议对id 处理成Long 类型，不然随着id 自增后数据，导致传递bug
     const res = await lastValueFrom(this.siteService.getSiteList(data as SiteQuery))
@@ -59,7 +59,7 @@ export class SiteService implements OnModuleInit {
    * @return {*}
    * @memberof SiteService
    */
-  @measureAsyncTime
+  @MeasureAsyncTime
   public async updateSiteId(data: SiteRequest) {
     const res = await lastValueFrom(this.siteService.updateSite(data as SiteRequest))
     return res
@@ -71,7 +71,7 @@ export class SiteService implements OnModuleInit {
    * @return {*}
    * @memberof SiteService
    */
-  @measureAsyncTime
+  @MeasureAsyncTime
   public async deleteSiteId(id: string) {
     const res = await lastValueFrom(this.siteService.deleteSiteId({ id: id }))
     return res
@@ -82,7 +82,7 @@ export class SiteService implements OnModuleInit {
    * @param {string} id
    * @memberof SiteService
    */
-  @measureAsyncTime
+  @MeasureAsyncTime
   public async getByIdSiteInfo(id: string) {
     const res = await lastValueFrom(this.siteService.getByIdSiteInfo({ id: id }))
     return res
