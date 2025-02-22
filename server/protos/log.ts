@@ -226,6 +226,9 @@ export interface Response {
 }
 
 export interface LogResponse {
+  status: number;
+  message: string;
+  result: string;
 }
 
 export interface LogList {
