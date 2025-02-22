@@ -12,6 +12,10 @@ import { AuthDTO } from './auth.dto'
 
 const Logger = createLogger({ scope: 'AuthController', time: isDevEnv })
 
+/**
+ * 认证控制器
+ * 处理用户登录认证相关的HTTP请求
+ */
 @Controller('api/auth')
 export class AuthController {
   constructor(
@@ -19,6 +23,14 @@ export class AuthController {
     private readonly client: RedisMicroserviceService,
   ) {}
 
+  /**
+   * 管理员登录接口
+   * @param req - Express请求对象
+   * @param data - 登录信息DTO
+   * @param session - 会话信息
+   * @param res - Express响应对象
+   * @returns 登录结果响应
+   */
   @Post('login')
   public async adminLogin(
     @Req() req: Request,
@@ -42,8 +54,7 @@ export class AuthController {
 
   /**
    * 获取用户列表
-   * @return {*}
-   * @memberof AuthController
+   * @returns 用户列表数据
    */
   @Get('list')
   getUserList() {
@@ -51,10 +62,15 @@ export class AuthController {
     return this.client.sendData(pattern, {})
   }
 
+  /**
+   * 处理用户登录消息
+   * 用于微服务间通信的消息处理器
+   * @returns 测试用户列表数据
+   */
   @MessagePattern(USER_LOGIN)
   handleLogin() {
-    Logger.log('触发了')
-    const userList = [{ id: 1, name: '测试der' }]
+    Logger.log('用户登录消息触发')
+    const userList = [{ id: 1, name: '测试用户' }]
     return { userList }
   }
 }

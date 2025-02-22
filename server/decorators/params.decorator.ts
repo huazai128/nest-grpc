@@ -21,7 +21,6 @@ export interface QueryParamsResult {
   cookies: QueryCookies
   visitor: QueryVisitor
   request: Request
-  isAuthenticated: boolean
 }
 
 /**
@@ -56,8 +55,9 @@ export const QueryParams = createParamDecorator(
       cookies: request.cookies,
       visitor,
       request,
+      body: request.body || {},
     }
 
-    return field ? result[field] : result
+    return field ? result[field] : (result as QueryParamsResult)
   },
 )
