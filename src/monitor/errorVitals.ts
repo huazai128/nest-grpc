@@ -13,10 +13,13 @@ import isHtml from 'is-html'
 import { v4 as uuidv4 } from 'uuid'
 import { record } from '@rrweb/record'
 import localForage from 'localforage'
+import { pack } from '@rrweb/packer'
 
 // 创建本地存储实例,用于存储录制的日志
 const store = localForage.createInstance({
   name: 'recordLog',
+  storeName: 'recordEvents', // 指定存储名称
+  description: 'Store for recording user events', // 添加描述
 })
 
 /**
@@ -56,9 +59,11 @@ export default class ErrorVitals extends CommonExtends {
   private readonly CURRENT_RECORD_KEY = 'curRecordKey'
   // 最大记录数量
   private readonly MAX_RECORD_KEYS = 10
+  // 事件矩阵最大大小(字节)
+  private readonly MAX_EVENTS_SIZE = 1024 * 1024 // 1MB
 
   // 已处理的错误ID集合
-  private errorUids: string[] = []
+  private errorUids: Set<string> = new Set() // 使用Set提高查找效率
   // 录制的事件矩阵
   private eventsMatrix: any[] = []
   // 当前录制ID
@@ -67,11 +72,14 @@ export default class ErrorVitals extends CommonExtends {
   private isStartRecord = false
   // 录制历史key列表
   private reordHistoryKeys: string[] = []
+  // 记录当前事件矩阵大小
+  private currentEventsSize = 0
 
   constructor() {
     super()
     this.initializeErrorHandlers()
     this.onPageLoad()
+    this.initStore() // 初始化时就调用initStore
   }
 
   /**
@@ -96,12 +104,14 @@ export default class ErrorVitals extends CommonExtends {
 
       // 获取当前记录
       const currentRecord = (await store.getItem(this.CURRENT_RECORD_KEY)) as any
-      if (currentRecord) {
+      if (currentRecord?.events?.length) {
         this.sendLog.add({
           category: TransportCategory.RV,
           events: JSON.stringify(currentRecord.events),
           monitorId: currentRecord.monitorId,
         })
+        // 发送后清除当前记录
+        await store.removeItem(this.CURRENT_RECORD_KEY)
       }
     } catch (error) {
       console.error('Failed to initialize store:', error)
@@ -132,11 +142,11 @@ export default class ErrorVitals extends CommonExtends {
     const monitorId = `${TransportCategory.ERROR}${uuidv4()}`
 
     // 避免重复发送相同错误
-    if (this.errorUids.includes(error.errorUid)) {
+    if (this.errorUids.has(error.errorUid)) {
       return false
     }
 
-    this.errorUids.push(error.errorUid)
+    this.errorUids.add(error.errorUid)
 
     const errorInfo = {
       ...error,
@@ -146,6 +156,7 @@ export default class ErrorVitals extends CommonExtends {
       stackTrace,
       monitorId,
       recordKeys: this.reordHistoryKeys,
+      timestamp: Date.now(), // 添加时间戳
     }
     this.sendLog.add(errorInfo)
   }
@@ -329,6 +340,22 @@ export default class ErrorVitals extends CommonExtends {
       emit: (event, isCheckout) => this.emitRecord(event, isCheckout),
       recordCanvas: true,
       checkoutEveryNth: 200,
+      packFn: pack,
+      sampling: {
+        // 设置滚动事件的触发频率
+        scroll: 200, // 每 200ms 最多触发一次
+        // 设置媒体交互事件的触发频率
+        media: 1000, // 每 1s 最多触发一次
+        // 设置输入事件的录制时机
+        input: 'last', // 连续输入时，只录制最终值
+        // 设置鼠标移动事件的触发频率
+        mousemove: 200, // 每 200ms 最多触发一次
+      },
+      // 忽略一些不必要的属性变化
+      ignoreClass: /.*ignore-class.*/,
+      blockClass: /.*block-class.*/,
+      // 启用压缩
+      enableCompression: true,
     })
   }
 
@@ -337,20 +364,31 @@ export default class ErrorVitals extends CommonExtends {
    * @param event 录制的事件
    * @param isCheckout 是否检查点
    */
-  private emitRecord(event: any, isCheckout?: boolean) {
+  private async emitRecord(event: any, isCheckout?: boolean) {
+    const eventSize = new TextEncoder().encode(JSON.stringify(event)).length
+
+    // 如果单个事件或累计事件大小超过限制，强制触发检查点
+    if (eventSize > this.MAX_EVENTS_SIZE || this.currentEventsSize + eventSize > this.MAX_EVENTS_SIZE) {
+      isCheckout = true
+    }
+
     if (isCheckout) {
-      this.sendLog.add({
+      await this.sendLog.add({
         category: TransportCategory.RV,
         events: JSON.stringify(this.eventsMatrix),
         monitorId: this.curRecordId,
+        timestamp: Date.now(),
       })
       this.eventsMatrix = []
+      this.currentEventsSize = 0
       this.startRecordId()
     } else {
       this.eventsMatrix.push(event)
-      store.setItem(this.CURRENT_RECORD_KEY, {
+      this.currentEventsSize += eventSize
+      await store.setItem(this.CURRENT_RECORD_KEY, {
         monitorId: this.curRecordId,
         events: this.eventsMatrix,
+        timestamp: Date.now(),
       })
     }
   }
@@ -359,14 +397,18 @@ export default class ErrorVitals extends CommonExtends {
    * 添加录制记录
    * @param key 记录的key
    */
-  private pushRecord(key: string) {
+  private async pushRecord(key: string) {
     if (this.reordHistoryKeys.length < this.MAX_RECORD_KEYS) {
       this.reordHistoryKeys.push(key)
     } else {
-      this.reordHistoryKeys.shift()
+      const oldKey = this.reordHistoryKeys.shift()
+      // 删除过期的记录
+      if (oldKey) {
+        await store.removeItem(oldKey)
+      }
       this.reordHistoryKeys.push(key)
     }
-    store.setItem(this.HISTORY_KEYS, this.reordHistoryKeys)
+    await store.setItem(this.HISTORY_KEYS, this.reordHistoryKeys)
   }
 
   /**
