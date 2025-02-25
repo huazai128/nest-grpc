@@ -21,9 +21,9 @@ export default abstract class LogStore {
   protected logList: IMetrics[] = []
   // 用于存储用户行为
   private behaviorList: BehaviorItem[] = []
-  // 缓存key
+  // 缓存behavior key
   private behaviorStoreKey: string = 'behaviorStoreKey'
-  // 缓存key
+  // 缓存logskey
   private logsStoreKey: string = 'logsStoreKey'
   // 配置信息
   public config!: ConfigProps
@@ -209,6 +209,11 @@ export default abstract class LogStore {
    * @memberof LogStore
    */
   getLog = (): IMetrics[] => {
+    // 这里只是简单的对上报时检查网络，但它缺少了对服务器端异常的处理机制比如服务器宕机、请求超时等情况的处理。这是一个潜在的改进点。
+    if (!navigator.onLine) {
+      return []
+    }
+
     const logs: IMetrics[] = []
     const list = this.logList.filter((item, index: number) => {
       if (index < this.len) {
@@ -217,6 +222,7 @@ export default abstract class LogStore {
       return index >= this.len
     })
     this.logList = [...list]
+    store.setItem(this.logsStoreKey, this.logList)
     return logs
   }
 

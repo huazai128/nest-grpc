@@ -351,11 +351,6 @@ export default class ErrorVitals extends CommonExtends {
         // 设置鼠标移动事件的触发频率
         mousemove: 200, // 每 200ms 最多触发一次
       },
-      // 忽略一些不必要的属性变化
-      ignoreClass: /.*ignore-class.*/,
-      blockClass: /.*block-class.*/,
-      // 启用压缩
-      enableCompression: true,
     })
   }
 
@@ -373,7 +368,7 @@ export default class ErrorVitals extends CommonExtends {
     }
 
     if (isCheckout) {
-      await this.sendLog.add({
+      this.sendLog.add({
         category: TransportCategory.RV,
         events: JSON.stringify(this.eventsMatrix),
         monitorId: this.curRecordId,
