@@ -167,6 +167,7 @@ export default abstract class LogStore {
         if (value) {
           const list = (value || []) as BehaviorItem[]
           this.behaviorList = [...list, ...this.behaviorList]
+          store.removeItem(this.behaviorStoreKey)
         }
         return true
       }),
@@ -175,6 +176,7 @@ export default abstract class LogStore {
           const list = (value || []) as BehaviorItem[]
           // 确保这里添加数组开始
           this.logList = [...list, ...this.logList]
+          store.removeItem(this.logsStoreKey)
         }
         return true
       }),
