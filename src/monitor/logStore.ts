@@ -56,9 +56,9 @@ export default abstract class LogStore {
    * @memberof SendLog
    */
   getInit() {
-    // 如果是刷新页面还是使用来的traceId，唯一的id， 可以查看用户进入流程
+    // 如果是刷新页面还是使用原来来的traceId，唯一的id， 可以查看用户进入流程
     const traceId = sessionStorage.getItem('traceId')
-    // 做了简单的判断
+    // 做了简单的判断, 如果traceId长度大于40，则认为是正常的traceId
     if (traceId && traceId.length > 40) {
       this.traceId = traceId
     } else {
