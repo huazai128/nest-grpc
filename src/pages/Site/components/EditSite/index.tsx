@@ -36,6 +36,7 @@ const EditSite = observer(() => {
           apiRules: apiRules,
           recordWhiteList,
           isApi: !!site?.isApi ? 1 : 0,
+          feedbackUrl: site?.feedbackUrl,
         })
       }
     }
@@ -48,7 +49,10 @@ const EditSite = observer(() => {
         if (!!apiRules) {
           try {
             values.apiRules = JSON.parse(apiRules)
-          } catch (e) {}
+          } catch (e) {
+            message.error('api屏蔽告警配置格式错误')
+            return
+          }
         }
         values.recordWhiteList = values.recordWhiteList
           ?.split(',')
@@ -97,10 +101,17 @@ const EditSite = observer(() => {
         </Form.Item>
         <Form.Item
           name="reportUrl"
-          label="上报告警群接口"
-          rules={[{ required: true, message: '请输入上报群告警接口' }]}
+          label="错误日志上报告警群"
+          rules={[{ required: true, message: '请输入错误日志上报告警群' }]}
         >
-          <Input placeholder="请输入上报群告警接口" />
+          <Input placeholder="请输入错误日志上报告警群" />
+        </Form.Item>
+        <Form.Item
+          name="feedbackUrl"
+          label="用户反馈日志上报告警群"
+          rules={[{ required: true, message: '请输入用户反馈日志上报告警群' }]}
+        >
+          <Input placeholder="请输入用户反馈日志上报告警群" />
         </Form.Item>
         <Form.Item
           name="isApi"

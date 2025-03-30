@@ -7,8 +7,10 @@ declare interface Window {
     }
     apiHost?: string
     _id?: string
+
     [key: string]: any
   }
+  sendUserLog?: (feedbackInfo: { content: string; oId: string }) => void
 }
 
 declare module 'worker-loader!*.ts' {

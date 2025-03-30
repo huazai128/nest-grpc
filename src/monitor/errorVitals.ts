@@ -80,6 +80,7 @@ export default class ErrorVitals extends CommonExtends {
     this.initializeErrorHandlers()
     this.onPageLoad()
     this.initStore() // 初始化时就调用initStore
+    window.sendUserLog = this.reportFeedback.bind(this)
   }
 
   /**
@@ -412,5 +413,40 @@ export default class ErrorVitals extends CommonExtends {
   private startRecordId() {
     this.curRecordId = `${TransportCategory.RV}${uuidv4()}`
     this.pushRecord(this.curRecordId)
+  }
+
+  /**
+   * 用户反馈日志上报
+   * @param feedbackInfo 用户反馈信息
+   */
+  public reportFeedback(feedbackInfo: { content: string; oId: string }) {
+    const monitorId = `FEEDBACK-${uuidv4()}`
+
+    // 获取最近的操作日志
+    const operationLogs = this.sendLog.getList()
+
+    // 获取最近的错误日志
+    const errorLogs = Array.from(this.errorUids).slice(-10) // 获取最近10条错误记录
+
+    // 获取当前录制的事件
+    const currentEvents = this.eventsMatrix.length > 0 ? JSON.stringify(this.eventsMatrix) : null
+
+    // 组装反馈信息
+    const feedback = {
+      monitorId,
+      category: TransportCategory.USER,
+      timestamp: Date.now(),
+      content: feedbackInfo.content,
+      oId: feedbackInfo.oId,
+      breadcrumbs: operationLogs,
+      errorList: errorLogs,
+      currentEvents,
+      recordKeys: this.reordHistoryKeys,
+    }
+
+    // 上报反馈信息
+    this.sendLog.add(feedback)
+
+    return monitorId
   }
 }

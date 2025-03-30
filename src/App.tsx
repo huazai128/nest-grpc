@@ -15,6 +15,8 @@ const monitor = new Monitor({
   isOnRecord: true,
 })
 
+window.sendUserLog({ content: 'test12121', oId: 'test' })
+
 configure({
   enforceActions: 'never',
 })
