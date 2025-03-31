@@ -147,13 +147,14 @@ export default class ErrorVitals extends CommonExtends {
     if (this.errorUids.has(error.errorUid)) {
       return false
     }
+    const breadcrumbs = this.sendLog.getList()
 
     this.errorUids.add(error.errorUid)
 
     const errorInfo = {
       ...error,
       category: TransportCategory.ERROR,
-      breadcrumbs: this.sendLog.getList(),
+      breadcrumbs: breadcrumbs,
       meta,
       stackTrace,
       monitorId,
@@ -420,7 +421,7 @@ export default class ErrorVitals extends CommonExtends {
    * @param feedbackInfo 用户反馈信息
    */
   public reportFeedback(feedbackInfo: { content: string; oId: string }) {
-    const monitorId = `FEEDBACK-${uuidv4()}`
+    const monitorId = `${TransportCategory.USER}${uuidv4()}`
 
     // 获取最近的操作日志
     const operationLogs = this.sendLog.getList()
@@ -446,7 +447,5 @@ export default class ErrorVitals extends CommonExtends {
 
     // 上报反馈信息
     this.sendLog.add(feedback)
-
-    return monitorId
   }
 }

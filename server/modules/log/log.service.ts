@@ -34,7 +34,7 @@ export class LogService implements OnModuleInit {
   async saveLog(data: SaveLogRequest) {
     try {
       Logger.info('saveLog grpc请求数据:', data)
-      // 不加await会报错。这里会存在问题，当大量数据过来会导致CPU和内存都会偏高告警。这里要使用kafaka处理好些
+      // 不加await会报错。这里会存在问题，当大量数据过来会导致CPU和内存都会偏高告警。这里要使用kafaka处理好些。
       await lastValueFrom(this.logService.saveLog(data as any))
     } catch (error) {
       Logger.error('saveLog grpc错误信息:', error.code, error.message)
