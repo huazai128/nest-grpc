@@ -1,27 +1,54 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-  
-</p>
+# Project Name
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+基于 Nest.js 和 React 的全栈开发项目，采用 TypeScript 开发，支持服务端渲染（SSR）。
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 技术栈
+
+- 后端：Nest.js
+- 前端：React
+- 样式：SCSS
+- 构建工具：Webpack
+- 开发语言：TypeScript
+
+## 项目特点
+
+- 支持服务端渲染（SSR）
+- 使用 SCSS 模块化样式管理
+- TypeScript 保证代码类型安全
+- 支持热更新开发
+- 生产环境优化构建
+
+## 快速开始
+
+### 安装依赖
+
+```bash
+yarn install
+```
+
+### 开发环境
+
+```bash
+# 启动后端服务
+yarn run start:dev
+
+# 启动前端开发服务
+yarn run dev
+```
+
+访问 `http://localhost:端口号` 即可看到页面
+
+### 生产环境构建
+
+```bash
+# 方式1：用于调试
+yarn run build
+
+# 方式2：生产环境优化构建（推荐）
+yarn run build:webpack
+```
+
+## 项目结构
 
 ## Description
 
@@ -55,12 +82,12 @@ $ yarn install
 
 ```bash
 # development 访问node服务地址即可看到页面
+$ yarn run proto
 $ yarn run start:dev
 $ yarn run dev
 
-
 # production
-$ yarn run build  // 可以用于调试
+$ yarn run prod  // 可以用于调试
 or
 $ yarn run build:webpack // 可以正常运行，体积小。
 $ yarn run emp:build
