@@ -87,12 +87,7 @@ $ yarn run start:dev
 $ yarn run dev
 
 # production
-$ yarn run prod  // 可以用于调试
-or
-$ yarn run build:webpack // 可以正常运行，体积小。
-$ yarn run emp:build
-
-
+$ yarn run prod 
 ```
 
 ### Actions

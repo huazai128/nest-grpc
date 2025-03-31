@@ -175,10 +175,9 @@ export class RedisService {
 
   /**
    * 清除所有
-   * @param {string} key
    * @memberof RedisService
    */
-  public async clean(key: string) {
+  public async clean() {
     await this.redis.del(await this.keys())
   }
 }

@@ -81,6 +81,7 @@ export default class ErrorVitals extends CommonExtends {
     this.onPageLoad()
     this.initStore() // 初始化时就调用initStore
     window.sendUserLog = this.reportFeedback.bind(this)
+    window.initReactError = this.initReactError.bind(this)
   }
 
   /**
@@ -315,7 +316,7 @@ export default class ErrorVitals extends CommonExtends {
    * @param error Error对象
    * @param errorInfo 错误信息
    */
-  public initReactError(error: Error, errorInfo: ErrorInfo) {
+  public initReactError(error: Error, errorInfo: ErrorInfo, name: string) {
     const errUid = getErrorUid(`${MechanismType.REACT}-${error.name}-${error.message}`)
 
     const errInfo: ExceptionMetrics = {
@@ -324,12 +325,11 @@ export default class ErrorVitals extends CommonExtends {
       errorType: error?.name || 'Unknown',
       stackTrace: parseStackFrames(error),
       errorUid: errUid,
+      componentName: name, // 组件名称
       meta: {
         file: parseStackFrames({ stack: errorInfo.componentStack } as any),
-        componentName: errorInfo.componentName,
       },
     }
-
     this.errorSendHandler(errInfo)
   }
 

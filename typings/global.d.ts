@@ -11,6 +11,7 @@ declare interface Window {
     [key: string]: any
   }
   sendUserLog?: (feedbackInfo: { content: string; oId: string }) => void
+  initReactError?: (error: Error, errorInfo: ErrorInfo, name: string) => void
 }
 
 declare module 'worker-loader!*.ts' {

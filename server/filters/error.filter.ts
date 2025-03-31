@@ -5,7 +5,6 @@ import { UNDEFINED } from '@app/constants/value.constant'
 import { isDevEnv } from '@app/app.env'
 
 /**
- *
  * 1. 全局异常捕获器
  * 2. 捕获所有异常，并格式化错误消息为 <HttpErrorResponse>
  * 3. 仅处理 API 请求
@@ -25,8 +24,9 @@ export class HttpExceptionFilter implements ExceptionFilter {
     if (!request.url.includes('/api/')) {
       return
     }
+    console.log(exception, 'exception')
     const exceptionStatus = exception?.getStatus?.() || HttpStatus.INTERNAL_SERVER_ERROR
-    const errorResponse: ExceptionInfo = exception.getResponse() as ExceptionInfo
+    const errorResponse: ExceptionInfo = exception?.getResponse() as ExceptionInfo
     const errorMessage = _isString(errorResponse) ? errorResponse : errorResponse.message
     const errorInfo = _isString(errorResponse) ? null : errorResponse.error
 

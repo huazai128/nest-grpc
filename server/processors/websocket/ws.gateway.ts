@@ -9,7 +9,7 @@ import {
   OnGatewayConnection,
   OnGatewayDisconnect,
 } from '@nestjs/websockets'
-import { from, Observable, map, lastValueFrom, of } from 'rxjs'
+import { from, Observable, map } from 'rxjs'
 import { Server } from 'socket.io'
 import { RedisMicroserviceService } from '@app/processors/microservices/redis.microservice.service'
 import { USER_LOGIN } from '@app/constants/pattern.constant'
@@ -27,11 +27,11 @@ export class WsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server
 
-  handleDisconnect(client: any) {
+  handleDisconnect() {
     Logger.log('websocket 连接关闭')
   }
 
-  handleConnection(client: any, ...args: any[]) {
+  handleConnection() {
     // this.server.emit('events', { data: 'websocket 连接成功' })
     Logger.log('websocket 连接成功')
   }
@@ -54,7 +54,7 @@ export class WsGateway implements OnGatewayConnection, OnGatewayDisconnect {
    * @memberof WsGateway
    */
   onMessage<T>(events: string): Promise<T> {
-    return new Promise<T>((resolve, reject) => {
+    return new Promise<T>((resolve) => {
       this.server.on(events, (data) => {
         resolve(data)
       })

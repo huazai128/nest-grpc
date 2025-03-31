@@ -6,11 +6,7 @@ import {
 import { DynamicModule, Global, Module, Provider } from '@nestjs/common'
 import { createRedisConnection, getRedisConnectionToken, getRedisOptionsToken } from './redis.util'
 import { RedisService } from './redis.service'
-import { createLogger } from '@app/utils/logger'
-import { isDevEnv } from '@app/app.env'
 import { CacheService } from './cache.service'
-
-const logger = createLogger({ scope: 'RedisCoreModule', time: isDevEnv })
 
 @Global()
 @Module({

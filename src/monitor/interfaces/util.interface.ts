@@ -122,6 +122,7 @@ export interface ExceptionMetrics {
   breadcrumbs?: Array<string>
   meta?: any
   errorUid: string
+  componentName?: string
 }
 
 export interface ErrorInfo {

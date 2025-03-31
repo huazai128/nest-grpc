@@ -48,10 +48,10 @@ export class CacheService {
   /**
    * 删除缓存
    * @param {string} key
-   * @return {*}  {Promise<Boolean>}
+   * @return {*}  {Promise<boolean>}
    * @memberof CacheService
    */
-  public delete(key: string): Promise<Boolean> {
+  public delete(key: string): Promise<boolean> {
     return this.redisService.del(key)
   }
 
