@@ -125,14 +125,14 @@ export default class ErrorVitals extends CommonExtends {
    */
   private onPageLoad() {
     const handler = () => {
-      window.addEventListener('load', () => {
-        if (!this.isStartRecord) {
-          this.isStartRecord = true
-          this.startRecordId()
-          this.startRecord()
-        }
-      })
+      if (!this.isStartRecord) {
+        console.log('开始录制')
+        this.isStartRecord = true
+        this.startRecordId()
+        this.startRecord()
+      }
     }
+    window.addEventListener('load', handler)
     window.addEventListener('pageshow', handler, { once: true, capture: true })
   }
 
@@ -370,6 +370,7 @@ export default class ErrorVitals extends CommonExtends {
     }
 
     if (isCheckout) {
+      this.eventsMatrix.push(event)
       this.sendLog.add({
         category: TransportCategory.RV,
         events: JSON.stringify(this.eventsMatrix),
@@ -385,7 +386,7 @@ export default class ErrorVitals extends CommonExtends {
       await store.setItem(this.CURRENT_RECORD_KEY, {
         monitorId: this.curRecordId,
         events: this.eventsMatrix,
-        timestamp: Date.now(),
+        timestamp: Date.now(), // 这个时间没有存储，后面在加上
       })
     }
   }

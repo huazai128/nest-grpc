@@ -237,8 +237,11 @@ export default abstract class LogStore {
     if (this.behaviorList.length < this.maxBehaviorLen) {
       this.behaviorList.push(value)
     } else {
-      this.behaviorList.shift() // 删除数组第一个元素
-      this.behaviorList.push(value) // 添加最新元素
+      // 如果大于200，删除到199个
+      while (this.behaviorList.length >= this.maxBehaviorLen) {
+        this.behaviorList.shift()
+      }
+      this.behaviorList.push(value)
     }
     store.setItem(this.behaviorStoreKey, this.behaviorList)
   }
