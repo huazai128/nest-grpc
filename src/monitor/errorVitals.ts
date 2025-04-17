@@ -60,7 +60,7 @@ export default class ErrorVitals extends CommonExtends {
   // 最大记录数量
   private readonly MAX_RECORD_KEYS = 10
   // 事件矩阵最大大小(字节)
-  private readonly MAX_EVENTS_SIZE = 1024 * 1024 // 1MB
+  private readonly MAX_EVENTS_SIZE = 2 * 1024 * 1024 // 2MB
 
   // 已处理的错误ID集合
   private errorUids: Set<string> = new Set() // 使用Set提高查找效率
@@ -368,7 +368,6 @@ export default class ErrorVitals extends CommonExtends {
     if (eventSize > this.MAX_EVENTS_SIZE || this.currentEventsSize + eventSize > this.MAX_EVENTS_SIZE) {
       isCheckout = true
     }
-
     if (isCheckout) {
       this.eventsMatrix.push(event)
       this.sendLog.add({
