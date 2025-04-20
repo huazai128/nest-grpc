@@ -19,6 +19,9 @@ function getAggregationPathOrUrl<T>(data: HttpParams): Promise<ResponseData<T>> 
 function getMemoryData<T>(data: HttpParams): Promise<ResponseData<T>> {
   return http.get<T>('/api/log/getMemoryData', data)
 }
+function getIpAnalysis<T>(data: HttpParams): Promise<ResponseData<T>> {
+  return http.get<T>('/api/log/ip', data)
+}
 
 export default {
   getLogs,
@@ -26,4 +29,5 @@ export default {
   getLogsChart,
   getAggregationPathOrUrl,
   getMemoryData,
+  getIpAnalysis,
 }

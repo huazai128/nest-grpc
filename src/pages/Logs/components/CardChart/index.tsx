@@ -11,7 +11,7 @@ const CardData = () => {
   return (
     <Card bordered={false} className={styles.cardData}>
       <RcEchart height={110} data={toJS(logStore.chartList)} xField="startTime" yField="count" />
-      <TotalData total={logStore.page.total} />
+      <TotalData total={logStore.total} />
     </Card>
   )
 }

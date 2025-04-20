@@ -1,7 +1,13 @@
 import { BadRequestException, Inject, Injectable, OnModuleInit } from '@nestjs/common'
 import { ClientGrpc } from '@nestjs/microservices'
-import { SaveLogRequest, LogService as LogServiceT, LogList } from '@app/protos/log'
-import { lastValueFrom } from 'rxjs'
+import {
+  SaveLogRequest,
+  LogService as LogServiceT,
+  LogList,
+  IPLocationRequest,
+  IPLocationResponse,
+} from '@app/protos/log'
+import { lastValueFrom, Observable } from 'rxjs'
 import { createLogger } from '@app/utils/logger'
 import { QueryDTO } from '@app/protos/common/query_dto'
 import { LogChartQueryDTO, LogPaginateQueryDTO } from './log.dto'
@@ -86,6 +92,22 @@ export class LogService implements OnModuleInit {
     } catch (error) {
       Logger.error('getLogsChart grpc错误信息:', error.code, error.message)
       throw new BadRequestException({ code: error.code, message: '调用getLogsChart grpc方法获取出错了' })
+    }
+  }
+
+  /**
+   * 获取IP分析
+   * @param {string} ip
+   * @return {*}  {Promise<IPLocationResponse>}
+   * @memberof LogService
+   */
+  public async getIpAnalysis(ip: string) {
+    try {
+      const data = await lastValueFrom(this.logService.handleIPLocation({ ip } as IPLocationRequest))
+      return data
+    } catch (error) {
+      Logger.error('getIpAnalysis grpc错误信息:', error.code, error.message)
+      throw new BadRequestException({ code: error.code, message: '调用getIpAnalysis grpc方法获取出错了' })
     }
   }
 }

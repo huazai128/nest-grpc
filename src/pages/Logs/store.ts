@@ -5,6 +5,7 @@ import { globalStore } from '@src/stores'
 import { handleSearchKeywords } from '@src/utils/util'
 import {
   AggDataItem,
+  IPLocationResponse,
   LogAggregationResponse,
   LogChartSearch,
   LogItem,
@@ -36,6 +37,10 @@ export class LogStore extends ListStore {
   @observable aggData?: Array<AggDataItem> = []
 
   @observable isLoaddingAgg = false
+
+  @observable ipAnalysis?: IPLocationResponse
+
+  @observable total: number = 0
 
   @observable aggPage = {
     page: 1,
@@ -111,13 +116,16 @@ export class LogStore extends ListStore {
    */
   getLogsChartData = async ({ format, ...params }: LogChartSearch) => {
     const { status, result } = await this.api.log.getLogsChart<Array<any>>(params)
+
     if (Object.is(status, 'success')) {
+      const data = result || []
+      this.total = data.reduce((acc, curr) => acc + Number(curr.count), 0)
       const list = chartDate({
         startTime: params.startTime,
         endTime: params.endTime,
         timeSlot: params.timeSlot,
         format: format,
-        data: result || [],
+        data: data,
       })
       this.chartList = list
     }
@@ -134,6 +142,8 @@ export class LogStore extends ListStore {
   onModalType = async (type: string, logInfo: LogItem, title: string) => {
     if (Object.is(type, 'code') || Object.is(type, 'record') || Object.is(type, 'behavior')) {
       await this.getErrorInfo(logInfo.id)
+    } else if (type === 'ip') {
+      await this.getIpAnalysis(logInfo.ip)
     } else {
       this.logInfo = logInfo
     }
@@ -167,6 +177,7 @@ export class LogStore extends ListStore {
     this.type = undefined
     this.logInfo = undefined
     this.title = undefined
+    this.ipAnalysis = undefined
   }
 
   /**
@@ -240,6 +251,14 @@ export class LogStore extends ListStore {
       page: 1,
       size: 20,
       total: 0,
+    }
+  }
+
+  @action
+  getIpAnalysis = async (ip: string) => {
+    const { status, result } = await this.api.log.getIpAnalysis<IPLocationResponse>({ ip })
+    if (Object.is(status, 'success')) {
+      this.ipAnalysis = result as IPLocationResponse
     }
   }
 }

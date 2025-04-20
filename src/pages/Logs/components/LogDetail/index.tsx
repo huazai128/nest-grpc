@@ -20,49 +20,49 @@ interface IProps extends LogItem {
 
 const LogDetail = ({ onModalType, ...item }: IProps) => {
   const render = () => {
-    if (item.doce.category == TransportCategory.ERROR) {
+    if (item.category == TransportCategory.ERROR) {
       return (
         <>
-          <Tag color="#108ee9" onClick={() => onModalType('code', item.doce, '查看源码')}>
+          <Tag color="#108ee9" onClick={() => onModalType('code', item, '查看源码')}>
             查看源码
           </Tag>
-          <Tag color="#108ee9" onClick={() => onModalType('record', item.doce, '查看录制')}>
+          <Tag color="#108ee9" onClick={() => onModalType('record', item, '查看录制')}>
             查看录制
           </Tag>
-          <Tag color="#108ee9" onClick={() => onModalType('behavior', item.doce, '查看用户行为')}>
+          <Tag color="#108ee9" onClick={() => onModalType('behavior', item, '查看用户行为')}>
             查看用户行为
           </Tag>
         </>
       )
     } else {
-      switch (item.doce.reportsType) {
+      switch (item.reportsType) {
         case MetricsName.FP:
           return (
-            <Tag color="#108ee9" onClick={() => onModalType(MetricsName.FP, item.doce, 'FP分析')}>
+            <Tag color="#108ee9" onClick={() => onModalType(MetricsName.FP, item, 'FP分析')}>
               FP分析
             </Tag>
           )
         case MetricsName.NT:
           return (
-            <Tag color="#108ee9" onClick={() => onModalType(MetricsName.NT, item.doce, 'NT分析')}>
+            <Tag color="#108ee9" onClick={() => onModalType(MetricsName.NT, item, 'NT分析')}>
               NT分析
             </Tag>
           )
         case MetricsName.FMP:
           return (
-            <Tag color="#108ee9" onClick={() => onModalType(MetricsName.FMP, item.doce, 'FMP分析')}>
+            <Tag color="#108ee9" onClick={() => onModalType(MetricsName.FMP, item, 'FMP分析')}>
               FMP分析
             </Tag>
           )
         case MetricsName.FCP:
           return (
-            <Tag color="#108ee9" onClick={() => onModalType(MetricsName.FCP, item.doce, 'FCP分析')}>
+            <Tag color="#108ee9" onClick={() => onModalType(MetricsName.FCP, item, 'FCP分析')}>
               FCP分析
             </Tag>
           )
         case MetricsName.RF:
           return (
-            <Tag color="#108ee9" onClick={() => onModalType(MetricsName.RF, item.doce, 'RF分析')}>
+            <Tag color="#108ee9" onClick={() => onModalType(MetricsName.RF, item, 'RF分析')}>
               RF分析
             </Tag>
           )
@@ -83,12 +83,14 @@ const LogDetail = ({ onModalType, ...item }: IProps) => {
                 <CopyOutlined />
               </Text>
             </Tooltip>
-            <Tag color="#108ee9">IP: {item.doce.ip} 分析</Tag>
+            <Tag color="#108ee9" onClick={() => onModalType("ip", item, 'IP分析')}>
+              IP: {item.ip} 分析
+            </Tag>
             <Tag color="#108ee9">UA分析</Tag>
             {render()}
           </Space>
-          {isObject(item.doce) &&
-            Object.entries(item.doce).map(
+          {isObject(item) &&
+            Object.entries(item).map(
               ([key, value]: any) =>
                 !!value &&
                 !excludeKeys.includes(key) && (
@@ -102,10 +104,10 @@ const LogDetail = ({ onModalType, ...item }: IProps) => {
                   </Text>
                 ),
             )}
-          {item.doce?.requestTime && item.doce?.responseTime && (
+          {item?.requestTime && item.responseTime && (
             <Text className={styles.logInfo}>
               <Tag>接口耗时:</Tag>
-              {item.doce?.responseTime - item.doce?.requestTime}
+              {item.responseTime - item.requestTime}
             </Text>
           )}
           {item.category === 'error' &&

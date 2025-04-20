@@ -5,6 +5,7 @@ import { Modal } from 'antd'
 import { toJS } from 'mobx'
 import styles from './style.scss'
 import ErrorBoundaryHoc from '../ErrorBoundary'
+import { IPLocationResponse } from '@src/interfaces/log.interface'
 
 interface IProps {
   open: boolean
@@ -12,9 +13,10 @@ interface IProps {
   logInfo?: Record<string, any>
   hideModal?: () => void
   type?: string
+  ipAnalysis?: IPLocationResponse
 }
 
-const LogModal = ({ open, title, logInfo, type, hideModal }: IProps) => {
+const LogModal = ({ open, title, logInfo, type, ipAnalysis, hideModal }: IProps) => {
   const render = () => {
     switch (type) {
       case 'record':
@@ -24,6 +26,25 @@ const LogModal = ({ open, title, logInfo, type, hideModal }: IProps) => {
       case 'code':
         const obj: any = JSON.parse(logInfo?.errorDetail || '{}')
         return <ErrorCode {...obj} stackTrace={logInfo?.stackTrace} />
+      case 'ip':
+        return (
+          <div className={styles.logItem}>
+            {logInfo?.ipAnalysis && (
+              <>
+                <p>IP: {ipAnalysis?.ip || '-'}</p>
+                <p>国家: {ipAnalysis?.country || '-'}</p>
+                <p>省份: {ipAnalysis?.province || '-'}</p>
+                <p>城市: {ipAnalysis?.city || '-'}</p>
+                <p>国家代码: {ipAnalysis?.country_code || '-'}</p>
+                <p>地区: {ipAnalysis?.region || '-'}</p>
+                <p>地区代码: {ipAnalysis?.region_code || '-'}</p>
+                <p>邮政编码: {ipAnalysis?.zip || '-'}</p>
+                <p>纬度: {ipAnalysis?.latitude || '-'}</p>
+                <p>经度: {ipAnalysis?.longitude || '-'}</p>
+              </>
+            )}
+          </div>
+        )
     }
   }
   return (

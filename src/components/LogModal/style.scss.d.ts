@@ -1,5 +1,5 @@
 declare const styles: {
-  readonly "logModal": string;
-};
-export = styles;
-
+  readonly logItem: string
+  readonly logModal: string
+}
+export = styles

@@ -26,3 +26,16 @@ export interface AggDataItem {
   value: number
   ratio: string
 }
+
+export interface IPLocationResponse {
+  ip: string
+  country: string
+  province: string
+  city: string
+  country_code: string
+  region: string
+  region_code: string
+  zip: string
+  latitude: number
+  longitude: number
+}

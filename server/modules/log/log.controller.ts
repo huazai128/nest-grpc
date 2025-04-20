@@ -122,4 +122,15 @@ export class LogController {
   getLogsChart(@Query() query: LogChartQueryDTO): Promise<ChartItem[]> {
     return this.logService.getLogsChart(query)
   }
+
+  /**
+   * 获取IP分析
+   * @param {string} ip
+   * @memberof LogController
+   */
+  @Get('ip')
+  getIpAnalysis(@Query() { ip }: { ip: string }) {
+    logger.info('getIpAnalysis', ip)
+    return this.logService.getIpAnalysis(ip)
+  }
 }

@@ -58,7 +58,7 @@ const TableAggregation = observer(() => {
 
 const Logs = observer(() => {
   const logStore = useLogStore()
-  const { open, title, logInfo, type, aggregationPathOrUrlData, hideModal, updateType } = logStore
+  const { open, title, logInfo, type, ipAnalysis, aggregationPathOrUrlData, hideModal, updateType } = logStore
 
   const onSelectMenu = (type: string) => {
     updateType(type)
@@ -99,7 +99,14 @@ const Logs = observer(() => {
           }}
         ></SearchList>
       </Page>
-      <LogModal open={open} title={title} logInfo={logInfo} type={type} hideModal={hideModal} />
+      <LogModal
+        open={open}
+        title={title}
+        logInfo={logInfo}
+        ipAnalysis={ipAnalysis}
+        type={type}
+        hideModal={hideModal}
+      />
     </>
   )
 })
