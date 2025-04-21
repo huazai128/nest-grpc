@@ -17,6 +17,7 @@ interface IProps {
 }
 
 const LogModal = ({ open, title, logInfo, type, ipAnalysis, hideModal }: IProps) => {
+  console.log('logInfo', type, toJS(ipAnalysis))
   const render = () => {
     switch (type) {
       case 'record':
@@ -29,7 +30,7 @@ const LogModal = ({ open, title, logInfo, type, ipAnalysis, hideModal }: IProps)
       case 'ip':
         return (
           <div className={styles.logItem}>
-            {logInfo?.ipAnalysis && (
+            {ipAnalysis && (
               <>
                 <p>IP: {ipAnalysis?.ip || '-'}</p>
                 <p>国家: {ipAnalysis?.country || '-'}</p>

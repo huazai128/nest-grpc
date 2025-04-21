@@ -86,7 +86,9 @@ const LogDetail = ({ onModalType, ...item }: IProps) => {
             <Tag color="#108ee9" onClick={() => onModalType("ip", item, 'IP分析')}>
               IP: {item.ip} 分析
             </Tag>
-            <Tag color="#108ee9">UA分析</Tag>
+            <Tooltip title="UA分析">
+              <Tag color="#108ee9">UA分析</Tag>
+            </Tooltip>
             {render()}
           </Space>
           {isObject(item) &&
