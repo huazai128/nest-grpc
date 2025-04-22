@@ -29,8 +29,6 @@ const Site = observer(() => {
     siteStore.loadMoreData()
   })
 
-  useEffect(() => { }, [])
-
   return (
     <Page title="首页" className={styles.siteBox}>
       <Content className={styles.siteLayout} style={{ padding: '24px 50px' }}>

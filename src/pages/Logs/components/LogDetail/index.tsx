@@ -5,8 +5,9 @@ import dayjs from 'dayjs'
 import { CopyOutlined } from '@ant-design/icons'
 import styles from './style.scss'
 import { isObject } from 'lodash'
-import { MetricsName, TransportCategory } from '@src/types'
 import { LogItem } from '@src/interfaces/log.interface'
+import { MetricsName } from '@src/monitor/interfaces/util.interface'
+import { TransportCategory } from '@src/interfaces/monitor.interface'
 
 const keys = ['create_at', 'update_at']
 const excludeKeys = ['events', 'stackTrace', 'resourcePrefs', 'breadcrumbs']
@@ -86,7 +87,15 @@ const LogDetail = ({ onModalType, ...item }: IProps) => {
             <Tag color="#108ee9" onClick={() => onModalType("ip", item, 'IP分析')}>
               IP: {item.ip} 分析
             </Tag>
-            <Tooltip title="UA分析">
+            <Tooltip overlay={
+              <div>
+                <p>浏览器: {item?.ua_result?.browser?.name}</p>
+                <p>操作系统: {item?.ua_result?.os?.name}</p>
+                <p>设备: {item?.ua_result?.device?.name}</p>
+                <p>版本: {item?.ua_result?.version}</p>
+                <p>引擎: {item?.ua_result?.engine?.name}</p>
+              </div>
+            }>
               <Tag color="#108ee9">UA分析</Tag>
             </Tooltip>
             {render()}
