@@ -4,13 +4,13 @@ import ErrorBoundaryHoc from '@src/components/ErrorBoundary'
 import dayjs from 'dayjs'
 import { CopyOutlined } from '@ant-design/icons'
 import styles from './style.scss'
-import { isObject } from 'lodash'
+import { isObject, isString } from 'lodash'
 import { LogItem } from '@src/interfaces/log.interface'
 import { MetricsName } from '@src/monitor/interfaces/util.interface'
 import { TransportCategory } from '@src/interfaces/monitor.interface'
 
 const keys = ['create_at', 'update_at']
-const excludeKeys = ['events', 'stackTrace', 'resourcePrefs', 'breadcrumbs']
+const excludeKeys = ['events', 'stackTrace', 'resourcePrefs', 'breadcrumbs', 'ua_result']
 const pKeys = ['params', 'url', 'method', 'body']
 
 const { Title, Text } = Typography
@@ -70,6 +70,7 @@ const LogDetail = ({ onModalType, ...item }: IProps) => {
       }
     }
   }
+  const uaResult = isString(item?.ua_result) ? JSON.parse(item?.ua_result) : item?.ua_result
   return (
     <List.Item key={item.id}>
       <Space className={styles.logItem}>
@@ -84,18 +85,21 @@ const LogDetail = ({ onModalType, ...item }: IProps) => {
                 <CopyOutlined />
               </Text>
             </Tooltip>
-            <Tag color="#108ee9" onClick={() => onModalType("ip", item, 'IP分析')}>
+            <Tag color="#108ee9" onClick={() => onModalType('ip', item, 'IP分析')}>
               IP: {item.ip} 分析
             </Tag>
-            <Tooltip overlay={
-              <div>
-                <p>浏览器: {item?.ua_result?.browser?.name}</p>
-                <p>操作系统: {item?.ua_result?.os?.name}</p>
-                <p>设备: {item?.ua_result?.device?.name}</p>
-                <p>版本: {item?.ua_result?.version}</p>
-                <p>引擎: {item?.ua_result?.engine?.name}</p>
-              </div>
-            }>
+            <Tooltip
+              overlay={
+                <div className={styles.uaResult}>
+                  <p>浏览器: {uaResult?.browser?.name}</p>
+                  <p>操作系统: {uaResult?.os?.name}</p>
+                  <p>操作系统版本: {uaResult?.os?.version}</p>
+                  <p>浏览器版本: {uaResult?.engine?.version}</p>
+                  <p>引擎: {uaResult?.engine?.name}</p>
+                  <p>UA: {uaResult?.ua}</p>
+                </div>
+              }
+            >
               <Tag color="#108ee9">UA分析</Tag>
             </Tooltip>
             {render()}
