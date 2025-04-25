@@ -71,7 +71,10 @@ export class LogService implements OnModuleInit {
    */
   public async cursorPaginate(paginateQuery: LogPaginateQueryDTO): Promise<LogList> {
     try {
+      const t = new Date()
       const data = await lastValueFrom(this.logService.getLogsByCursor(paginateQuery as unknown as QueryDTO))
+      const t2 = new Date()
+      Logger.info('cursorPaginate grpc请求时间:', t2.getTime() - t.getTime())
       return data
     } catch (error) {
       Logger.error('cursorPaginate grpc错误信息:', error.code, error.message)

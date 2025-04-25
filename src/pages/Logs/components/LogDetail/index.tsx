@@ -81,9 +81,7 @@ const LogDetail = ({ onModalType, ...item }: IProps) => {
         <Space direction="vertical">
           <Space className={styles.tagList} size={[0, 8]} wrap>
             <Tooltip title="复制">
-              <Text style={{ marginRight: '8px' }}>
-                <CopyOutlined />
-              </Text>
+              <Text style={{ marginRight: '8px' }}>复制</Text>
             </Tooltip>
             <Tag color="#108ee9" onClick={() => onModalType('ip', item, 'IP分析')}>
               IP: {item.ip} 分析

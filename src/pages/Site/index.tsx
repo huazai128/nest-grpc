@@ -10,7 +10,6 @@ import styles from './style.scss'
 import EditSite from './components/EditSite'
 import { useStore, SiteProvider } from './store'
 import useRootStore from '@src/stores/useRootStore'
-import { useEffect } from 'react'
 
 const { Content } = Layout
 
