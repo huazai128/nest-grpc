@@ -1,4 +1,5 @@
 import { AuthModule } from './auth/auth.module'
+import { ExpansionModule } from './expansion/expansion.module'
 import { InterceptModule } from './intercept/intercept.module'
 import { LogModule } from './log/log.module'
 import { ProtousersModule } from './protousers/protousers.module'
@@ -10,6 +11,7 @@ export default [
   ProtousersModule,
   SiteModule,
   LogModule,
+  ExpansionModule,
 
   // 拦截不存在的API，不让走入router module 中
   InterceptModule,
