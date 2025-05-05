@@ -26,6 +26,6 @@ export class ExpansionController {
   @UseInterceptors(FileInterceptor('file'))
   public async uploadZipFile(@UploadedFile() file, @Body() body) {
     logger.log(file, body)
-    return await this.uploadService.uploadZip()
+    return await this.uploadService.uploadZip(file, body.fileId)
   }
 }

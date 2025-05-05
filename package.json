@@ -19,7 +19,7 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "dev": "emp dev -cl false",
-    "emp:build": "emp build",
+    "emp:build": "cross-env NODE_ENV=prod emp build",
     "build:ts": "emp build -t",
     "emp:start": "emp serve",
     "stat": "emp build --analyze",

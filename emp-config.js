@@ -1,14 +1,15 @@
 const { defineConfig } = require('@efox/emp')
 const { cdn, esm } = require('./cdn')
 const webpack = require('webpack')
+const { join, resolve } = require('path')
 const InlineCodePlugin = require('html-inline-code-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const { TypedCssModulesPlugin } = require('typed-css-modules-webpack-plugin')
-const { join, resolve } = require('path')
 const { UploadSourceMapPlugin } = require('./build/sourcemap-upload-plugin')
 
-module.exports = defineConfig(({ mode, env }) => {
-  process.env.EMP_ENV = env || 'dev'
+module.exports = defineConfig(({ mode }) => {
+  const env = process.env.NODE_ENV || 'dev'
+  process.env.EMP_ENV = process.env.NODE_ENV || 'dev'
   const target = 'es5'
   const isESM = !['es3', 'es5'].includes(target)
   return {
@@ -41,11 +42,12 @@ module.exports = defineConfig(({ mode, env }) => {
       title: '基础架构框架',
     },
     webpackChain: (chain) => {
+      console.log(env, '====')
       if (env !== 'dev' && !!env) {
         chain.devtool('source-map')
         chain.plugin('SourcemapUploadPlugin').use(
           new UploadSourceMapPlugin({
-            url: `http://localhost:5005/api/upload-zip`, // 上传url
+            url: `http://192.168.31.210:5001/api/upload-zip`, // 上传url
             uploadPath: resolve(__dirname, './dist/client/js'),
             patterns: [/\js.map$/],
             requestOption: {
