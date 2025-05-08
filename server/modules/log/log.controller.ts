@@ -3,7 +3,7 @@ import { QueryParams, QueryVisitor } from '@app/decorators/params.decorator'
 import { Responsor } from '@app/decorators/responsor.decorator'
 import { LogList, SaveLogRequest } from '@app/protos/log'
 import { Controller, Get, Post, Query, Res, UseGuards } from '@nestjs/common'
-import { Response } from 'express'
+import { Response as ExpressResponse } from 'express'
 import { LogService } from './log.service'
 import { RedisService } from '@app/processors/redis/redis.service'
 import { LogChartQueryDTO, LogData, LogPaginateQueryDTO } from './log.dto'
@@ -55,7 +55,7 @@ export class LogController {
   async postMultiLogs(
     @PlainBody() body: { logs: Partial<LogData>[] },
     @QueryParams('visitor') visitor: QueryVisitor,
-    @Res() res: Response,
+    @Res() res: ExpressResponse,
   ) {
     const { logs } = body
 

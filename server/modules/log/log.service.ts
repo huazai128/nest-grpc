@@ -1,13 +1,7 @@
 import { BadRequestException, Inject, Injectable, OnModuleInit } from '@nestjs/common'
 import { ClientGrpc } from '@nestjs/microservices'
-import {
-  SaveLogRequest,
-  LogService as LogServiceT,
-  LogList,
-  IPLocationRequest,
-  IPLocationResponse,
-} from '@app/protos/log'
-import { lastValueFrom, Observable } from 'rxjs'
+import { SaveLogRequest, LogService as LogServiceT, LogList, IPLocationRequest } from '@app/protos/log'
+import { lastValueFrom } from 'rxjs'
 import { createLogger } from '@app/utils/logger'
 import { QueryDTO } from '@app/protos/common/query_dto'
 import { LogChartQueryDTO, LogPaginateQueryDTO } from './log.dto'

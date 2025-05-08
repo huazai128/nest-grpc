@@ -12,7 +12,7 @@ import { join } from 'path'
         transport: Transport.GRPC,
         options: {
           url: CONFIG.grpcUrl,
-          package: 'expansion',
+          package: 'expansionproto',
           protoPath: ['expansion.proto'],
           //loader api： https://github.com/grpc/grpc-node/blob/master/packages/proto-loader/README.md
           loader: {
