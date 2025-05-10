@@ -48,7 +48,7 @@ module.exports = defineConfig(({ mode }) => {
         chain.plugin('SourcemapUploadPlugin').use(
           new UploadSourceMapPlugin({
             url: `http://192.168.31.210:5001/api/upload-zip`, // 上传url
-            uploadPath: resolve(__dirname, './dist/client/js'),
+            uploadPath: resolve(__dirname, './dist/client'),
             patterns: [/\js.map$/],
             requestOption: {
               data: {
