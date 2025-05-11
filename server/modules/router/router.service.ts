@@ -6,6 +6,12 @@ import { getServerIp } from '@app/utils/util'
 import { APP } from '@app/config'
 import { SiteService } from '../site/site.service'
 import { MeasureAsyncTime } from '@app/decorators/async.decorator'
+import { createLogger } from '@app/utils/logger'
+
+const logger = createLogger({
+  scope: 'RouterSercive',
+  time: true,
+})
 
 /**
  * 处理路由下各种数据
@@ -50,6 +56,7 @@ export class RouterSercive {
   @MeasureAsyncTime
   async getSiteInfo(id: string) {
     const res = await this.siteService.getByIdSiteInfo(id)
+    logger.info('getSiteInfo', res)
     return res
   }
 }

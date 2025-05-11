@@ -257,7 +257,7 @@ export class LogStore extends ListStore {
    */
   getErrorInfo = async (id: number) => {
     // TODO: 需要在API中添加errorApi服务
-    const { status, result } = await this.api.errorApi.getErrorIdByInfo(id)
+    const { status, result } = await this.api.error.getErrorIdByInfo(id)
     if (Object.is(status, 'success')) {
       this.logInfo = result as any
     }

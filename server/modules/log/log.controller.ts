@@ -107,6 +107,7 @@ export class LogController {
   @Responsor.api()
   @Responsor.handle('获取日志列表游标分页')
   getLogsByCursor(@Query() query: LogPaginateQueryDTO) {
+    logger.info('getLogsByCursor', query)
     return this.logService.cursorPaginate(query)
   }
 
