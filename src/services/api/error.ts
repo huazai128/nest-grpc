@@ -2,7 +2,7 @@ import { ResponseData } from '@src/interfaces/response.iterface'
 import http, { HttpParams } from '@src/services/http'
 
 function getErrorLogs<T>(data: HttpParams): Promise<ResponseData<T>> {
-  return http.get<T>('/api/error', data)
+  return http.get<T>('/api/error/logs', data)
 }
 
 function getErrorLogsEchart<T>(data: HttpParams): Promise<ResponseData<T>> {
