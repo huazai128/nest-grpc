@@ -10,6 +10,7 @@ import { Site } from '@src/interfaces/site.interface'
 import { LogsProvider, useLogStore } from './store'
 import DateSelect from '@src/components/DateSelect'
 import CardChart from './components/CardChart'
+import { useEffect } from 'react'
 
 const formList: Array<FormItemProps> = [
   {
@@ -59,6 +60,10 @@ const TableAggregation = observer(() => {
 const Logs = observer(() => {
   const logStore = useLogStore()
   const { open, title, logInfo, type, ipAnalysis, aggregationPathOrUrlData, hideModal, updateType } = logStore
+
+  useEffect(() => {
+    i
+  }, [])
 
   const onSelectMenu = (type: string) => {
     updateType(type)

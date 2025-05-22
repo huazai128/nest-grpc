@@ -50,13 +50,23 @@ export class RouterSercive {
   /**
    * 获取站点信息
    * @param {string} id - 站点ID
-   * @returns {Promise<any>} 站点信息
+   * @returns {Promise<any>} 站点信息，如果5秒内未返回则返回空对象
    * @memberof RouterSercive
    */
   @MeasureAsyncTime
   async getSiteInfo(id: string) {
-    const res = await this.siteService.getByIdSiteInfo(id)
-    logger.info('getSiteInfo', res)
-    return res
+    try {
+      // 创建一个Promise.race，包含实际请求和一个3秒超时，防止grpc 获取过长导致页面加载超时
+      const res = await Promise.race([
+        this.siteService.getByIdSiteInfo(id),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Site info request timeout after 3s')), 3000)),
+      ])
+
+      logger.info('getSiteInfo', res)
+      return res
+    } catch (error) {
+      logger.warn(`getSiteInfo timeout or error for id ${id}: ${error.message}`)
+      return {} // 超时或出错时返回空对象
+    }
   }
 }

@@ -60,7 +60,7 @@ export class RouterController {
     // 获取通用数据
     const commonData = this.routeService.getCommonData(req)
     // 获取站点特定信息
-    const siteInfo = await this.routeService.getSiteInfo(id)
+    const siteInfo = (await this.routeService.getSiteInfo(id)) || {}
     // 合并数据返回
     return { data: { ...commonData, ...siteInfo } }
   }

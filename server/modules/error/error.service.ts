@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common'
 import { createLogger } from '@app/utils/logger'
 import { MeasureAsyncTime } from '@app/decorators/async.decorator'
 import { ClientGrpc } from '@nestjs/microservices'
-import { ErrorInfoRequest, ErrorService as ErrorServiceT } from '@app/protos/error'
+import { ErrorService as ErrorServiceT, GetErrorInfoRequest } from '@app/protos/error'
 import { lastValueFrom } from 'rxjs'
 const Logger = createLogger({ scope: 'ErrorService', time: true })
 
@@ -49,7 +49,7 @@ export class ErrorService {
 
   @MeasureAsyncTime
   async getErrorId(id: number) {
-    const res = await lastValueFrom(this.errorService.getErrorInfo({ id } as ErrorInfoRequest))
+    const res = await lastValueFrom(this.errorService.getErrorInfo({ id } as GetErrorInfoRequest))
     Logger.info('getErrorId', res)
     return res
   }
