@@ -166,7 +166,9 @@ export default abstract class LogStore {
       store.getItem(this.behaviorStoreKey).then((value) => {
         if (value) {
           const list = (value || []) as BehaviorItem[]
-          this.behaviorList = [...list, ...this.behaviorList]
+          if (Array.isArray(list)) {
+            this.behaviorList = [...list, ...this.behaviorList]
+          }
           store.removeItem(this.behaviorStoreKey)
         }
         return true

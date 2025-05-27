@@ -102,7 +102,9 @@ export default class ErrorVitals extends CommonExtends {
     try {
       // 获取历史记录列表
       const historyList = await store.getItem(this.HISTORY_KEYS)
-      this.reordHistoryKeys = (historyList || []) as string[]
+      if (Array.isArray(historyList)) {
+        this.reordHistoryKeys = historyList as string[]
+      }
 
       // 获取当前记录
       const currentRecord = (await store.getItem(this.CURRENT_RECORD_KEY)) as any
@@ -147,7 +149,10 @@ export default class ErrorVitals extends CommonExtends {
     if (this.errorUids.has(error.errorUid)) {
       return false
     }
-    const breadcrumbs = this.sendLog.getList()
+    let breadcrumbs = this.sendLog.getList()
+    if (!Array.isArray(breadcrumbs)) {
+      breadcrumbs = []
+    }
 
     this.errorUids.add(error.errorUid)
 
