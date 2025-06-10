@@ -60,10 +60,6 @@ export class LogController {
     const { logs } = body
 
     // 如果日志数组长度超过10，直接返回, 这里存在问题，就是数据量多，且日志数据量很大，导致内存占用过高. 所以约定上报日志数量不超过10条
-    // 还可以继续优化，使用队列来处理，或者使用批量处理
-    if (logs.length > 10) {
-      return res.status(204).json()
-    }
 
     // 不需要等所有的日志处理完成，直接返回
     logs.map(async (item) => {

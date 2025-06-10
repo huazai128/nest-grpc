@@ -61,10 +61,6 @@ const Logs = observer(() => {
   const logStore = useLogStore()
   const { open, title, logInfo, type, ipAnalysis, aggregationPathOrUrlData, hideModal, updateType } = logStore
 
-  useEffect(() => {
-    i
-  }, [])
-
   const onSelectMenu = (type: string) => {
     updateType(type)
     if (!Object.is(type, 'default')) {

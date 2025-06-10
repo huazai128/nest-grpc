@@ -24,7 +24,6 @@ export class HttpExceptionFilter implements ExceptionFilter {
     if (!request.url.includes('/api/')) {
       return
     }
-    console.log(exception, 'exception')
     const exceptionStatus = exception?.getStatus?.() || HttpStatus.INTERNAL_SERVER_ERROR
     const errorResponse: ExceptionInfo = exception?.getResponse() as ExceptionInfo
     const errorMessage = _isString(errorResponse) ? errorResponse : errorResponse.message

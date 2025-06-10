@@ -149,12 +149,16 @@ export default class ErrorVitals extends CommonExtends {
     if (this.errorUids.has(error.errorUid)) {
       return false
     }
-    let breadcrumbs = this.sendLog.getList()
+    let breadcrumbs = this.sendLog
+      .getList()
+      .filter((item) => item && typeof item === 'object' && typeof item !== 'string')
     if (!Array.isArray(breadcrumbs)) {
       breadcrumbs = []
     }
 
     this.errorUids.add(error.errorUid)
+    const recordKeys =
+      this.reordHistoryKeys.length > 0 && Array.isArray(this.reordHistoryKeys) ? this.reordHistoryKeys : []
 
     const errorInfo = {
       ...error,
@@ -163,7 +167,7 @@ export default class ErrorVitals extends CommonExtends {
       meta,
       stackTrace,
       monitorId,
-      recordKeys: this.reordHistoryKeys,
+      recordKeys: recordKeys,
       timestamp: Date.now(), // 添加时间戳
     }
     this.sendLog.add(errorInfo)
@@ -430,12 +434,19 @@ export default class ErrorVitals extends CommonExtends {
 
     // 获取最近的操作日志
     const operationLogs = this.sendLog.getList()
-
     // 获取最近的错误日志
     const errorLogs = Array.from(this.errorUids).slice(-10) // 获取最近10条错误记录
 
     // 获取当前录制的事件
     const currentEvents = this.eventsMatrix.length > 0 ? JSON.stringify(this.eventsMatrix) : null
+
+    const recordKeys =
+      this.reordHistoryKeys.length > 0 && Array.isArray(this.reordHistoryKeys) ? this.reordHistoryKeys : []
+
+    const breadcrumbs =
+      operationLogs?.length > 0 && Array.isArray(operationLogs)
+        ? operationLogs.filter((item) => item && typeof item === 'object')
+        : []
 
     // 组装反馈信息
     const feedback = {
@@ -444,10 +455,10 @@ export default class ErrorVitals extends CommonExtends {
       timestamp: Date.now(),
       content: feedbackInfo.content,
       oId: feedbackInfo.oId,
-      breadcrumbs: operationLogs,
+      breadcrumbs: breadcrumbs,
       errorList: errorLogs,
       currentEvents,
-      recordKeys: this.reordHistoryKeys,
+      recordKeys: recordKeys,
     }
 
     // 上报反馈信息

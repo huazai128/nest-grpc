@@ -210,10 +210,12 @@ export class LogStore extends ListStore {
    */
   @action
   onModalType = async (type: string, logInfo: LogItem, title: string) => {
-    if (Object.is(type, 'code') || Object.is(type, 'record') || Object.is(type, 'behavior')) {
+    if (Object.is(type, 'code') || Object.is(type, 'behavior')) {
       await this.getErrorInfo(logInfo.cId)
-    } else if (type === 'ip') {
+    } else if (Object.is(type, 'ip')) {
       await this.getIpAnalysis(logInfo.ip)
+    } else if (Object.is(type, 'record')) {
+      // await this.getRecordInfo(logInfo.cId)
     } else {
       this.logInfo = logInfo
     }

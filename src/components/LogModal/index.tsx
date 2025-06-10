@@ -25,8 +25,8 @@ const LogModal = ({ open, title, logInfo, type, ipAnalysis, hideModal }: IProps)
       case 'behavior':
         return <BehaviorList list={toJS(logInfo?.breadcrumbs) || []} />
       case 'code':
-        const obj: any = JSON.parse(logInfo?.errorDetail || '{}')
-        return <ErrorCode {...obj} stackTrace={logInfo?.stackTrace} />
+        const list: any = logInfo?.errorDetailList || []
+        return <ErrorCode list={list} stackTrace={logInfo?.stackTrace} />
       case 'ip':
         return (
           <div className={styles.logItem}>
