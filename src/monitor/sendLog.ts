@@ -1,6 +1,21 @@
 import { IMetrics } from './interfaces/util.interface'
 import LogStore from './logStore'
-import CircularJSON from 'circular-json'
+import fastJson from 'fast-json-stringify'
+
+const schema = {
+  type: 'object' as const,
+  properties: {
+    logs: {
+      type: 'array' as const,
+      items: {
+        type: 'object' as const,
+        additionalProperties: true,
+      },
+    },
+  },
+}
+
+const stringify = fastJson(schema)
 
 /**
  * 发送日志
@@ -61,7 +76,7 @@ export class SendLog extends LogStore {
     if (typeof navigator.sendBeacon === 'function') {
       try {
         // sendBeacon 上传的长度有限制，而且不同浏览器下长度不一样。建议接口端，尽量是分页逻辑返回。这样可以批量发送
-        const isSuccess = window.navigator?.sendBeacon(this.url, CircularJSON.stringify(params))
+        const isSuccess = window.navigator?.sendBeacon(this.url, stringify(params))
         !isSuccess && this.xmlTransport(params)
       } catch (error) {
         this.xmlTransport(params)
@@ -78,7 +93,7 @@ export class SendLog extends LogStore {
   xmlTransport = (params: IMetrics) => {
     const xhr = new (window as any).oXMLHttpRequest()
     xhr.open('POST', this.url, true)
-    xhr.send(CircularJSON.stringify(params))
+    xhr.send(stringify(params))
   }
 }
 

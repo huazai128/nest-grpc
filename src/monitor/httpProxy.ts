@@ -1,4 +1,166 @@
 import { FN1, HttpMetrics } from './interfaces/util.interface'
+import fastJson from 'fast-json-stringify'
+
+// 定义通用的JSON schema
+const responseSchema = {
+  type: 'object' as const,
+  additionalProperties: true,
+}
+
+const stringify = fastJson(responseSchema)
+
+/**
+ * 安全的JSON序列化，使用fastJson避免多次stringify导致的斜杠问题
+ */
+const safeStringify = (data: any): string => {
+  try {
+    // 如果输入已经是字符串，检查是否需要处理多重转义
+    if (typeof data === 'string') {
+      // 快速检查是否包含转义字符，避免不必要的正则匹配
+      if (!data.includes('\\')) {
+        return data
+      }
+
+      let processedString = data
+
+      // 优化的多重转义检测，使用更简单的条件
+      if (data.includes('\\\\"') || (data.startsWith('"') && data.endsWith('"') && data.includes('\\"'))) {
+        // 移除最外层的引号（如果存在）
+        if (processedString.startsWith('"') && processedString.endsWith('"')) {
+          processedString = processedString.slice(1, -1)
+        }
+
+        // 一次性修复所有转义，避免多次replace
+        processedString = processedString
+          .replace(/\\\\\\"/g, '"') // 三重转义 \\\" -> "
+          .replace(/\\\\"/g, '"') // 双重转义 \\" -> "
+          .replace(/\\"/g, '"') // 单重转义 \" -> "
+          .replace(/\\\\/g, '\\') // 修复反斜杠转义
+      }
+
+      // 尝试解析修复后的字符串
+      try {
+        const parsed = JSON.parse(processedString)
+        // 如果解析成功，递归处理解析后的对象
+        return safeStringify(parsed)
+      } catch {
+        // 如果解析失败，返回修复后的字符串
+        return processedString
+      }
+    }
+
+    // 使用Map替代WeakSet，提供更好的性能和内存管理
+    const processedCache = new Map()
+    let cacheCounter = 0
+    const MAX_CACHE_SIZE = 100
+
+    /**
+     * 递归处理数据，避免多层JSON序列化问题
+     */
+    const processDataRecursively = (value: any, depth: number = 0): any => {
+      // 防止无限递归，设置最大深度
+      if (depth > 3) {
+        // 减少最大深度，提升性能
+        return '[Max Depth Reached]'
+      }
+
+      if (value === null || value === undefined) {
+        return value
+      }
+
+      // 处理基本类型，直接返回
+      const valueType = typeof value
+      if (valueType !== 'object' && valueType !== 'string') {
+        return value
+      }
+
+      // 处理字符串类型 - 优化JSON检测
+      if (valueType === 'string') {
+        // 更严格的JSON字符串检测，避免不必要的解析尝试
+        const trimmed = value.trim()
+        if (
+          trimmed.length < 2 ||
+          (!trimmed.startsWith('{') && !trimmed.startsWith('[')) ||
+          (!trimmed.endsWith('}') && !trimmed.endsWith(']'))
+        ) {
+          return value
+        }
+
+        try {
+          const parsed = JSON.parse(trimmed)
+          return processDataRecursively(parsed, depth + 1)
+        } catch {
+          return value
+        }
+      }
+
+      // 优化循环引用检测
+      if (processedCache.has(value)) {
+        return '[Circular Reference]'
+      }
+
+      // 限制缓存大小，避免内存泄漏
+      if (cacheCounter >= MAX_CACHE_SIZE) {
+        processedCache.clear()
+        cacheCounter = 0
+      }
+      processedCache.set(value, true)
+      cacheCounter++
+
+      // 处理数组类型
+      if (Array.isArray(value)) {
+        const maxLength = 50 // 减少数组处理长度
+        if (value.length === 0) return []
+
+        const result = new Array(Math.min(value.length, maxLength))
+        for (let i = 0; i < result.length; i++) {
+          result[i] = processDataRecursively(value[i], depth + 1)
+        }
+
+        if (value.length > maxLength) {
+          result.push(`[... ${value.length - maxLength} more items]`)
+        }
+        return result
+      }
+
+      // 处理对象类型
+      if (valueType === 'object') {
+        const keys = Object.keys(value)
+        const maxKeys = 30 // 减少对象键处理数量
+        const processedObj: Record<string, any> = {}
+
+        const keysToProcess = keys.slice(0, maxKeys)
+        for (const key of keysToProcess) {
+          processedObj[key] = processDataRecursively(value[key], depth + 1)
+        }
+
+        if (keys.length > maxKeys) {
+          processedObj['[truncated]'] = `... ${keys.length - maxKeys} more keys`
+        }
+        return processedObj
+      }
+
+      return value
+    }
+
+    // 递归处理数据
+    const processedData = processDataRecursively(data)
+
+    // 使用fastJson进行最终序列化
+    return stringify(processedData)
+  } catch (error) {
+    // 如果所有处理都失败，返回安全的字符串形式
+    if (typeof data === 'string') {
+      return data
+    }
+
+    try {
+      return JSON.stringify(data)
+    } catch {
+      return String(data)
+    }
+  }
+}
 
 /**
  * 解析query参数
@@ -26,16 +188,16 @@ const parseResponse = (response: any) => {
     const { status, message, result, code, msg, data } = JSON.parse(response)
     let value = null
     if (data) {
-      value = typeof data === 'object' ? JSON.stringify(data) : data
+      value = typeof data === 'object' ? safeStringify(data) : data
     }
     return {
       status: status || code,
       message: msg || message,
-      result: result ? JSON.stringify(result) : value,
+      result: result ? safeStringify(result) : value,
     }
   } catch {
     try {
-      return { result: JSON.stringify(response) }
+      return { result: safeStringify(response) }
     } catch {
       return { result: response }
     }
