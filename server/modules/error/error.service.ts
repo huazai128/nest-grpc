@@ -4,6 +4,7 @@ import { MeasureAsyncTime } from '@app/decorators/async.decorator'
 import { ClientGrpc } from '@nestjs/microservices'
 import { ErrorService as ErrorServiceT, GetErrorInfoRequest } from '@app/protos/error'
 import { lastValueFrom } from 'rxjs'
+
 const Logger = createLogger({ scope: 'ErrorService', time: true })
 
 /**

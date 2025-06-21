@@ -3,6 +3,7 @@ import { ErrorService } from './error.service'
 import { ApiGuard } from '@app/guards/api.guard'
 import { Responsor } from '@app/decorators/responsor.decorator'
 import { createLogger } from '@app/utils/logger'
+
 const Logger = createLogger({ scope: 'ErrorController', time: true })
 /**
  * 错误控制器

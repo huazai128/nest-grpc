@@ -33,10 +33,13 @@ export class LogService implements OnModuleInit {
   @MeasureAsyncTime
   async saveLog(data: SaveLogRequest) {
     try {
-      Logger.info('saveLog grpc请求数据:', data)
+      // 过滤掉null和undefined的值
+      const filteredData = this.filterNullUndefined(data)
+
+      Logger.info('saveLog grpc请求数据:', filteredData)
 
       // 使用更高效的方式估算数据大小，避免完整序列化
-      const estimatedSize = this.estimateDataSize(data)
+      const estimatedSize = this.estimateDataSize(filteredData)
       const maxSize = 4 * 1024 * 1024 // 4MB阈值
 
       if (estimatedSize > maxSize) {
@@ -44,12 +47,12 @@ export class LogService implements OnModuleInit {
         const { ReplaySubject } = await import('rxjs')
 
         // 只在需要时进行完整序列化
-        const serializedData = JSON.stringify(data)
+        const serializedData = JSON.stringify(filteredData)
         const actualSize = serializedData.length
 
         // 如果实际大小小于阈值，直接发送
         if (actualSize <= maxSize) {
-          await lastValueFrom(this.logService.saveLog(data as any))
+          await lastValueFrom(this.logService.saveLog(filteredData as any))
           return
         }
 
@@ -85,7 +88,7 @@ export class LogService implements OnModuleInit {
         }
       } else {
         // 数据较小，直接发送
-        await lastValueFrom(this.logService.saveLog(data as any))
+        await lastValueFrom(this.logService.saveLog(filteredData as any))
       }
     } catch (error) {
       Logger.error('saveLog grpc错误信息:', error.code, error.message)
@@ -94,12 +97,41 @@ export class LogService implements OnModuleInit {
   }
 
   /**
+   * 过滤掉null和undefined的值
+   * @private
+   */
+  private filterNullUndefined(data: any): any {
+    if (data === null || data === undefined) {
+      return undefined
+    }
+
+    if (Array.isArray(data)) {
+      return data.filter((item) => item !== null && item !== undefined).map((item) => this.filterNullUndefined(item))
+    }
+
+    if (typeof data === 'object') {
+      const filtered: any = {}
+      for (const [key, value] of Object.entries(data)) {
+        if (value !== null && value !== undefined) {
+          const filteredValue = this.filterNullUndefined(value)
+          if (filteredValue !== undefined) {
+            filtered[key] = filteredValue
+          }
+        }
+      }
+      return filtered
+    }
+
+    return data
+  }
+
+  /**
    * 估算数据大小，避免完整序列化的性能开销
    * @private
    */
   private estimateDataSize(data: any): number {
     if (!data) return 0
-
+    // 如果数据是字符串，则返回字符串长度
     const estimateValue = (value: any): number => {
       if (value === null || value === undefined) return 4
       if (typeof value === 'string') return value.length * 2 // UTF-16
