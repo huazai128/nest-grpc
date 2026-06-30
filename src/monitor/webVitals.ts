@@ -178,7 +178,8 @@ export class WebVitals extends CommonExtends {
         this.sendMetricsLog(
           {
             resourcePrefs: list,
-            cacheRate: ((cacheQuantity / metrics.length) * 100).toFixed(2),
+            // 资源列表为空时避免 0/0 产生 "NaN"，统一兜底为 "0.00"
+            cacheRate: metrics.length ? ((cacheQuantity / metrics.length) * 100).toFixed(2) : '0.00',
           },
           MetricsName.RF,
         )

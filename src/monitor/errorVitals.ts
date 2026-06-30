@@ -234,7 +234,7 @@ export default class ErrorVitals extends CommonExtends {
       e.preventDefault()
 
       let value = e.reason.message || e.reason
-      if (Object.prototype.toString.call(value) === '[Object Object]') {
+      if (Object.prototype.toString.call(value) === '[object Object]') {
         value = JSON.stringify(value)
       }
 
@@ -268,20 +268,24 @@ export default class ErrorVitals extends CommonExtends {
 
       const errUid = getErrorUid(`${MechanismType.HP}-${res}-${metrics.statusText}`)
 
-      if (hasHtmlAndBodyTags(res)) {
+      // res 可能为 null / 字符串 / 基础类型，需先确认为对象再做 HTML 过滤，避免 Object.values 抛错
+      if (res && typeof res === 'object' && hasHtmlAndBodyTags(res)) {
         res = {
           ...res,
           result: '[-Body内容为HTML已过滤-]',
         }
       }
 
+      // response 已通过 value 上报（且经过 HTML 过滤），meta 不再重复携带原始 response，
+      // 既减少重复字段，也避免 meta.response 绕过过滤泄漏 HTML 内容。
+      const { response: _response, ...restMetrics } = metrics
       const errorInfo: ExceptionMetrics = {
         reportsType: MechanismType.HP,
         value: JSON.stringify(res),
         errorType: 'HttpError',
         errorUid: errUid,
         meta: {
-          ...metrics,
+          ...restMetrics,
           body: typeof metrics.body === 'string' && isHtml(metrics.body) ? '[-Body内容为HTML已过滤-]' : metrics.body,
         },
       }

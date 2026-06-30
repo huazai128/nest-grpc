@@ -5,6 +5,9 @@ import fastJson from 'fast-json-stringify'
 const schema = {
   type: 'object' as const,
   properties: {
+    // 整批日志共享的会话级公共字段，提到外层只上报一次，避免每条日志重复携带
+    siteId: { type: 'string' as const },
+    traceId: { type: 'string' as const },
     logs: {
       type: 'array' as const,
       items: {
@@ -70,7 +73,11 @@ export class SendLog extends LogStore {
    * @memberof SendLog
    */
   sendMultiLog = (list: IMetrics[]) => {
+    // siteId/traceId 在一次批量上报内是恒定的，统一放到批量外层，单条日志不再重复携带。
+    // 跨会话补报的历史日志会保留各自的 traceId（见 LogStore.initStore），其优先级高于外层默认值。
     const params = {
+      siteId: this.config?.appKey,
+      traceId: this.traceId,
       logs: list,
     }
     if (typeof navigator.sendBeacon === 'function') {

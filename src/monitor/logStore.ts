@@ -94,6 +94,28 @@ export default abstract class LogStore {
   }
 
   /**
+   * 统一注入单条日志级公共字段（pageId/timestamp）。
+   * - 仅在此处集中处理，避免各采集模块各自拼装导致字段重复或不一致。
+   * - siteId、traceId 在一次批量上报内恒定，已提升到批量外层（见 SendLog.sendMultiLog），单条日志不再携带。
+   * - 调用方已显式传入的字段优先级最高，防止被默认值覆盖。
+   * - pageId 缺省时不写入 undefined，避免产生无意义字段（如 webInfo 无 pageId）。
+   * @param {IMetrics} value
+   * @return {IMetrics}
+   * @memberof LogStore
+   */
+  protected mergeCommonFields = (value: IMetrics): IMetrics => {
+    const merged: IMetrics = {
+      pageId: this.pageId,
+      timestamp: Date.now(),
+      ...value,
+    }
+    if (merged.pageId === undefined) {
+      delete merged.pageId
+    }
+    return merged
+  }
+
+  /**
    * 动态获取当前页面path和referrer
    * @memberof SendLog
    */
@@ -104,23 +126,25 @@ export default abstract class LogStore {
     }
     this.curHref = href
     this.pageId = 'pageId:' + uuidv4()
-    this.logList.splice(1, 0, {
-      path: pathname,
-      referrer: document.referrer,
-      prevHref: this.prevHref,
-      title: document.title,
-      href,
-      jumpType: e?.type || '',
-      type: performance?.navigation?.type,
-      pageId: this.pageId,
-      category: TransportCategory.PageInfo,
-      traceId: this.traceId,
-      // 用户来源
-      // 0: 点击链接、地址栏输入、表单提交、脚本操作等。
-      // 1: 点击重新加载按钮、location.reload。
-      // 2: 点击前进或后退按钮。
-      // 255: 任何其他来源。即非刷新/ 非前进后退、非点击链接 / 地址栏输入 / 表单提交 / 脚本操作等。
-    })
+    this.logList.splice(
+      1,
+      0,
+      this.mergeCommonFields({
+        path: pathname,
+        referrer: document.referrer,
+        prevHref: this.prevHref,
+        title: document.title,
+        href,
+        jumpType: e?.type || '',
+        type: performance?.navigation?.type,
+        category: TransportCategory.PageInfo,
+        // 用户来源
+        // 0: 点击链接、地址栏输入、表单提交、脚本操作等。
+        // 1: 点击重新加载按钮、location.reload。
+        // 2: 点击前进或后退按钮。
+        // 255: 任何其他来源。即非刷新/ 非前进后退、非点击链接 / 地址栏输入 / 表单提交 / 脚本操作等。
+      }),
+    )
   }
 
   /**
@@ -143,17 +167,18 @@ export default abstract class LogStore {
     const { width, height } = window.screen
     const { language } = navigator
     // 网页基础信息，一般都不会变，Redis 存储 3 天
-    this.logList.unshift({
-      lang: language.substr(0, 2),
-      winScreen: `${width}x${height}`,
-      docScreen: `${document.documentElement.clientWidth || document.body.clientWidth}x${
-        document.documentElement.clientHeight || document.body.clientHeight
-      }`,
-      userId: userId,
-      traceId: this.traceId,
-      mode: this.config.mode,
-      category: TransportCategory.WebInfo,
-    })
+    this.logList.unshift(
+      this.mergeCommonFields({
+        lang: language.slice(0, 2),
+        winScreen: `${width}x${height}`,
+        docScreen: `${document.documentElement.clientWidth || document.body.clientWidth}x${
+          document.documentElement.clientHeight || document.body.clientHeight
+        }`,
+        userId: userId,
+        mode: this.config.mode,
+        category: TransportCategory.WebInfo,
+      }),
+    )
   }
 
   /**
@@ -175,9 +200,9 @@ export default abstract class LogStore {
       }),
       store.getItem(this.logsStoreKey).then((value) => {
         if (value) {
-          const list = (value || []) as BehaviorItem[]
+          const restored = this.restoreLogs(value)
           // 确保这里添加数组开始
-          this.logList = [...list, ...this.logList]
+          this.logList = [...restored, ...this.logList]
           store.removeItem(this.logsStoreKey)
         }
         return true
@@ -200,12 +225,30 @@ export default abstract class LogStore {
         monitorId: value.monitorId,
       })
     }
-    this.logList.push({
-      ...value,
-      pageId: this.pageId,
-      traceId: this.traceId,
-    })
+    this.logList.push(this.mergeCommonFields(value))
     this.handlerCommon()
+  }
+
+  /**
+   * 还原本地缓存的未上报日志。
+   * traceId 已提到批量外层，单条日志默认不携带；但缓存可能跨会话恢复，
+   * 若缓存所属会话与当前会话不同，则为这些历史日志逐条补回原会话的 traceId，
+   * 避免被本次批量外层的当前 traceId 误归并。
+   * @param {unknown} value 缓存值
+   * @return {IMetrics[]}
+   * @memberof LogStore
+   */
+  private restoreLogs = (value: unknown): IMetrics[] => {
+    // 兼容旧版本数组格式
+    if (Array.isArray(value)) {
+      return value as IMetrics[]
+    }
+    const cache = value as { traceId?: string; logs?: IMetrics[] }
+    const logs = Array.isArray(cache?.logs) ? cache.logs : []
+    if (cache?.traceId && cache.traceId !== this.traceId) {
+      return logs.map((item) => ({ traceId: cache.traceId, ...item }))
+    }
+    return logs
   }
 
   /**
@@ -218,15 +261,18 @@ export default abstract class LogStore {
       return []
     }
 
+    // siteId/traceId 已提升到批量外层，pageId/timestamp 在入队（mergeCommonFields）时注入，
+    // 此处不再重复补充，避免字段在多个环节被反复拼装导致不一致。
     const logs: IMetrics[] = []
     const list = this.logList.filter((item, index: number) => {
       if (index < this.len) {
-        logs.push({ ...item, siteId: this.config.appKey })
+        logs.push(item)
       }
       return index >= this.len
     })
     this.logList = [...list]
-    store.setItem(this.logsStoreKey, this.logList)
+    // 缓存时记录当前会话 traceId，便于跨会话补报时还原归属
+    store.setItem(this.logsStoreKey, { traceId: this.traceId, logs: this.logList })
     return logs
   }
 

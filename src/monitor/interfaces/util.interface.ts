@@ -80,10 +80,9 @@ export enum TransportCategory {
 
 export interface HttpMetrics {
   method: string
-  url: string
+  // queryUrl 为含 query 的完整请求 URL；不含 query 的 url 与解析后的 params 可由后端从 queryUrl 派生，故不再重复上报
   queryUrl: string
   body: any
-  params: Record<string, string>
   requestTime: number
   responseTime: number
   status: number

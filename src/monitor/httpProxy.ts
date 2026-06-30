@@ -163,24 +163,6 @@ const safeStringify = (data: any): string => {
 }
 
 /**
- * 解析query参数
- */
-const parseUrlParameter = (searchPath: string) => {
-  try {
-    const search = (searchPath || window.location.search).match(/\?.*(?=\b|#)/)?.[0]?.replace(/^\?/, '')
-    if (!search) return {}
-
-    return search.split('&').reduce((queries: Record<string, string>, param) => {
-      const [key, value] = param.split('=')
-      queries[key] = value ? decodeURIComponent(value) : ''
-      return queries
-    }, {})
-  } catch {
-    return {}
-  }
-}
-
-/**
  * 解析响应数据
  */
 const parseResponse = (response: any) => {
@@ -221,10 +203,8 @@ export const proxyXmlHttp = (sendHandler: FN1 | null | undefined, loadHandler: F
       const { open, send } = xhr
       const metrics: HttpMetrics = {
         method: '',
-        url: '',
         queryUrl: '',
         body: null,
-        params: {},
         requestTime: 0,
         responseTime: 0,
         status: 0,
@@ -241,7 +221,6 @@ export const proxyXmlHttp = (sendHandler: FN1 | null | undefined, loadHandler: F
         Object.assign(metrics, {
           method,
           queryUrl: url,
-          url: url.split('?')[0],
         })
         open.call(xhr, method, url, true)
       }
@@ -249,7 +228,6 @@ export const proxyXmlHttp = (sendHandler: FN1 | null | undefined, loadHandler: F
       xhr.send = (body) => {
         Object.assign(metrics, {
           body,
-          params: parseUrlParameter(metrics.queryUrl as string),
           requestTime: Date.now(),
         })
         if (typeof sendHandler === 'function') sendHandler(xhr)
@@ -295,10 +273,8 @@ export const proxyFetch = (sendHandler: FN1 | null | undefined, loadHandler: FN1
     const url = (typeof input === 'string' ? input : input?.url) || ''
     const metrics: HttpMetrics = {
       method: init?.method || '',
-      url: url.split('?')[0],
       queryUrl: url,
       body: init?.body,
-      params: parseUrlParameter(url),
       requestTime: Date.now(),
       responseTime: 0,
       status: 0,
