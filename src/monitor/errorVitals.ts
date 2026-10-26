@@ -11,7 +11,7 @@ import {
 } from './interfaces/util.interface'
 import { initBlankScreen, noteFatalError } from './blankScreen'
 import { appendSessionStep, currentPagePath } from './sessionLog'
-import { attachSessionLog } from './sessionLogUpload'
+import { attachRecordEvents, attachSessionLog } from './sessionLogUpload'
 import { getErrorKey, getErrorUid, parseStackFrames } from './utils'
 import isHtml from 'is-html'
 import { v4 as uuidv4 } from 'uuid'
@@ -124,10 +124,12 @@ export default class ErrorVitals extends CommonExtends {
       // 获取当前记录
       const currentRecord = (await store.getItem(this.CURRENT_RECORD_KEY)) as any
       if (currentRecord?.events?.length) {
+        const monitorId = currentRecord.monitorId
+        const attached = await attachRecordEvents(monitorId, JSON.stringify(currentRecord.events))
         this.sendLog.add({
           category: TransportCategory.RV,
-          events: JSON.stringify(currentRecord.events),
-          monitorId: currentRecord.monitorId,
+          monitorId,
+          ...attached,
         })
         // 发送后清除当前记录
         await store.removeItem(this.CURRENT_RECORD_KEY)
@@ -409,15 +411,18 @@ export default class ErrorVitals extends CommonExtends {
     }
     if (isCheckout) {
       this.eventsMatrix.push(event)
-      this.sendLog.add({
-        category: TransportCategory.RV,
-        events: JSON.stringify(this.eventsMatrix),
-        monitorId: this.curRecordId,
-        timestamp: Date.now(),
-      })
+      const monitorId = this.curRecordId
+      const payload = JSON.stringify(this.eventsMatrix)
       this.eventsMatrix = []
       this.currentEventsSize = 0
       this.startRecordId()
+      const attached = await attachRecordEvents(monitorId, payload)
+      this.sendLog.add({
+        category: TransportCategory.RV,
+        monitorId,
+        timestamp: Date.now(),
+        ...attached,
+      })
     } else {
       this.eventsMatrix.push(event)
       this.currentEventsSize += eventSize

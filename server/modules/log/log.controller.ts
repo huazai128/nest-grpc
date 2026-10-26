@@ -110,6 +110,35 @@ export class LogController {
   }
 
   /**
+   * 上传 rrweb JSON 到阿里云 OSS，返回链接。SDK 在录屏检查点先调这里，再上报 eventsUrl。
+   * @param {ExpressRequest} req
+   */
+  @Post('record-file')
+  @Responsor.api()
+  @Responsor.handle('上传录屏片段')
+  async uploadRecordFile(@Req() req: ExpressRequest) {
+    if (!this.ossService.isEnabled()) {
+      throw new ServiceUnavailableException('OSS 未配置')
+    }
+    const monitorId = String(req.headers['x-record-id'] || 'video').replace(/[^a-zA-Z0-9._:-]/g, '_')
+    const siteId = String(req.headers['x-site-id'] || '')
+    const body = (await rawbody(req, { limit: '3mb', encoding: 'utf8' })).trim()
+    if (!body) {
+      throw new BadRequestException('录屏数据为空')
+    }
+    const put = await this.ossService.putRrweb({
+      monitorId,
+      body,
+      siteId,
+    })
+    return {
+      monitorId,
+      eventsUrl: put.eventsUrl,
+      bytes: Buffer.byteLength(body, 'utf8'),
+    }
+  }
+
+  /**
    * 通过游标获取日志
    * @param {LogPaginateQueryDTO} query
    * @memberof LogController

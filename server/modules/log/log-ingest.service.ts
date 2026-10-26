@@ -101,8 +101,18 @@ export class LogIngestService {
   }
 
   /**
-   * 会话 .log 转存 OSS：成功后只留 logUrl，正文不进 Kafka/gRPC/Mongo。
-   * 未配置 OSS 或上传失败时保留 events，避免把步骤日志丢掉。
+   * 会话 .log / rrweb 转存 OSS：成功后只留链接，正文不进 Kafka/gRPC/Mongo。
+   * 未配置 OSS 或上传失败时保留 events，避免把数据丢掉。
+   * @param {LogData} data
+   * @return {Promise<LogData>}
+   */
+  public async offloadBlobs(data: LogData): Promise<LogData> {
+    const session = await this.offloadSessionLog(data)
+    return this.offloadRrweb(session)
+  }
+
+  /**
+   * 会话 .log 转存 OSS，只留 logUrl。
    * @param {LogData} data
    * @return {Promise<LogData>}
    */
@@ -111,10 +121,7 @@ export class LogIngestService {
       return data
     }
     if (data.logUrl) {
-      if (!data.events) return data
-      const next = { ...data }
-      delete next.events
-      return next
+      return this.stripEvents(data)
     }
     if (typeof data.events !== 'string' || !data.events) {
       return data
@@ -128,18 +135,59 @@ export class LogIngestService {
         body: data.events,
         siteId: data.siteId,
       })
-      const next = { ...data, logUrl: put.logUrl }
-      delete next.events
-      return next
+      return this.stripEvents({ ...data, logUrl: put.logUrl })
     } catch (error) {
       logger.error('会话日志转存 OSS 失败，保留 events 兜底', error)
       return data
     }
   }
 
-  /** 单条：先转存会话 .log，再 Kafka 削峰，失败或未启 consumer 时限流 gRPC 兜底 */
+  /**
+   * rrweb 片段转存 OSS，只留 eventsUrl。
+   * @param {LogData} data
+   * @return {Promise<LogData>}
+   */
+  public async offloadRrweb(data: LogData): Promise<LogData> {
+    if (String(data.category) !== TransportCategory.RV) {
+      return data
+    }
+    if (data.eventsUrl) {
+      return this.stripEvents(data)
+    }
+    if (typeof data.events !== 'string' || !data.events) {
+      return data
+    }
+    if (!this.ossService.isEnabled()) {
+      return data
+    }
+    try {
+      const put = await this.ossService.putRrweb({
+        monitorId: String(data.monitorId || 'video'),
+        body: data.events,
+        siteId: data.siteId,
+      })
+      return this.stripEvents({ ...data, eventsUrl: put.eventsUrl })
+    } catch (error) {
+      logger.error('录屏转存 OSS 失败，保留 events 兜底', error)
+      return data
+    }
+  }
+
+  /**
+   * 已有 OSS 链接时丢掉正文。
+   * @param {LogData} data
+   * @return {LogData}
+   */
+  private stripEvents(data: LogData): LogData {
+    if (!data.events) return data
+    const next = { ...data }
+    delete next.events
+    return next
+  }
+
+  /** 单条：先转存大文本，再 Kafka 削峰，失败或未启 consumer 时限流 gRPC 兜底 */
   public async ingestOne(data: LogData): Promise<void> {
-    const ready = await this.offloadSessionLog(data)
+    const ready = await this.offloadBlobs(data)
     this.kafkaSend(ready)
   }
 
@@ -235,7 +283,7 @@ export class LogIngestService {
       } as LogData
 
       hydrateCollectedAliases(merged as Record<string, unknown>)
-      const ready = await this.offloadSessionLog(merged)
+      const ready = await this.offloadBlobs(merged)
 
       if (!this.isSupported(ready)) continue
 

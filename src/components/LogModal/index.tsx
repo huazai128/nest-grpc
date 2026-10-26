@@ -21,7 +21,7 @@ const LogModal = ({ open, title, logInfo, type, ipAnalysis, hideModal }: IProps)
   const render = () => {
     switch (type) {
       case 'record':
-        return <Replayer events={JSON.parse(logInfo?.events || '[]')} />
+        return <Replayer eventsUrl={logInfo?.eventsUrl} eventsJson={logInfo?.events} />
       case 'behavior':
         return <BehaviorList list={toJS(logInfo?.breadcrumbs) || []} />
       case 'code':

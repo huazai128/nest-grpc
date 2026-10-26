@@ -13,8 +13,9 @@ const LIMITS = {
   nodeDom: 4000, // 节点 HTML 快照
   content: 16000, // 用户反馈内容
   body: 32000, // 请求体
-  events: 3 * 1024 * 1024, // 录屏 JSON；会话 .log 走 OSS，失败兜底才走此字段
-  logUrl: 2048, // 阿里云 OSS 链接
+  events: 3 * 1024 * 1024, // 仅 OSS 失败兜底；正式路径走 logUrl / eventsUrl
+  logUrl: 2048, // 会话 .log 的阿里云 OSS 链接
+  eventsUrl: 2048, // rrweb 片段的阿里云 OSS 链接
   ua: 2048, // User-Agent
   logData: 32000, // 通用长文本
 }
@@ -41,6 +42,7 @@ const RESERVED_ROOT_KEYS = new Set([
   'events',
   'logName',
   'logUrl',
+  'eventsUrl',
 ])
 
 /** 按字段名对齐服务端截断上限；queryUrl / 资源 name / 元素文本不截 */
@@ -63,6 +65,7 @@ const STRING_LIMIT_KEYS: Record<string, number> = {
   errorUid: LIMITS.indexed,
   logName: LIMITS.indexed,
   logUrl: LIMITS.logUrl,
+  eventsUrl: LIMITS.eventsUrl,
   eventAction: LIMITS.indexed,
   eventCategory: LIMITS.indexed,
   eventValue: LIMITS.logData,

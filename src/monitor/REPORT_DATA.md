@@ -6,6 +6,7 @@
 
 - 上报地址：`${ConfigProps.url}/api/log/multi`
 - 会话 `.log` 上传：`${ConfigProps.url}/api/log/session-file`（`text/plain`，白屏 / 反馈时先上传再带链接上报）
+- 录屏上传：`${ConfigProps.url}/api/log/record-file`（`application/json`，rrweb 检查点先上传再带 `eventsUrl` 上报）
 - 请求方法：`POST`
 - 请求体：
 
@@ -369,7 +370,8 @@ SDK 使用 `rrweb` 录制页面操作。达到检查点或单片段大小阈值�
 | --- | --- | --- |
 | `category` | `video` | 固定值。 |
 | `monitorId` | string | `video${uuid}`，同一录屏片段的 ID。 |
-| `events` | string | rrweb 事件数组 JSON 字符串。 |
+| `eventsUrl` | string | rrweb 片段的阿里云 OSS 链接。检查点时先 `POST /api/log/record-file` 再带链接上报。 |
+| `events` | string | **仅上传 OSS 失败时**携带 rrweb JSON 兜底；成功后不报。 |
 | `timestamp` | number | 片段上报时间戳。 |
 
 本地缓存键：
@@ -409,7 +411,8 @@ SDK 在本地维护一份纯文本 `.log`（`sessionLog.ts`），记录用户操
   - 日志反馈：`window.sendUserLog()` 的 `user.logName` + `user.logUrl`
 - 上传接口：`POST ${url}/api/log/session-file`，服务端 PutObject 到阿里云 OSS。
 - Kafka / Mongo **不存** `.log` 正文，避免 1.5MB 打满消息和库。上传失败才把 `events` 正文走原上报，由 ingest 再转 OSS。
-- 服务端环境变量：`OSS_ACCESS_KEY_ID`、`OSS_ACCESS_KEY_SECRET`、`OSS_BUCKET`，可选 `OSS_REGION`（默认 `oss-cn-hangzhou`）、`OSS_ENDPOINT`、`OSS_PREFIX`（默认 `session-logs/`）、`OSS_ACL`（默认 `public-read`）、`OSS_CDN_HOST`。
+- 服务端环境变量：`OSS_ACCESS_KEY_ID`、`OSS_ACCESS_KEY_SECRET`、`OSS_BUCKET`，可选 `OSS_REGION`（默认 `oss-cn-hangzhou`）、`OSS_ENDPOINT`、`OSS_PREFIX`（默认 `session-logs/`）、`OSS_RRWEB_PREFIX`（默认 `rrweb/`）、`OSS_ACL`（默认 `public-read`）、`OSS_CDN_HOST`。
+- 录屏上传：`POST ${url}/api/log/record-file`（`application/json`，上限约 2MB/片段）。
 - `prod` 仍采集 console，只是不再输出到页面。SDK 自己的 `/api/log/` 请求不写入步骤。
 
 `.log` 文本示例：
@@ -840,7 +843,7 @@ JS / React / 关键脚本样式失败后，视口采样仍无内容才上报。�
   "category": "video",
   "pageId": "pageId:018f6b8c-aaaa-4222-8333-7f0000000002",
   "monitorId": "video018f6b8c-1111-4222-8333-7f0000000008",
-  "events": "[{\"type\":4,\"timestamp\":1710000000000,\"data\":{\"href\":\"https://example.com/dashboard\"}}]",
+  "eventsUrl": "https://bucket.oss-cn-hangzhou.aliyuncs.com/rrweb/2026/10/26/site-demo/uuid-video018f6b8c.json",
   "timestamp": 1710000000800
 }
 ```
@@ -875,7 +878,8 @@ JS / React / 关键脚本样式失败后，视口采样仍无内容才上报。�
 - `webInfo`、`pageInfo` 只用于服务端缓存和合并，不直接作为普通日志入库。
 - 接口和错误日志会过滤 HTML 响应体，避免大体积 HTML 入库。
 - 当前 SDK 中 `video` 和 `user` 日志未设置 `reportsType`，后端和展示层需要按 `category` 识别。
-- 会话 `.log` 只在白屏错误和用户反馈时上传 OSS，上报字段是 `logName` + `logUrl`；正文是带步骤说明的纯文本，不是 rrweb JSON。录屏仍走 `video` / `recordKeys`。
+- 会话 `.log` 只在白屏错误和用户反馈时上传 OSS，上报字段是 `logName` + `logUrl`；正文是带步骤说明的纯文本，不是 rrweb JSON。
+- 录屏 rrweb JSON 同样上 OSS（`rrweb/` 目录），`video` 上报只带 `monitorId` + `eventsUrl`；错误 / 反馈通过 `recordKeys` 关联，不把正文写入 `ErrorLog.events`。回放按 `eventsUrl` 拉取 JSON。
 - `resource-flow.cacheRate` 在资源列表为空时统一兜底为 `"0.00"`，不会再出现 `NaN` 字符串。
 - `timestamp` 现为所有日志均会携带的单条公共字段（入队时间戳）；错误、录屏、反馈仍以事件实际发生时间覆盖该值。
 - 为减少重复上报，公共字段分两层：`siteId`、`traceId` 提到批量请求体外层（整批只上报一次，单条日志不再携带）；`pageId`、`timestamp` 因会随页面/事件变化，仍在单条日志级由 `mergeCommonFields()` 一处注入。新增采集模块不应再自行拼装这些字段。
