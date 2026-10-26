@@ -48,6 +48,10 @@ export class SiteDTO {
   @IsNotEmpty({ message: '不能为空' })
   @IsUrl({}, { message: '请输入有效的 URL 地址' })
   feedbackUrl: string
+
+  @IsOptional()
+  @IsString()
+  networkSpeedReportUrl?: string
 }
 
 export class SitePaginateDTO extends IntersectionType(PaginateSortDTO, KeywordDTO, DateQueryDTO) {
