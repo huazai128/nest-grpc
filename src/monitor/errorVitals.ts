@@ -10,6 +10,8 @@ import {
   TransportCategory,
 } from './interfaces/util.interface'
 import { initBlankScreen, noteFatalError } from './blankScreen'
+import { appendSessionStep, currentPagePath } from './sessionLog'
+import { attachSessionLog } from './sessionLogUpload'
 import { getErrorKey, getErrorUid, parseStackFrames } from './utils'
 import isHtml from 'is-html'
 import { v4 as uuidv4 } from 'uuid'
@@ -173,7 +175,13 @@ export default class ErrorVitals extends CommonExtends {
 
     const recordKeys = this.reordHistoryKeys
 
-    const errorInfo = {
+    appendSessionStep('error', `${error.errorType || error.reportsType} ${error.value || ''}`.trim(), [
+      `页面: ${currentPagePath()}`,
+      `机制: ${error.reportsType}`,
+      error.errorUid ? `指纹: ${error.errorUid}` : '',
+    ])
+
+    const errorInfo: Record<string, unknown> = {
       ...error,
       category: TransportCategory.ERROR,
       breadcrumbs: breadcrumbs.length ? breadcrumbs : undefined,
@@ -182,6 +190,12 @@ export default class ErrorVitals extends CommonExtends {
       monitorId,
       recordKeys: recordKeys.length ? recordKeys : undefined,
       timestamp: Date.now(),
+    }
+    if (error.reportsType === MechanismType.BS) {
+      const attached = await attachSessionLog('blank-screen', this.sendLog.traceId)
+      if (attached.logName) errorInfo.logName = attached.logName
+      if (attached.logUrl) errorInfo.logUrl = attached.logUrl
+      if (attached.events) errorInfo.events = attached.events
     }
     this.sendLog.add(errorInfo)
     noteFatalError({
@@ -445,20 +459,21 @@ export default class ErrorVitals extends CommonExtends {
    * 用户反馈日志上报
    * @param feedbackInfo 用户反馈信息
    */
-  public reportFeedback(feedbackInfo: { content: string; oId: string }) {
+  public async reportFeedback(feedbackInfo: { content: string; oId: string }) {
     const monitorId = `${TransportCategory.USER}${uuidv4()}`
 
     // 获取最近的操作日志
     const breadcrumbs = this.sendLog.getList()
     // 获取最近的错误日志
     const errorLogs = Array.from(this.errorUids).slice(-10) // 获取最近10条错误记录
-
-    // 获取当前录制的事件
-    const currentEvents = this.eventsMatrix.length > 0 ? JSON.stringify(this.eventsMatrix) : null
-
     const recordKeys = this.reordHistoryKeys
+    appendSessionStep('feedback', '用户提交日志反馈', [
+      `页面: ${currentPagePath()}`,
+      feedbackInfo.oId ? `oId: ${feedbackInfo.oId}` : '',
+    ])
+    const attached = await attachSessionLog('user-feedback', this.sendLog.traceId)
 
-    // 组装反馈信息
+    // 组装反馈信息：.log 先上 OSS，上报只带 logUrl；上传失败才带 events 正文
     const feedback = {
       monitorId,
       category: TransportCategory.USER,
@@ -467,7 +482,9 @@ export default class ErrorVitals extends CommonExtends {
       oId: feedbackInfo.oId,
       breadcrumbs: breadcrumbs.length ? breadcrumbs : undefined,
       errorList: errorLogs.length ? errorLogs : undefined,
-      currentEvents,
+      logName: attached.logName,
+      logUrl: attached.logUrl,
+      events: attached.events,
       recordKeys: recordKeys.length ? recordKeys : undefined,
     }
 

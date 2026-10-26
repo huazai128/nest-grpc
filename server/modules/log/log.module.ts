@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common'
 import { LogController } from './log.controller'
 import { LogService } from './log.service'
 import { LogIngestService } from './log-ingest.service'
+import { OssService } from '@app/processors/oss/oss.service'
 import { ClientsModule, Transport } from '@nestjs/microservices'
 import { CONFIG } from '@app/config'
 import { join } from 'path'
@@ -26,6 +27,6 @@ import { join } from 'path'
     ]),
   ],
   controllers: [LogController],
-  providers: [LogService, LogIngestService],
+  providers: [LogService, LogIngestService, OssService],
 })
 export class LogModule {}

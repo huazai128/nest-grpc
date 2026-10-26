@@ -4,6 +4,7 @@ import { getCookie, getPageKey, proxyHash, proxyHistory, wrHistory } from './uti
 import { v4 as uuidv4 } from 'uuid'
 import { ConfigProps } from './interfaces/config.interface'
 import { omitEmpty } from './compactLog'
+import { appendSessionStep } from './sessionLog'
 
 /** IndexedDB：未 ack 的日志队列和行为轨迹 */
 const store = localForage.createInstance({
@@ -184,6 +185,12 @@ export default abstract class LogStore {
     } else {
       this.logList.unshift(pageInfo)
     }
+    appendSessionStep('page', `进入页面 ${pathname}`, [
+      `href: ${href}`,
+      this.prevHref ? `上一页: ${this.prevHref}` : '',
+      e?.type ? `来源: ${e.type}` : '',
+      document.title ? `标题: ${document.title}` : '',
+    ])
     this.persistLogs()
     this.handlerCommon()
   }

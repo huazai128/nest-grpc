@@ -22,7 +22,7 @@ export class Monitor {
     if (!appKey) {
       throw '上报map 存储位置为空'
     }
-    // prod 静默 console，其它环境保留输出，便于排查采集问题
+    // prod 不打印 console，所有环境都写入本地会话 .log，供白屏 / 反馈上报
     rewriteConsole(data.mode)
     sendLog.setConfig(data)
     // 先挂采集再 bootstrap：首屏 pageInfo 才能通知 PV / 曝光 / 白屏

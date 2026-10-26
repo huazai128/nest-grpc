@@ -1,0 +1,66 @@
+# session-traceId:018f6b8c-1111-4222-8333-7f0000000001-blank-screen.log
+# 会话操作步骤与打印日志
+# reason: blank-screen
+# traceId: traceId:018f6b8c-1111-4222-8333-7f0000000001
+# href: https://example.com/dashboard?tab=overview
+# generated: 2026-10-26T10:17:30.904Z
+# steps: 11
+# bytes: 1527/1572864
+# 说明: 仅白屏或日志反馈时上传阿里云 OSS；上报只保留 logUrl，正文不进 Kafka/Mongo
+
+[1] 18:17:30.894  STEP  page
+    说明: 进入页面 /dashboard
+    href: https://example.com/dashboard?tab=overview
+    来源: pageshow
+    标题: Dashboard
+
+[2] 18:17:30.902  CONSOLE  log
+    说明: 打印日志 console.log
+    内容: app mounted {"env":"test","build":42}
+
+[3] 18:17:30.902  STEP  click
+    说明: 点击 button#submit「提交」
+    页面: /dashboard
+    样式: btn btn-primary
+
+[4] 18:17:30.902  STEP  blur
+    说明: 输入框失焦 input#email
+    页面: /dashboard
+    输入值: user@example.com
+
+[5] 18:17:30.903  STEP  http
+    说明: POST /api/order?source=web → 200
+    页面: /dashboard
+    状态: OK
+    耗时: 128ms
+
+[6] 18:17:30.903  STEP  http
+    说明: POST /api/log/multi → 204
+    （这条模拟 SDK 自己的上报，真实代码会跳过）
+
+[7] 18:17:30.903  STEP  custom
+    说明: 自定义埋点 submit submit_order
+    页面: /dashboard
+    类别: order
+    取值: success
+
+[8] 18:17:30.903  CONSOLE  warn
+    说明: 警告 console.warn
+    内容: retry order {"skuId":"sku_10001"}
+
+[9] 18:17:30.903  CONSOLE  error
+    说明: 报错 console.error
+    内容: Error: Cannot read properties of undefined
+
+[10] 18:17:30.903  STEP  error
+    说明: TypeError Cannot read properties of undefined
+    页面: /dashboard
+    机制: js
+    指纹: js-9b3f8c1a
+
+[11] 18:17:30.903  STEP  error
+    说明: BlankScreen 页面白屏: TypeError Cannot read properties of undefined
+    页面: /dashboard
+    机制: blank-screen
+    指纹: blank-screen-4e1a90c2
+

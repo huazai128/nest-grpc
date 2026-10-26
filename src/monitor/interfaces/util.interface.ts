@@ -216,6 +216,12 @@ export interface ExceptionMetrics {
   errorUid: string
   /** React 错误对应组件名 */
   componentName?: string
+  /** 上传失败时的会话 .log 正文兜底；成功后不带 */
+  events?: string
+  /** 会话 .log 文件名 */
+  logName?: string
+  /** 会话 .log 的阿里云 OSS 链接 */
+  logUrl?: string
 }
 
 /** React ErrorBoundary 传入的组件栈信息 */

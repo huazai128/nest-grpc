@@ -1,3 +1,5 @@
+import { appendSessionConsole } from './sessionLog'
+
 /** 需要按环境开关的 console 输出方法 */
 const OUTPUT_METHODS = [
   'log',
@@ -47,11 +49,29 @@ function captureNativeConsole(): void {
   captured = true
 }
 
-/** prod 环境下替换输出方法，丢弃参数 */
-function noop(): void {}
+/**
+ * 包装后的 console：先写入本地 .log，再按环境决定是否打印。
+ * prod 不输出到页面，但步骤日志仍采集，供白屏 / 反馈上报。
+ * @param {ConsoleOutputMethod} method
+ * @param {boolean} silent
+ * @return {(...args: unknown[]) => void}
+ */
+function wrapMethod(method: ConsoleOutputMethod, silent: boolean): (...args: unknown[]) => void {
+  const native = nativeMethods[method]
+  return (...args: unknown[]) => {
+    try {
+      appendSessionConsole(method, args)
+    } catch {
+      // 采集失败不影响业务 console
+    }
+    if (!silent && native) {
+      native(...args)
+    }
+  }
+}
 
 /**
- * 按环境重写 console：prod 静默，其余环境输出原始参数。
+ * 按环境重写 console：prod 静默页面输出，所有环境都采集到会话 .log。
  * @param {string} [mode] ConfigProps.mode
  */
 export function rewriteConsole(mode?: string): void {
@@ -63,8 +83,7 @@ export function rewriteConsole(mode?: string): void {
   appliedKey = key
 
   OUTPUT_METHODS.forEach((method) => {
-    const native = nativeMethods[method]
-    if (!native) return
-    console[method] = silent ? noop : native
+    if (!nativeMethods[method]) return
+    console[method] = wrapMethod(method, silent)
   })
 }

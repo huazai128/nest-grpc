@@ -1,10 +1,11 @@
 # Monitor SDK 上报数据定义
 
-本文档定义 `src/monitor` SDK 需要上报的数据结构。SDK 初始化后会自动采集页面信息、性能、PV、用户行为、接口、错误、录屏和用户反馈，并通过批量接口上报。
+本文档定义 `src/monitor` SDK 需要上报的数据结构。SDK 初始化后会自动采集页面信息、性能、PV、用户行为、接口、错误、录屏和用户反馈，并通过批量接口上报。用户操作步骤与 console 打印会写入本地 1.5MB `.log`，只在报错白屏和 `sendUserLog` 反馈时上传阿里云 OSS，上报只带 `logUrl`。
 
 ## 上报协议
 
 - 上报地址：`${ConfigProps.url}/api/log/multi`
+- 会话 `.log` 上传：`${ConfigProps.url}/api/log/session-file`（`text/plain`，白屏 / 反馈时先上传再带链接上报）
 - 请求方法：`POST`
 - 请求体：
 
@@ -26,7 +27,7 @@
 
 ## 采集流程
 
-初始化顺序：`rewriteConsole` → `setConfig`（入队 `webInfo`）→ `WebVitals` / `UserVitals` / `ErrorVitals` 挂采集 → `bootstrap` 补发首屏 `pageInfo` 并通知订阅方。
+初始化顺序：`rewriteConsole`（采集 console 到本地 .log）→ `setConfig`（入队 `webInfo`）→ `WebVitals` / `UserVitals` / `ErrorVitals` 挂采集 → `bootstrap` 补发首屏 `pageInfo` 并通知订阅方。
 
 - 页面生命周期由 `LogStore` 统一发出：path + search + hash 变化才换 `pageId`。PV、曝光、白屏都订阅这一路，不再各自绑路由。
 - SDK 若在 `load` / `pageshow` 之后才执行，仍会补首屏 `pageInfo`、PV、录屏和资源耗时，不会把第一页丢掉。
@@ -48,7 +49,7 @@ interface ConfigProps {
 
 - `url`：上报服务地址，必填。
 - `appKey`：站点 ID，必填，上报时落到 `siteId`。
-- `mode`：环境标识，如 `test`、`release`、`prod`。初始化时会重写 `console`：`prod` 不输出，其余环境原样打印参数。
+- `mode`：环境标识，如 `test`、`release`、`prod`。初始化时会重写 `console`：所有环境都把打印写入本地会话 `.log`；`prod` 不再输出到页面，其余环境原样打印参数。
 - `isExposure`：是否开启曝光埋点，默认开启；传 `false` 时不初始化曝光监听。
 - `maxBehaviorRecords`：行为轨迹最大记录数，默认 `200`。
 - `isOnRecord`：是否开启录屏，默认开启；传 `false` 时不启动 rrweb。自定义埋点通过 `window.sendTracker` 上报。
@@ -335,6 +336,9 @@ SDK 代理 `XMLHttpRequest` 和 `fetch`，请求完成后上报。
 | `recordKeys` | string[] | 最近录屏片段 ID。 |
 | `componentName` | string | React 错误对应组件名。 |
 | `timestamp` | number | 错误发生时间戳。 |
+| `logName` | string | **仅报错白屏**携带。如 `session-{traceId}-blank-screen.log`。 |
+| `logUrl` | string | **仅报错白屏**携带。会话 `.log` 的阿里云 OSS 链接。 |
+| `events` | string | **仅上传 OSS 失败时**携带 `.log` 正文兜底；成功后不报。录屏仍走 `video.events`。 |
 
 错误机制类型：
 
@@ -387,9 +391,53 @@ SDK 使用 `rrweb` 录制页面操作。达到检查点或单片段大小阈值�
 | `oId` | string | 业务侧关联 ID，如团队 ID、项目 ID。 |
 | `breadcrumbs` | BehaviorItem[] | 最近用户行为轨迹。 |
 | `errorList` | string[] | 最近 10 个错误指纹。 |
-| `currentEvents` | string \| null | 当前未切片的 rrweb 事件 JSON 字符串。 |
+| `logName` | string | `.log` 文件名，如 `session-{traceId}-user-feedback.log`。 |
+| `logUrl` | string | 会话 `.log` 的阿里云 OSS 链接。 |
+| `events` | string | **仅上传 OSS 失败时**携带 `.log` 正文兜底；成功后不报。 |
 | `recordKeys` | string[] | 最近录屏片段 ID。 |
 | `timestamp` | number | 反馈发生时间戳。 |
+
+## 会话操作步骤 .log
+
+SDK 在本地维护一份纯文本 `.log`（`sessionLog.ts`），记录用户操作步骤和 `console` 打印，**不会随 PV / 点击 / 接口等常规日志上报**。
+
+- 采集内容：换页、点击 / 失焦 / 触摸、接口、自定义埋点、错误、console 打印。
+- 每条都有序号、时间、类型，以及「说明」行（必要时再跟页面 / 节点 / 内容）。
+- 体积上限 **1.5MB**（UTF-8），超出丢掉最旧步骤。
+- 只在两种场景上传 OSS，上报只带链接：
+  - 报错白屏：`error.logName` + `error.logUrl`
+  - 日志反馈：`window.sendUserLog()` 的 `user.logName` + `user.logUrl`
+- 上传接口：`POST ${url}/api/log/session-file`，服务端 PutObject 到阿里云 OSS。
+- Kafka / Mongo **不存** `.log` 正文，避免 1.5MB 打满消息和库。上传失败才把 `events` 正文走原上报，由 ingest 再转 OSS。
+- 服务端环境变量：`OSS_ACCESS_KEY_ID`、`OSS_ACCESS_KEY_SECRET`、`OSS_BUCKET`，可选 `OSS_REGION`（默认 `oss-cn-hangzhou`）、`OSS_ENDPOINT`、`OSS_PREFIX`（默认 `session-logs/`）、`OSS_ACL`（默认 `public-read`）、`OSS_CDN_HOST`。
+- `prod` 仍采集 console，只是不再输出到页面。SDK 自己的 `/api/log/` 请求不写入步骤。
+
+`.log` 文本示例：
+
+```text
+# session-traceId:018f6b8c-1111-4222-8333-7f0000000001-blank-screen.log
+# 会话操作步骤与打印日志
+# reason: blank-screen
+# traceId: traceId:018f6b8c-1111-4222-8333-7f0000000001
+# href: https://example.com/dashboard
+# generated: 2026-10-26T10:08:01.000Z
+# steps: 3
+# bytes: 420/1572864
+# 说明: 仅白屏或日志反馈时上传阿里云 OSS；上报只保留 logUrl，正文不进 Kafka/Mongo
+
+[1] 18:08:01.123  STEP  page
+    说明: 进入页面 /dashboard
+    href: https://example.com/dashboard
+    来源: pageshow
+
+[2] 18:08:02.010  CONSOLE  log
+    说明: 打印日志 console.log
+    内容: app mounted
+
+[3] 18:08:05.220  STEP  click
+    说明: 点击 button#submit「提交」
+    页面: /dashboard
+```
 
 ## 单条上报数据示例
 
@@ -779,6 +827,8 @@ JS / React / 关键脚本样式失败后，视口采样仍无内容才上报。�
   },
   "breadcrumbs": [{ "type": "pv", "monitorId": "pv018f6b8c-bbbb-4222-8333-7f0000000003" }],
   "recordKeys": ["video018f6b8c-1111-4222-8333-7f0000000008"],
+  "logName": "session-traceId:018f6b8c-1111-4222-8333-7f0000000001-blank-screen.log",
+  "logUrl": "https://bucket.oss-cn-hangzhou.aliyuncs.com/session-logs/2026/10/26/site-demo/uuid-session-traceId_018f6b8c-blank-screen.log",
   "timestamp": 1710000000750
 }
 ```
@@ -810,7 +860,8 @@ JS / React / 关键脚本样式失败后，视口采样仍无内容才上报。�
     { "type": "api", "monitorId": "api018f6b8c-eeee-4222-8333-7f0000000006" }
   ],
   "errorList": ["js-9b3f8c1a", "http-record-2c70d9f0"],
-  "currentEvents": "[{\"type\":3,\"timestamp\":1710000000750,\"data\":{\"source\":1}}]",
+  "logName": "session-traceId:018f6b8c-1111-4222-8333-7f0000000001-user-feedback.log",
+  "logUrl": "https://bucket.oss-cn-hangzhou.aliyuncs.com/session-logs/2026/10/26/site-demo/uuid-session-traceId_018f6b8c-user-feedback.log",
   "recordKeys": ["video018f6b8c-1111-4222-8333-7f0000000008"],
   "timestamp": 1710000000900
 }
@@ -824,6 +875,7 @@ JS / React / 关键脚本样式失败后，视口采样仍无内容才上报。�
 - `webInfo`、`pageInfo` 只用于服务端缓存和合并，不直接作为普通日志入库。
 - 接口和错误日志会过滤 HTML 响应体，避免大体积 HTML 入库。
 - 当前 SDK 中 `video` 和 `user` 日志未设置 `reportsType`，后端和展示层需要按 `category` 识别。
+- 会话 `.log` 只在白屏错误和用户反馈时上传 OSS，上报字段是 `logName` + `logUrl`；正文是带步骤说明的纯文本，不是 rrweb JSON。录屏仍走 `video` / `recordKeys`。
 - `resource-flow.cacheRate` 在资源列表为空时统一兜底为 `"0.00"`，不会再出现 `NaN` 字符串。
 - `timestamp` 现为所有日志均会携带的单条公共字段（入队时间戳）；错误、录屏、反馈仍以事件实际发生时间覆盖该值。
 - 为减少重复上报，公共字段分两层：`siteId`、`traceId` 提到批量请求体外层（整批只上报一次，单条日志不再携带）；`pageId`、`timestamp` 因会随页面/事件变化，仍在单条日志级由 `mergeCommonFields()` 一处注入。新增采集模块不应再自行拼装这些字段。

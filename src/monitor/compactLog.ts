@@ -13,7 +13,8 @@ const LIMITS = {
   nodeDom: 4000, // 节点 HTML 快照
   content: 16000, // 用户反馈内容
   body: 32000, // 请求体
-  events: 3 * 1024 * 1024, // 录屏事件 JSON
+  events: 3 * 1024 * 1024, // 录屏 JSON；会话 .log 走 OSS，失败兜底才走此字段
+  logUrl: 2048, // 阿里云 OSS 链接
   ua: 2048, // User-Agent
   logData: 32000, // 通用长文本
 }
@@ -37,6 +38,9 @@ const RESERVED_ROOT_KEYS = new Set([
   'nodeDom',
   'text',
   'type',
+  'events',
+  'logName',
+  'logUrl',
 ])
 
 /** 按字段名对齐服务端截断上限；queryUrl / 资源 name / 元素文本不截 */
@@ -57,6 +61,8 @@ const STRING_LIMIT_KEYS: Record<string, number> = {
   monitorId: LIMITS.indexed,
   pageId: LIMITS.indexed,
   errorUid: LIMITS.indexed,
+  logName: LIMITS.indexed,
+  logUrl: LIMITS.logUrl,
   eventAction: LIMITS.indexed,
   eventCategory: LIMITS.indexed,
   eventValue: LIMITS.logData,

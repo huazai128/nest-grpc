@@ -5,6 +5,7 @@ import { downloadSpeed, mOberver } from './utils'
 import isHtml from 'is-html'
 import { v4 as uuidv4 } from 'uuid'
 import { compactHttpMetrics, pickDataset } from './compactLog'
+import { appendSessionStep, currentPagePath, shortUrl } from './sessionLog'
 
 /**
  * UserVitals 类 - 用于监控用户行为
@@ -91,6 +92,7 @@ export class UserVitals extends CommonExtends {
       }
 
       const eventData = this.buildEventData(target, e)
+      this.appendClickStep(target, e)
       this.sendLog.add(eventData)
     }
 
@@ -238,6 +240,11 @@ export class UserVitals extends CommonExtends {
     return (options: CustomAnalyticsData): void => {
       const monitorId = `${TransportCategory.CUSTOM}${uuidv4()}`
 
+      appendSessionStep('custom', `自定义埋点 ${options.eventAction || ''} ${options.eventLabel || ''}`.trim(), [
+        `页面: ${currentPagePath()}`,
+        options.eventCategory ? `类别: ${options.eventCategory}` : '',
+        options.eventValue ? `取值: ${options.eventValue}` : '',
+      ])
       this.sendLog.add({
         reportsType: MetricsName.CDR,
         category: TransportCategory.CUSTOM,
@@ -254,6 +261,14 @@ export class UserVitals extends CommonExtends {
     const handler = (metrics: HttpMetrics): void => {
       const monitorId = `${TransportCategory.API}${uuidv4()}`
       const response = this.formatResponse(metrics.response)
+      if (!this.isMonitorReportUrl(metrics.queryUrl)) {
+        const cost = Math.max(0, Number(metrics.responseTime || 0) - Number(metrics.requestTime || 0))
+        appendSessionStep('http', `${metrics.method || 'GET'} ${shortUrl(metrics.queryUrl)} → ${metrics.status}`, [
+          `页面: ${currentPagePath()}`,
+          metrics.statusText ? `状态: ${metrics.statusText}` : '',
+          cost ? `耗时: ${cost}ms` : '',
+        ])
+      }
 
       this.sendLog.add({
         reportsType: MetricsName.HT,
@@ -273,5 +288,37 @@ export class UserVitals extends CommonExtends {
    */
   private formatResponse(response: unknown): unknown {
     return typeof response === 'string' && isHtml(response) ? '[-Body内容为HTML已过滤-]' : response
+  }
+
+  /**
+   * 点击 / 失焦 / 触摸写入会话 .log，不单独上报这份文本。
+   * @param {HTMLElement} target
+   * @param {Event} event
+   */
+  private appendClickStep(target: HTMLElement, event: Event): void {
+    const tag = target.tagName.toLowerCase()
+    const id = target.id ? `#${target.id}` : ''
+    const text = (target.innerText || target.textContent || '').trim().slice(0, 80)
+    const value = (target as HTMLInputElement).value
+    const action = event.type === 'blur' ? 'blur' : event.type === 'touchend' ? 'touchend' : 'click'
+    const verb = action === 'blur' ? '输入框失焦' : action === 'touchend' ? '触摸结束' : '点击'
+    const title = text ? `${verb} ${tag}${id}「${text}」` : `${verb} ${tag}${id || ''}`.trim()
+    appendSessionStep(action, title, [
+      `页面: ${currentPagePath()}`,
+      target.className ? `样式: ${String(target.className).slice(0, 120)}` : '',
+      action === 'blur' && value ? `输入值: ${String(value).slice(0, 120)}` : '',
+    ])
+  }
+
+  /**
+   * SDK 自己的上报请求不记入步骤，避免 .log 被监控流量刷屏。
+   * @param {string} [url]
+   * @return {boolean}
+   */
+  private isMonitorReportUrl(url?: string): boolean {
+    const href = String(url || '')
+    if (href.includes('/api/log/')) return true
+    const reportUrl = this.sendLog.config?.url
+    return Boolean(reportUrl && href.startsWith(reportUrl))
   }
 }

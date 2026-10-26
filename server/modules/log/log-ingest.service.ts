@@ -11,6 +11,7 @@ import { QueryVisitor } from '@app/decorators/params.decorator'
 import { RedisService } from '@app/processors/redis/redis.service'
 import { grpcFallbackExecutor } from '@app/utils/boundedExecutor'
 import { hydrateCollectedAliases } from './logPayload.util'
+import { isSessionLogPayload, OssService } from '@app/processors/oss/oss.service'
 
 const logger = createLogger({ scope: 'LogIngestService', time: isProdEnv ? false : true })
 
@@ -69,6 +70,7 @@ export class LogIngestService {
     private readonly kafkaService: KafkaService,
     private readonly logService: LogService,
     private readonly cacheService: RedisService,
+    private readonly ossService: OssService,
   ) {}
 
   /** 转成 gRPC SaveLogRequest；当前即浅拷贝，保留 hydrate 后的别名 */
@@ -96,6 +98,49 @@ export class LogIngestService {
     } catch {
       return maxKafkaPayloadBytes + 1
     }
+  }
+
+  /**
+   * 会话 .log 转存 OSS：成功后只留 logUrl，正文不进 Kafka/gRPC/Mongo。
+   * 未配置 OSS 或上传失败时保留 events，避免把步骤日志丢掉。
+   * @param {LogData} data
+   * @return {Promise<LogData>}
+   */
+  public async offloadSessionLog(data: LogData): Promise<LogData> {
+    if (!isSessionLogPayload(data.logName, data.events)) {
+      return data
+    }
+    if (data.logUrl) {
+      if (!data.events) return data
+      const next = { ...data }
+      delete next.events
+      return next
+    }
+    if (typeof data.events !== 'string' || !data.events) {
+      return data
+    }
+    if (!this.ossService.isEnabled()) {
+      return data
+    }
+    try {
+      const put = await this.ossService.putSessionLog({
+        logName: String(data.logName || 'session.log'),
+        body: data.events,
+        siteId: data.siteId,
+      })
+      const next = { ...data, logUrl: put.logUrl }
+      delete next.events
+      return next
+    } catch (error) {
+      logger.error('会话日志转存 OSS 失败，保留 events 兜底', error)
+      return data
+    }
+  }
+
+  /** 单条：先转存会话 .log，再 Kafka 削峰，失败或未启 consumer 时限流 gRPC 兜底 */
+  public async ingestOne(data: LogData): Promise<void> {
+    const ready = await this.offloadSessionLog(data)
+    this.kafkaSend(ready)
   }
 
   /** 单条：Kafka 削峰，失败或未启 consumer 时限流 gRPC 兜底 */
@@ -190,19 +235,20 @@ export class LogIngestService {
       } as LogData
 
       hydrateCollectedAliases(merged as Record<string, unknown>)
+      const ready = await this.offloadSessionLog(merged)
 
-      if (!this.isSupported(merged)) continue
+      if (!this.isSupported(ready)) continue
 
-      const payload = this.preparePayload(merged)
+      const payload = this.preparePayload(ready)
       if (!isKafkaConsumerEnabled()) {
         this.enqueueGrpcFallback(payload)
         continue
       }
-      if (this.estimateBytes(merged) > maxKafkaPayloadBytes) {
+      if (this.estimateBytes(ready) > maxKafkaPayloadBytes) {
         grpcOversized.push(payload)
         continue
       }
-      kafkaBatch.push(merged)
+      kafkaBatch.push(ready)
     }
 
     for (const p of grpcOversized) {

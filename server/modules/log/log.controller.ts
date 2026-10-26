@@ -1,11 +1,13 @@
 import { PlainBody } from '@app/decorators/body.decorator'
 import { QueryParams, QueryVisitor } from '@app/decorators/params.decorator'
 import { Responsor } from '@app/decorators/responsor.decorator'
-import { LogList, SaveLogRequest } from '@app/protos/log'
-import { Controller, Get, Post, Query, Res, UseGuards } from '@nestjs/common'
-import { Response as ExpressResponse } from 'express'
+import { LogList } from '@app/protos/log'
+import { BadRequestException, Controller, Get, Post, Query, Req, Res, ServiceUnavailableException, UseGuards } from '@nestjs/common'
+import { Request as ExpressRequest, Response as ExpressResponse } from 'express'
+import rawbody from 'raw-body'
 import { LogService } from './log.service'
 import { LogIngestService } from './log-ingest.service'
+import { OssService } from '@app/processors/oss/oss.service'
 import { LogChartQueryDTO, LogData, LogPaginateQueryDTO } from './log.dto'
 import { ApiGuard } from '@app/guards/api.guard'
 import { ChartItem } from '@app/protos/common/chart_item'
@@ -18,6 +20,7 @@ export class LogController {
   constructor(
     private readonly logService: LogService,
     private readonly logIngestService: LogIngestService,
+    private readonly ossService: OssService,
   ) {}
 
   /**
@@ -50,7 +53,7 @@ export class LogController {
       ua: visitor.ua,
       ua_result: visitor.ua_result,
     } as LogData
-    this.logIngestService.kafkaSend(logData)
+    await this.logIngestService.ingestOne(logData)
     return res.status(204).json()
   }
 
@@ -72,6 +75,38 @@ export class LogController {
   ) {
     await this.logIngestService.ingestMultiLogs(body || {}, visitor)
     return res.status(204).json()
+  }
+
+  /**
+   * 上传会话 .log 到阿里云 OSS，返回链接。SDK 在白屏 / 反馈时先调这里，再上报 logUrl。
+   * @param {ExpressRequest} req
+   */
+  @Post('session-file')
+  @Responsor.api()
+  @Responsor.handle('上传会话日志')
+  async uploadSessionFile(@Req() req: ExpressRequest) {
+    if (!this.ossService.isEnabled()) {
+      throw new ServiceUnavailableException('OSS 未配置')
+    }
+    const logNameHeader = String(req.headers['x-session-log-name'] || '')
+    const logName = logNameHeader.replace(/[^a-zA-Z0-9._:-]/g, '_') || 'session.log'
+    const reason = String(req.headers['x-session-log-reason'] || '')
+    const siteId = String(req.headers['x-site-id'] || '')
+    const body = (await rawbody(req, { limit: '2mb', encoding: 'utf8' })).trim()
+    if (!body) {
+      throw new BadRequestException('会话日志为空')
+    }
+    const put = await this.ossService.putSessionLog({
+      logName,
+      body,
+      siteId,
+      reason,
+    })
+    return {
+      logName,
+      logUrl: put.logUrl,
+      bytes: Buffer.byteLength(body, 'utf8'),
+    }
   }
 
   /**
