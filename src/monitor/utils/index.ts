@@ -1,3 +1,6 @@
+/**
+ * 监控 SDK 工具方法：性能条目、路由代理、错误堆栈、测速等。
+ */
 /* eslint-disable @typescript-eslint/no-empty-function */
 import {
   FN1,
@@ -10,6 +13,7 @@ import {
 
 window.performance = window.performance || window.msPerformance || window.webkitPerformance
 
+/** 当前运行环境对 Performance / Observer 的能力探测，采集前先判断再调用 */
 export const supported = {
   performance: !!window.performance,
   getEntriesByType: !!(window.performance && window.performance.getEntriesByType),
@@ -18,10 +22,16 @@ export const supported = {
   PerformanceNavigationTiming: 'PerformanceNavigationTiming' in window,
 }
 
+/** MutationObserver 单条变更回调 */
 export interface MutationObserverHandler {
   (mutation: MutationRecord): void
 }
 
+/**
+ * 监听 document.body 整棵子树的增删改，用于曝光节点补观察和 FMP。
+ * @param {MutationObserverHandler} callback
+ * @return {MutationObserver}
+ */
 export const mOberver = (callback: MutationObserverHandler): MutationObserver => {
   const mOb = new MutationObserver(function (mutationsList: MutationRecord[]) {
     mutationsList?.forEach(callback)
@@ -63,33 +73,51 @@ export const afterLoad = (callback: any) => {
   if (document.readyState === 'complete') {
     setTimeout(callback)
   } else {
-    window.addEventListener('pageshow', callback, { once: true, capture: true })
+    window.addEventListener('load', callback, { once: true, capture: true })
   }
 }
 
 /**
- * FP
- * @return {*}
+ * 当前页面身份：path + search + hash。Hash 路由变化也要换 pageId。
+ */
+export const getPageKey = (): string => {
+  const { pathname, search, hash } = window.location
+  return `${pathname}${search}${hash}`
+}
+
+/** 白屏/弱网下 paint 可能永不触发，超时结束避免 Promise 挂死 */
+const PAINT_WAIT_MS = 20000
+
+/**
+ * FP。无绘制或超时时返回 undefined，不阻塞后续流程。
+ * @return {Promise<(IMetrics | undefined)>}
  */
 export const getFP = async () => {
-  return new Promise<IMetrics | undefined>((resolve, reject) => {
+  return new Promise<IMetrics | undefined>((resolve) => {
+    let settled = false
+    let observer: PerformanceObserver | undefined
+    const finish = (entry?: IMetrics) => {
+      if (settled) return
+      settled = true
+      observer?.disconnect()
+      resolve(entry)
+    }
+    window.setTimeout(() => finish(undefined), PAINT_WAIT_MS)
     if (supported.PerformanceObserver) {
       try {
-        new PerformanceObserver((entryList) => {
+        observer = new PerformanceObserver((entryList) => {
           for (const entry of entryList.getEntriesByName('first-paint')) {
-            resolve(entry)
+            finish(entry as IMetrics)
           }
-        }).observe({ type: 'paint', buffered: true })
-        return false
-      } catch (error) {
-        // 在safari下获取为空数组
-        const entryList = performance.getEntriesByName('first-paint')
-        resolve(entryList[0])
+        })
+        observer.observe({ type: 'paint', buffered: true })
+        return
+      } catch {
+        // Safari 下 Observer 可能失败，回落到已有条目
       }
-    } else {
-      const entryList = performance.getEntriesByName('first-paint')
-      resolve(entryList[0])
     }
+    const entryList = performance.getEntriesByName('first-paint')
+    finish(entryList[0] as IMetrics | undefined)
   })
 }
 
@@ -144,6 +172,13 @@ export const getNavigationTiming = (): MPerformanceNavigationTiming | undefined 
  * @param {Array<ResourceFlowTiming>} resourceFlow
  * @return {*}  {(PerformanceObserver | undefined)}
  */
+/**
+ * 将 PerformanceResourceTiming 转为上报结构。
+ * request 与 ttfb 重复故不传；dns / ssl 为 0 省略；contentDownload 用真实下载耗时。
+ * @param {PerformanceResourceTiming} entry
+ * @param {boolean} [looseCache=false] 快照补全时用更宽松的缓存判定
+ * @return {ResourceFlowTiming}
+ */
 const toResourceFlowTiming = (entry: PerformanceResourceTiming, looseCache = false): ResourceFlowTiming => {
   const {
     name,
@@ -185,6 +220,11 @@ const toResourceFlowTiming = (entry: PerformanceResourceTiming, looseCache = fal
   return item
 }
 
+/**
+ * 用 PerformanceObserver 持续收集 resource 条目（load 前可能不完整，需再调 getPerformanceResourceFlow）。
+ * @param {Array<ResourceFlowTiming>} resourceFlow
+ * @return {(PerformanceObserver | undefined)}
+ */
 export const getResourceFlow = (resourceFlow: Array<ResourceFlowTiming>): PerformanceObserver | undefined => {
   const entryHandler = (entry: PerformanceResourceTiming) => {
     resourceFlow.push(toResourceFlowTiming(entry))
@@ -260,6 +300,10 @@ const FULL_MATCH =
 const STACKTRACE_LIMIT = 10
 
 // 解析每一行
+/**
+ * 解析堆栈中的单行，提取 filename / functionName / lineno / colno。
+ * @param {string} line
+ */
 export function parseStackLine(line: string) {
   const lineMatch = line.match(FULL_MATCH)
   if (!lineMatch) return {}
@@ -295,7 +339,11 @@ export function parseStackFrames(error: Error) {
   return frames.slice(0, STACKTRACE_LIMIT)
 }
 
-// 对每一个错误详情，生成一串编码, btoa不能处理中文,会报错
+/**
+ * 为错误详情生成指纹。btoa 不能直接处理中文，先 encodeURIComponent。
+ * @param {string} input
+ * @return {string}
+ */
 export const getErrorUid = (input: string) => {
   return window.btoa(unescape(encodeURIComponent(input)))
 }
@@ -344,22 +392,38 @@ export const getCookie = (c_name: string) => {
  * 获取FCP
  * @return {*}  {Promise<PerformanceEntry>}
  */
-export const getFCP = (): Promise<PerformanceEntry> => {
-  return new Promise<PerformanceEntry>((resolve) => {
-    if (supported.PerformanceObserver) {
-      new PerformanceObserver((entryList) => {
-        for (const entry of entryList.getEntriesByName('first-contentful-paint')) {
-          resolve(entry)
-        }
-      }).observe({ type: 'paint', buffered: true })
-    } else {
-      setTimeout(() => {
-        if (supported.performance) {
-          const [entry] = performance.getEntriesByName('first-contentful-paint')
-          resolve(entry)
-        }
-      }, 50)
+export const getFCP = (): Promise<PerformanceEntry | undefined> => {
+  return new Promise<PerformanceEntry | undefined>((resolve) => {
+    let settled = false
+    let observer: PerformanceObserver | undefined
+    const finish = (entry?: PerformanceEntry) => {
+      if (settled) return
+      settled = true
+      observer?.disconnect()
+      resolve(entry)
     }
+    window.setTimeout(() => finish(undefined), PAINT_WAIT_MS)
+    if (supported.PerformanceObserver) {
+      try {
+        observer = new PerformanceObserver((entryList) => {
+          for (const entry of entryList.getEntriesByName('first-contentful-paint')) {
+            finish(entry)
+          }
+        })
+        observer.observe({ type: 'paint', buffered: true })
+        return
+      } catch {
+        // 回落到已缓冲条目
+      }
+    }
+    window.setTimeout(() => {
+      if (supported.performance) {
+        const [entry] = performance.getEntriesByName('first-contentful-paint')
+        finish(entry)
+      } else {
+        finish(undefined)
+      }
+    }, 50)
   })
 }
 

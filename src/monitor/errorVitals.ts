@@ -9,6 +9,7 @@ import {
   MechanismType,
   TransportCategory,
 } from './interfaces/util.interface'
+import { initBlankScreen, noteFatalError } from './blankScreen'
 import { getErrorKey, getErrorUid, parseStackFrames } from './utils'
 import isHtml from 'is-html'
 import { v4 as uuidv4 } from 'uuid'
@@ -53,6 +54,7 @@ function hasHtmlAndBodyTags(obj: Record<string, any>): boolean {
  * - 错误上报，需要关联自定义信息，所以需要记录自定义信息
  * - 错误上报，需要关联请求信息，所以需要记录请求信息
  * - 错误上报，需要关联响应信息，所以需要记录响应信息
+ * - 报错白屏：JS/React/关键资源失败后采样视口，弱网加载中不误报
  */
 export default class ErrorVitals extends CommonExtends {
   // 本地存储的key常量
@@ -76,11 +78,21 @@ export default class ErrorVitals extends CommonExtends {
   // 记录当前事件矩阵大小
   private currentEventsSize = 0
 
+  /**
+   * 注册错误监听、补报未完成录屏，并暴露反馈 / React 错误入口。
+   */
   constructor() {
     super()
     this.initializeErrorHandlers()
     this.onPageLoad()
-    this.initStore() // 初始化时就调用initStore
+    this.initStore()
+    // 白屏只采「报错后视口仍无内容」，弱网加载中不误报
+    initBlankScreen(
+      (info) => {
+        void this.errorSendHandler(info)
+      },
+      (handler) => this.sendLog.subscribePageChange(handler),
+    )
     window.sendUserLog = this.reportFeedback.bind(this)
     window.initReactError = this.initReactError.bind(this)
   }
@@ -135,7 +147,11 @@ export default class ErrorVitals extends CommonExtends {
         this.startRecord()
       }
     }
-    window.addEventListener('load', handler)
+    if (document.readyState === 'complete') {
+      handler()
+      return
+    }
+    window.addEventListener('load', handler, { once: true })
     window.addEventListener('pageshow', handler, { once: true, capture: true })
   }
 
@@ -168,6 +184,13 @@ export default class ErrorVitals extends CommonExtends {
       timestamp: Date.now(),
     }
     this.sendLog.add(errorInfo)
+    noteFatalError({
+      reportsType: error.reportsType,
+      errorType: error.errorType,
+      errorUid: error.errorUid,
+      value: error.value,
+      resourceTag: meta?.type,
+    })
   }
 
   /**

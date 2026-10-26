@@ -1,8 +1,19 @@
+/**
+ * SDK 初始化配置，由业务在 `new Monitor(config)` 时传入。
+ * @export
+ * @interface ConfigProps
+ */
 export interface ConfigProps {
-  url: string // 上报Url
-  isExposure?: boolean // 是否支持曝光埋点
-  appKey: string //上报map 存储位置
-  mode: string // 环境
-  maxBehaviorRecords?: number // 最大行为跟踪数
-  isOnRecord?: boolean // 是否支持录屏
+  /** 上报服务地址，实际请求 `${url}/api/log/multi` */
+  url: string
+  /** 是否开启曝光埋点，默认开启；传 false 不监听 `.on-visible` */
+  isExposure?: boolean
+  /** 站点 ID，上报时作为批次外层 siteId */
+  appKey: string
+  /** 环境标识，如 test / release / prod；prod 会静默 console */
+  mode: string
+  /** 错误关联的行为轨迹最大条数，默认 200 */
+  maxBehaviorRecords?: number
+  /** 是否开启 rrweb 录屏，默认开启；传 false 不启动 */
+  isOnRecord?: boolean
 }

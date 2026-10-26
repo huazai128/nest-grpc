@@ -1,7 +1,7 @@
 import { CommonExtends } from './commonExtends'
 import { proxyFetch, proxyXmlHttp } from './httpProxy'
 import { CustomAnalyticsData, FN1, HttpMetrics, MetricsName, TransportCategory } from './interfaces/util.interface'
-import { downloadSpeed, mOberver, proxyHash, proxyHistory } from './utils'
+import { downloadSpeed, mOberver } from './utils'
 import isHtml from 'is-html'
 import { v4 as uuidv4 } from 'uuid'
 import { compactHttpMetrics, pickDataset } from './compactLog'
@@ -17,8 +17,12 @@ import { compactHttpMetrics, pickDataset } from './compactLog'
  * - 页面加载事件
  */
 export class UserVitals extends CommonExtends {
-  // 定义需要监听的事件类型
+  /** 点击 / 失焦 / 触摸结束，用于采集节点信息和 dataset 自定义属性 */
   private readonly events: Array<keyof WindowEventMap> = ['click', 'blur', 'touchend']
+  /** 当前页曝光观察器，路由切换时先断开再重建，避免重复上报 */
+  private exposureObserver?: IntersectionObserver
+  /** 监听 DOM 增删以给新的 `.on-visible` 节点补观察 */
+  private exposureMutation?: MutationObserver
 
   /**
    * 构造函数 - 初始化监控器
@@ -39,19 +43,15 @@ export class UserVitals extends CommonExtends {
   }
 
   /**
-   * 初始化路由变化监听
-   * 当路由变化时触发 PV 统计和曝光检测
+   * 跟随 LogStore 页面生命周期：首屏 bootstrap 和后续路由都会触发 PV / 曝光。
    */
   private initRouterChange = (): void => {
-    const handler = (): void => {
+    this.sendLog.subscribePageChange(() => {
       void this.initPV()
       if (this.sendLog.config?.isExposure !== false) {
         this.initExposure()
       }
-    }
-    window.addEventListener('pageshow', handler, { once: true, capture: true })
-    proxyHash(handler)
-    proxyHistory(handler)
+    })
   }
 
   /**
@@ -100,14 +100,19 @@ export class UserVitals extends CommonExtends {
   }
 
   /**
-   * 验证目标元素是否需要被监听
+   * 验证目标元素是否需要被监听。忽略 body / html，避免整页点击刷屏。
+   * @param {(string | undefined)} tagName
+   * @return {boolean}
    */
   private isValidTarget(tagName: string | undefined): boolean {
     return Boolean(tagName && !['body', 'html'].includes(tagName))
   }
 
   /**
-   * 构建事件数据对象
+   * 构建点击 / 失焦 / 触摸事件数据。
+   * nodeDom 仅在输入框 blur 时带输入值；dataset 不会覆盖 category 等保留键。
+   * @param {HTMLElement} target
+   * @param {Event} event
    */
   private buildEventData(target: HTMLElement, event: Event): Record<string, unknown> {
     const data = target.dataset || {}
@@ -138,9 +143,12 @@ export class UserVitals extends CommonExtends {
    * 初始化元素曝光监控
    */
   private initExposure = (): void => {
+    this.exposureObserver?.disconnect()
+    this.exposureMutation?.disconnect()
     const observer = this.createIntersectionObserver()
+    this.exposureObserver = observer
     this.observeVisibleElements(observer)
-    this.observeDOMChanges(observer)
+    this.exposureMutation = this.observeDOMChanges(observer)
   }
 
   /**
@@ -160,7 +168,8 @@ export class UserVitals extends CommonExtends {
   }
 
   /**
-   * 处理元素可见性变化
+   * 可见比例达到 0.55 且未标记 data-visible 时上报一次曝光。
+   * @param {IntersectionObserverEntry} entry
    */
   private handleIntersection(entry: IntersectionObserverEntry): void {
     const nodeRef = entry.target as HTMLElement
@@ -194,8 +203,8 @@ export class UserVitals extends CommonExtends {
   /**
    * 观察 DOM 变化
    */
-  private observeDOMChanges(observer: IntersectionObserver): void {
-    mOberver((mutation: MutationRecord) => {
+  private observeDOMChanges(observer: IntersectionObserver): MutationObserver {
+    return mOberver((mutation: MutationRecord) => {
       if (mutation.addedNodes.length) {
         this.handleAddedNodes(mutation.addedNodes, observer)
       }
@@ -259,7 +268,8 @@ export class UserVitals extends CommonExtends {
   }
 
   /**
-   * 格式化响应数据
+   * HTML 响应用占位符替换，避免把整页 DOM 写入接口日志。
+   * @param {unknown} response
    */
   private formatResponse(response: unknown): unknown {
     return typeof response === 'string' && isHtml(response) ? '[-Body内容为HTML已过滤-]' : response

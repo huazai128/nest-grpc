@@ -1,15 +1,16 @@
-import { BehaviorItem, IMetrics, TransportCategory } from './interfaces/util.interface'
+import { BehaviorItem, FN1, IMetrics, TransportCategory } from './interfaces/util.interface'
 import localForage from 'localforage'
-import { getCookie, proxyHash, proxyHistory, wrHistory } from './utils'
+import { getCookie, getPageKey, proxyHash, proxyHistory, wrHistory } from './utils'
 import { v4 as uuidv4 } from 'uuid'
 import { ConfigProps } from './interfaces/config.interface'
 import { omitEmpty } from './compactLog'
 
+/** IndexedDB：未 ack 的日志队列和行为轨迹 */
 const store = localForage.createInstance({
   name: 'behaviorLog',
 })
 
-// 排除不需要记录在用户行为里面的key
+/** 不写入 breadcrumbs 的类别：性能与录屏体积大且对错误排查帮助有限 */
 const noList = [TransportCategory.PREF, TransportCategory.RV]
 
 /**
@@ -44,7 +45,14 @@ export default abstract class LogStore {
   protected len: number = 10
   // 存储最大用户行为数
   protected maxBehaviorLen = 200
+  /** 上次已处理的页面键，包含 search / hash，避免 Hash 路由丢 pageInfo */
+  private lastPageKey = ''
+  /** 页面切换订阅：PV、曝光、白屏共用这一路，避免各自听路由 */
+  private pageChangeHandlers: FN1[] = []
 
+  /**
+   * 包装 History、恢复 IndexedDB 队列、监听路由以生成 pageInfo。
+   */
   constructor() {
     wrHistory()
     this.getInit()
@@ -69,28 +77,56 @@ export default abstract class LogStore {
   }
 
   /**
+   * 订阅页面切换。bootstrap / 路由变化时统一回调，采集模块不要再各自绑 hash/history。
+   * @param {FN1} handler
+   * @memberof LogStore
+   */
+  subscribePageChange = (handler: FN1): void => {
+    this.pageChangeHandlers.push(handler)
+  }
+
+  /**
+   * 页面键变化才换 pageId 并通知订阅方。
+   * @private
+   * @param {Event} [event]
+   * @memberof LogStore
+   */
+  private emitPageChange = (event?: Event): void => {
+    const key = getPageKey()
+    if (key === this.lastPageKey && this.pageId) return
+    this.lastPageKey = key
+    this.dynamicInfo(event)
+    this.pageChangeHandlers.forEach((handler) => {
+      try {
+        handler(event)
+      } catch (error) {
+        console.error('page change handler failed:', error)
+      }
+    })
+  }
+
+  /**
+   * 采集模块就绪后补发首屏 pageInfo，并尝试开始上报。
+   * SDK 若在 load/pageshow 之后才初始化，也能接到第一页。
+   * @memberof LogStore
+   */
+  bootstrap = (): void => {
+    if (!this.pageId) {
+      this.emitPageChange({ type: 'bootstrap' } as Event)
+    }
+    this.handlerCommon()
+  }
+
+  /**
    * 用于监听路由的变化
    * @memberof SendLog
    */
   initRouterChange = () => {
-    // 记录上一次的路径,用于对比是否发生变化
-    let lastPathname = ''
-    // 统一的路由变化处理函数
     const handleRouteChange = (event: Event) => {
-      const currentPathname = window.location.pathname
-      // 只在路径发生变化时触发
-      if (currentPathname === lastPathname) {
-        return
-      }
-      // 更新lastPathname并记录动态信息
-      lastPathname = currentPathname
-      this.dynamicInfo(event)
+      this.emitPageChange(event)
     }
-    // 监听页面显示事件,包括页面加载和从bfcache恢复
     window.addEventListener('pageshow', handleRouteChange, { capture: true })
-    // 监听hash路由变化
     proxyHash(handleRouteChange)
-    // 监听history路由变化
     proxyHistory(handleRouteChange)
   }
 
@@ -164,6 +200,7 @@ export default abstract class LogStore {
       this.maxBehaviorLen = config.maxBehaviorRecords
     }
     this.initPageInfo()
+    this.handlerCommon()
   }
 
   /**
@@ -196,28 +233,32 @@ export default abstract class LogStore {
    */
   initStore = async () => {
     // 此处要规避先后问题, 导致获取缓存数据前，就有上报数据 然后调用 peekLog，导致数据顺序不一致问题。
-    await Promise.all([
-      store.getItem(this.behaviorStoreKey).then((value) => {
-        if (value) {
-          const list = (value || []) as BehaviorItem[]
-          if (Array.isArray(list)) {
-            this.behaviorList = [...list, ...this.behaviorList]
+    try {
+      await Promise.all([
+        store.getItem(this.behaviorStoreKey).then((value) => {
+          if (value) {
+            const list = (value || []) as BehaviorItem[]
+            if (Array.isArray(list)) {
+              this.behaviorList = [...list, ...this.behaviorList]
+            }
           }
-        }
-        return true
-      }),
-      store.getItem(this.logsStoreKey).then((value) => {
-        if (value) {
-          const restored = this.restoreLogs(value)
-          // 确保这里添加数组开始
-          this.logList = [...restored, ...this.logList]
-        }
-        return true
-      }),
-    ])
-    this.persistLogs()
-    this.isOver = true
-    this.handlerCommon()
+          return true
+        }),
+        store.getItem(this.logsStoreKey).then((value) => {
+          if (value) {
+            const restored = this.restoreLogs(value)
+            this.logList = [...restored, ...this.logList]
+          }
+          return true
+        }),
+      ])
+    } catch (error) {
+      console.error('Failed to restore log queue:', error)
+    } finally {
+      this.persistLogs()
+      this.isOver = true
+      this.handlerCommon()
+    }
   }
 
   /**

@@ -24,6 +24,15 @@
 - 服务端合并：`webInfo` 和 `pageInfo` 会在服务端按 `traceId` 缓存 3 天，普通日志入库前会合并对应的基础网页信息、页面信息、`ip` 和 `ua`。`siteId`、`traceId` 取自批量外层（单条日志带 `traceId` 时以单条为准）。接口在入库流程完成后再返回 204。
 - 传输压缩（不丢采集语义）：发送前去掉空值/`siteId`/与外层相同的 `traceId`；同一批内连续相同的 `pageId` 只出现一次，服务端按批内上一页回填。超长字符串只按服务端入库上限截断（`queryUrl`、资源 `name`、元素文本不截）。资源不再重复上报与 `ttfb` 相同的 `request`，入库时用 `ttfb` 回填 `request`；`contentDownload` 为 `responseEnd - responseStart`。HTTP 只上报 `queryUrl`，入库时拆出 `url`/`params`。为 0 的未采集阶段时间戳不上报。
 
+## 采集流程
+
+初始化顺序：`rewriteConsole` → `setConfig`（入队 `webInfo`）→ `WebVitals` / `UserVitals` / `ErrorVitals` 挂采集 → `bootstrap` 补发首屏 `pageInfo` 并通知订阅方。
+
+- 页面生命周期由 `LogStore` 统一发出：path + search + hash 变化才换 `pageId`。PV、曝光、白屏都订阅这一路，不再各自绑路由。
+- SDK 若在 `load` / `pageshow` 之后才执行，仍会补首屏 `pageInfo`、PV、录屏和资源耗时，不会把第一页丢掉。
+- IndexedDB 恢复失败也会把 `isOver` 打开，避免队列永久不发。
+- 常规上报：入队 → 定时批量 POST → HTTP 2xx 后 ack；失败或离线保留队列，`online` 后续发；页面隐藏走 Beacon / keepalive。
+
 ## 初始化配置
 
 ```ts
@@ -39,7 +48,7 @@ interface ConfigProps {
 
 - `url`：上报服务地址，必填。
 - `appKey`：站点 ID，必填，上报时落到 `siteId`。
-- `mode`：环境标识，如 `test`、`release`、`prod`。
+- `mode`：环境标识，如 `test`、`release`、`prod`。初始化时会重写 `console`：`prod` 不输出，其余环境原样打印参数。
 - `isExposure`：是否开启曝光埋点，默认开启；传 `false` 时不初始化曝光监听。
 - `maxBehaviorRecords`：行为轨迹最大记录数，默认 `200`。
 - `isOnRecord`：是否开启录屏，默认开启；传 `false` 时不启动 rrweb。自定义埋点通过 `window.sendTracker` 上报。
@@ -84,7 +93,7 @@ interface ConfigProps {
 | `event` | 用户行为 | 点击、失焦、触摸、曝光 | `click-behavior-record`、`change-exposure` |
 | `custom` | 自定义埋点 | `window.sendTracker` / 自定义处理器 | `custom-define-record` |
 | `api` | 接口请求 | `fetch` / `XMLHttpRequest` 代理 | `http-record` |
-| `error` | 错误 | JS、资源、Promise、HTTP、CORS、React | `js`、`resource`、`unhandledrejection`、`http-record`、`cors`、`react` |
+| `error` | 错误 | JS、资源、Promise、HTTP、CORS、React、报错白屏 | `js`、`resource`、`unhandledrejection`、`http-record`、`cors`、`react`、`blank-screen` |
 | `video` | 录屏数据 | `rrweb` | 当前未写入 |
 | `user` | 用户反馈 | `window.sendUserLog()` | 当前未写入 |
 
@@ -337,6 +346,9 @@ SDK 代理 `XMLHttpRequest` 和 `fetch`，请求完成后上报。
 | `http-record` | HTTP 异常或业务失败 | `value`（响应体，已做 HTML 过滤）、`meta` 中接口指标（不含 `response`，避免与 `value` 重复） |
 | `cors` | 跨域脚本错误 | `value`、`errorType` |
 | `react` | React ErrorBoundary 手动调用 | `value`、`componentName`、`stackTrace`、`meta.file` |
+| `blank-screen` | JS / React / 关键 script、css 失败后视口仍无内容 | `value`（含诱因错误与采样）、`errorType=BlankScreen`、`meta.status` 空白点数、`meta.row` 采样点数、`meta.col` 空白占比、`meta.statusText` 网络类型 |
+
+白屏不是 FP 耗时。只有页面级错误之后，视口 5×5 采样空白占比 ≥ 88% 才上报。弱网（2g/3g/高 RTT）会延长等待，文档或关键资源仍在加载时不报，避免把慢开页当成白屏。同一 `pathname` 只报一次。
 
 `BehaviorItem`：
 
@@ -741,6 +753,33 @@ SDK 使用 `rrweb` 录制页面操作。达到检查点或单片段大小阈值�
   },
   "recordKeys": ["video018f6b8c-1111-4222-8333-7f0000000008"],
   "timestamp": 1710000000700
+}
+```
+
+### 报错白屏：`blank-screen`
+
+JS / React / 关键脚本样式失败后，视口采样仍无内容才上报。弱网加载中不上报。
+
+```json
+{
+  "category": "error",
+  "reportsType": "blank-screen",
+  "pageId": "pageId:018f6b8c-aaaa-4222-8333-7f0000000002",
+  "monitorId": "error018f6b8c-8888-4222-8333-7f0000000015",
+  "value": "页面白屏: TypeError Cannot read properties of undefined | empty=24/25 net=3g fcp=0 wait=10020",
+  "errorType": "BlankScreen",
+  "errorUid": "blank-screen-4e1a90c2",
+  "meta": {
+    "file": "https://example.com/dashboard",
+    "url": "https://example.com/dashboard",
+    "status": 24,
+    "row": 25,
+    "col": 96,
+    "statusText": "3g"
+  },
+  "breadcrumbs": [{ "type": "pv", "monitorId": "pv018f6b8c-bbbb-4222-8333-7f0000000003" }],
+  "recordKeys": ["video018f6b8c-1111-4222-8333-7f0000000008"],
+  "timestamp": 1710000000750
 }
 ```
 

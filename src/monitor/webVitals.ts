@@ -25,9 +25,9 @@ import { CommonExtends } from './commonExtends'
  * - Resource Flow - 资源加载流
  */
 export class WebVitals extends CommonExtends {
-  // 记录页面加载开始时间
+  /** 构造时的 performance.now()，用于 FMP 相对耗时 */
   private readonly startTime: number
-  // 记录 FCP 与实际时间的差值
+  /** FCP 时刻与 startTime 的差，辅助 FMP 判断 */
   private diffTime: number = 0
 
   /**
@@ -170,6 +170,7 @@ export class WebVitals extends CommonExtends {
       const resourceFlow: Array<ResourceFlowTiming> = []
       const resObserve = getResourceFlow(resourceFlow)
 
+      // load 后断开观察，再用 getEntriesByType 补全 Observer 漏掉的资源
       const stopListening = () => {
         resObserve?.disconnect()
         const metrics = getPerformanceResourceFlow() as Array<ResourceFlowTiming>
@@ -186,7 +187,7 @@ export class WebVitals extends CommonExtends {
         )
       }
 
-      window.addEventListener('load', stopListening, { once: true, capture: true })
+      afterLoad(stopListening)
     } catch (error) {
       console.error('Failed to initialize Resource Flow:', error)
     }

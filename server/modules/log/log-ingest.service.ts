@@ -10,68 +10,30 @@ import { isProdEnv } from '@app/config'
 import { QueryVisitor } from '@app/decorators/params.decorator'
 import { RedisService } from '@app/processors/redis/redis.service'
 import { grpcFallbackExecutor } from '@app/utils/boundedExecutor'
+import { hydrateCollectedAliases } from './logPayload.util'
 
 const logger = createLogger({ scope: 'LogIngestService', time: isProdEnv ? false : true })
 
+/** Kafka 单条消息上限（字节），超限改走 gRPC 兜底 */
 const maxKafkaPayloadBytes = 1048576
+/** webInfo / pageInfo 在 Redis 的 TTL（秒），默认 3 天 */
 const WEB_INFO_TIME = 3 * 24 * 60 * 60
+/** 会话级网页信息 category，只写 Redis 不入库 */
 const WEB_INFO = 'webInfo'
+/** 页面级信息 category，只写 Redis 不入库 */
 const PAGE_INFO = 'pageInfo'
+/** /multi 单次最多处理条数，超出截断并打日志 */
 const MULTI_MAX = 100
+/** 写入 Redis 时跳过的瞬时字段，避免污染后续日志合并 */
 const CACHE_SKIP_KEYS = new Set(['category', 'reportsType', 'timestamp'])
 
-function splitQueryUrl(queryUrl: string): { url: string; params?: Record<string, string> } {
-  const q = queryUrl.indexOf('?')
-  const url = q === -1 ? queryUrl : queryUrl.slice(0, q)
-  if (q === -1 || q === queryUrl.length - 1) return { url }
-  const params: Record<string, string> = {}
-  queryUrl
-    .slice(q + 1)
-    .split('&')
-    .forEach((pair) => {
-      if (!pair) return
-      const eq = pair.indexOf('=')
-      const rawKey = eq === -1 ? pair : pair.slice(0, eq)
-      const rawVal = eq === -1 ? '' : pair.slice(eq + 1)
-      try {
-        const key = decodeURIComponent(rawKey.replace(/\+/g, ' '))
-        const value = decodeURIComponent(rawVal.replace(/\+/g, ' '))
-        if (key) params[key] = value
-      } catch {
-        if (rawKey) params[rawKey] = rawVal
-      }
-    })
-  return Object.keys(params).length ? { url, params } : { url }
-}
-
-function hydrateHttpFromQueryUrl(target: Record<string, unknown> | undefined): void {
-  if (!target) return
-  if (typeof target.queryUrl !== 'string' || !target.queryUrl) return
-  if (target.url != null && target.url !== '') return
-  const parsed = splitQueryUrl(target.queryUrl)
-  target.url = parsed.url
-  if (target.params == null && parsed.params) {
-    target.params = parsed.params
-  }
-}
-
-function hydrateCollectedAliases(data: LogData): void {
-  const rec = data as LogData & {
-    resourcePrefs?: Array<Record<string, number>>
-    meta?: Record<string, unknown>
-  }
-  const prefs = rec.resourcePrefs
-  if (Array.isArray(prefs)) {
-    prefs.forEach((row) => {
-      if (row && row.request == null && row.ttfb != null) {
-        row.request = row.ttfb
-      }
-    })
-  }
-  hydrateHttpFromQueryUrl(rec as Record<string, unknown>)
-  hydrateHttpFromQueryUrl(rec.meta)
-}
-
+/**
+ * 抽出可缓存的网页/页面字段，附带本批 siteId/traceId。
+ * 空值不写，避免把空串覆盖掉 Redis 里已有的有效值。
+ * @param {Partial<LogData>} item
+ * @param {{ siteId?: string, traceId?: string }} extras 批次外层会话字段
+ * @return {Record<string, unknown>}
+ */
 function pickCacheFields(
   item: Partial<LogData>,
   extras: { siteId?: string; traceId?: string },
@@ -85,6 +47,7 @@ function pickCacheFields(
   return out
 }
 
+/** 允许入库的业务 category；webInfo / pageInfo 只进 Redis，不在此集合 */
 const supportedCategories = new Set<string>([
   TransportCategory.EVENT,
   TransportCategory.API,
@@ -96,6 +59,10 @@ const supportedCategories = new Set<string>([
   TransportCategory.RV,
 ])
 
+/**
+ * HTTP 上报入口：/multi 批量合并 Redis 后进 Kafka，失败再 gRPC 兜底。
+ * 负责外层 siteId/traceId、pageId 批内回填、压缩字段还原。
+ */
 @Injectable()
 export class LogIngestService {
   constructor(
@@ -104,10 +71,12 @@ export class LogIngestService {
     private readonly cacheService: RedisService,
   ) {}
 
+  /** 转成 gRPC SaveLogRequest；当前即浅拷贝，保留 hydrate 后的别名 */
   private preparePayload(data: LogData): SaveLogRequest {
     return { ...data } as SaveLogRequest
   }
 
+  /** webInfo/pageInfo 以外、且在 supportedCategories 内才允许入库 */
   private isSupported(data: LogData): boolean {
     return (
       data.category === TransportCategory.RV ||
@@ -115,10 +84,12 @@ export class LogIngestService {
     )
   }
 
+  /** Kafka 不可用或超限时限流调用 nest-server saveLog */
   private enqueueGrpcFallback(payload: SaveLogRequest): void {
     grpcFallbackExecutor.run(() => this.logService.saveLog(payload))
   }
 
+  /** 估算 JSON 字节；序列化失败视为超限，避免把坏数据塞进 Kafka */
   private estimateBytes(data: LogData): number {
     try {
       return new TextEncoder().encode(JSON.stringify(data)).length
@@ -166,6 +137,10 @@ export class LogIngestService {
     await this.processMultiLogs(slice, visitor, { siteId, traceId })
   }
 
+  /**
+   * 逐条：webInfo/pageInfo 写 Redis；普通日志合并缓存、回填 pageId、还原压缩字段后组 Kafka 批。
+   * 单条带 traceId 时优先于批次外层，避免跨会话补报串会话。
+   */
   private async processMultiLogs(
     items: Partial<LogData>[],
     visitor: QueryVisitor,
@@ -214,7 +189,7 @@ export class LogIngestService {
         ua_result: visitor.ua_result,
       } as LogData
 
-      hydrateCollectedAliases(merged)
+      hydrateCollectedAliases(merged as Record<string, unknown>)
 
       if (!this.isSupported(merged)) continue
 

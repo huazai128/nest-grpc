@@ -1,7 +1,12 @@
 import { FN1, HttpMetrics } from './interfaces/util.interface'
 import fastJson from 'fast-json-stringify'
 
-// 定义通用的JSON schema
+/**
+ * HTTP 代理：只包装一次 XMLHttpRequest / fetch，多个采集回调共享同一层。
+ * 业务请求本身不受影响；单个回调失败不会中断其余监听。
+ */
+
+// 定义通用的JSON schema，允许任意响应字段
 const responseSchema = {
   type: 'object' as const,
   additionalProperties: true,
@@ -10,7 +15,9 @@ const responseSchema = {
 const stringify = fastJson(responseSchema)
 
 /**
- * 安全的JSON序列化，使用fastJson避免多次stringify导致的斜杠问题
+ * 安全的 JSON 序列化，使用 fastJson 避免多次 stringify 导致的斜杠问题。
+ * @param {*} data
+ * @return {string}
  */
 const safeStringify = (data: any): string => {
   try {
@@ -163,7 +170,8 @@ const safeStringify = (data: any): string => {
 }
 
 /**
- * 解析响应数据
+ * 解析响应为 status / message / result 摘要，解析失败则整包作为 result。
+ * @param {*} response
  */
 const parseResponse = (response: any) => {
   try {
@@ -186,14 +194,25 @@ const parseResponse = (response: any) => {
   }
 }
 
+/** XHR send 前回调列表（预留扩展） */
 const xhrSendHandlers: FN1[] = []
+/** XHR 完成回调，采集接口日志 / HTTP 错误 */
 const xhrLoadHandlers: FN1[] = []
+/** 是否已替换 window.XMLHttpRequest，避免重复包装 */
 let xhrProxied = false
 
+/** fetch 发起前回调列表 */
 const fetchSendHandlers: FN1[] = []
+/** fetch 完成 / 失败回调 */
 const fetchLoadHandlers: FN1[] = []
+/** 是否已替换 window.fetch */
 let fetchProxied = false
 
+/**
+ * 依次通知采集回调，单个失败不影响其余监听和业务请求。
+ * @param {FN1[]} handlers
+ * @param {unknown} payload
+ */
 const notify = (handlers: FN1[], payload: unknown) => {
   handlers.forEach((handler) => {
     try {
@@ -205,7 +224,10 @@ const notify = (handlers: FN1[], payload: unknown) => {
 }
 
 /**
- * XMLHttpRequest代理。多次调用只包装一次，额外 handler 追加到列表。
+ * XMLHttpRequest 代理。多次调用只包装一次，额外 handler 追加到列表。
+ * 使用原生构造器采集，上报通道走 oXMLHttpRequest，避免监控自己的上报请求。
+ * @param {(FN1 | null | undefined)} sendHandler
+ * @param {FN1} loadHandler
  */
 export const proxyXmlHttp = (sendHandler: FN1 | null | undefined, loadHandler: FN1) => {
   if (!('XMLHttpRequest' in window) || typeof window.XMLHttpRequest !== 'function') return
@@ -280,7 +302,10 @@ export const proxyXmlHttp = (sendHandler: FN1 | null | undefined, loadHandler: F
 }
 
 /**
- * Fetch代理。多次调用只包装一次，额外 handler 追加到列表。
+ * Fetch 代理。多次调用只包装一次，额外 handler 追加到列表。
+ * 通过 clone() 读响应文本，不消耗业务侧 body。
+ * @param {(FN1 | null | undefined)} sendHandler
+ * @param {FN1} loadHandler
  */
 export const proxyFetch = (sendHandler: FN1 | null | undefined, loadHandler: FN1) => {
   if (!('fetch' in window) || typeof window.fetch !== 'function') return

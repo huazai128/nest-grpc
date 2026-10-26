@@ -3,6 +3,7 @@ import LogStore from './logStore'
 import fastJson from 'fast-json-stringify'
 import { compactLogBatch } from './compactLog'
 
+/** 批量上报 JSON schema：siteId / traceId 放外层，logs 为压缩后的单条列表 */
 const schema = {
   type: 'object' as const,
   properties: {
@@ -23,8 +24,10 @@ const stringify = fastJson(schema)
 
 /** Chrome sendBeacon 常见上限约 64KB，预留余量后超限改走 XHR / keepalive */
 const BEACON_MAX_BYTES = 60 * 1024
+/** 常规 XHR 上报超时，超时视为失败并保留队列 */
 const XHR_TIMEOUT = 10000
 
+/** 批量请求体：会话字段在外层，单条日志不再重复携带 */
 type MultiLogPayload = {
   siteId?: string
   traceId: string
@@ -38,11 +41,17 @@ type MultiLogPayload = {
  * @extends {LogStore}
  */
 export class SendLog extends LogStore {
+  /** 定时续发句柄 */
   private timer?: number
+  /** 常规上报间隔（毫秒） */
   private time: number = 1500
+  /** 是否正在发送，避免并发出队 */
   private sending = false
+  /** 生命周期监听是否已绑定，防止重复注册 */
   private unloadBound = false
+  /** 上次隐藏刷新时间，短间隔内去重 */
   private lastFlushAt = 0
+
   constructor() {
     super()
     this.bindLifecycle()
@@ -112,6 +121,13 @@ export class SendLog extends LogStore {
     }
   }
 
+  /**
+   * 组装批量请求体：外层带 siteId / traceId，单条日志做传输压缩。
+   * @private
+   * @param {IMetrics[]} list
+   * @return {MultiLogPayload}
+   * @memberof SendLog
+   */
   private buildParams(list: IMetrics[]): MultiLogPayload {
     return {
       siteId: this.config?.appKey,
@@ -163,6 +179,12 @@ export class SendLog extends LogStore {
     if (acked > 0) this.ackLog(acked)
   }
 
+  /**
+   * 页面卸载阶段用 fetch keepalive 补发，无法确认成功故不 ack。
+   * @private
+   * @param {string} payload
+   * @memberof SendLog
+   */
   private keepaliveSend(payload: string) {
     const nativeFetch = ((window as any).oFetch || window.fetch) as typeof fetch | undefined
     if (typeof nativeFetch !== 'function') return
@@ -203,4 +225,5 @@ export class SendLog extends LogStore {
   }
 }
 
+/** 全局单例，各采集模块共用同一队列 */
 export default new SendLog()
