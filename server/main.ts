@@ -32,7 +32,7 @@ async function bootstrap() {
 
   // 配置全局中间件
   app.use(compression()) // 启用 gzip 压缩
-  app.use(bodyParser.json({ limit: '10mb' })) // 解析 JSON 请求体，限制大小为 10mb
+  app.use(bodyParser.json({ limit: '300mb' }))
   app.use(cookieParser(COOKIE_KEY)) // 解析 Cookie
 
   // 自定义 Morgan 日志格式

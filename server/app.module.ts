@@ -20,6 +20,8 @@ import { OriginMiddleware } from '@app/middlewares/origin.middleware' // 来源�
 import { RedisCoreModule } from '@app/processors/redis/redis.module' // Redis核心模块
 import { RedisService } from '@app/processors/redis/redis.service' // Redis服务
 import { MicroserviceModule } from '@app/processors/microservices/microservice.module' // 微服务模块
+import { MonitorGrpcModule } from '@app/processors/grpc/monitor-grpc.module'
+import { KafkaModule } from '@app/processors/kafka/kafka.module'
 import { WebsocketModule } from '@app/processors/websocket/websocket.module' // WebSocket模块
 
 // 拦截器导入
@@ -31,6 +33,8 @@ import { LoggingInterceptor } from '@app/interceptors/logging.interceptor' // �
     RedisCoreModule.forRoot(CONFIG.redis),
     // 导入微服务和WebSocket模块
     MicroserviceModule,
+    MonitorGrpcModule,
+    KafkaModule,
     WebsocketModule,
     // 导入其他功能模块
     ...modules,

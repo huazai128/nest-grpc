@@ -52,17 +52,33 @@ export class RouterController {
    * @param {string} id - 站点ID
    * @returns {Promise<Object>} 渲染数据
    */
+  @Get('/admin/:siteId/*')
+  @UseGuards(RouterGuard)
+  @Header(HTML_CONTENT_TYPE, HTML_CONTENT_VALUE)
+  @Render('index')
+  async adminPage(@Req() req: Request, @Param('siteId') siteId: string) {
+    const commonData = this.routeService.getCommonData(req)
+    const siteInfo = (await this.routeService.getSiteInfo(siteId)) || {}
+    return { data: { ...commonData, ...siteInfo } }
+  }
+
   @Get('/page/:id/*')
   @UseGuards(RouterGuard)
   @Header(HTML_CONTENT_TYPE, HTML_CONTENT_VALUE)
   @Render('index')
   async homePage(@Req() req: Request, @Param('id') id: string) {
-    // 获取通用数据
     const commonData = this.routeService.getCommonData(req)
-    // 获取站点特定信息
     const siteInfo = (await this.routeService.getSiteInfo(id)) || {}
-    // 合并数据返回
     return { data: { ...commonData, ...siteInfo } }
+  }
+
+  @Get('/action-detail/:id')
+  @UseGuards(RouterGuard)
+  @Header(HTML_CONTENT_TYPE, HTML_CONTENT_VALUE)
+  @Render('index')
+  actionDetailPage(@Req() req: Request) {
+    const commonData = this.routeService.getCommonData(req)
+    return { data: { ...commonData } }
   }
 
   /**

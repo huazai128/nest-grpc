@@ -1,4 +1,4 @@
-@use '../../../styles/_var' as *;
+@import 'src/styles/_base.scss';
 
 .siderBox {
   :global(.ant-layout-sider-children) {

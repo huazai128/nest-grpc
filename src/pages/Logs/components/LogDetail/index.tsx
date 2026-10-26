@@ -2,74 +2,72 @@ import React from 'react'
 import { List, Space, Typography, Tooltip, Tag } from 'antd'
 import ErrorBoundaryHoc from '@src/components/ErrorBoundary'
 import dayjs from 'dayjs'
+import { CopyOutlined } from '@ant-design/icons'
 import styles from './style.scss'
-import { isObject, isString } from 'lodash'
-import { LogItem } from '@src/interfaces/log.interface'
-import { MetricsName } from '@src/monitor/interfaces/util.interface'
-import { TransportCategory } from '@src/interfaces/monitor.interface'
+import { isObject } from 'lodash'
+import { MetricsName, TransportCategory } from '@src/types'
 
 const keys = ['create_at', 'update_at']
-const excludeKeys = ['events', 'stackTrace', 'resourcePrefs', 'breadcrumbs', 'ua_result']
+const excludeKeys = ['events', 'stackTrace', 'resourcePrefs', 'breadcrumbs']
 const pKeys = ['params', 'url', 'method', 'body']
 
 const { Title, Text } = Typography
 
-interface IProps extends LogItem {
-  onModalType: (type: string, item: LogItem, title: string) => void
+interface IProps extends ILogStore.LogItem {
+  onModalType: (type: string, item: ILogStore.LogItem, title: string) => void
 }
 
 const LogDetail = ({ onModalType, ...item }: IProps) => {
   const render = () => {
-    if (item.category == TransportCategory.ERROR) {
+    if (item.doce.category == TransportCategory.ERROR) {
       return (
         <>
-          <Tag color="#108ee9" onClick={() => onModalType('code', item, '查看源码')}>
+          <Tag color="#108ee9" onClick={() => onModalType('code', item.doce, '查看源码')}>
             查看源码
           </Tag>
-          <Tag color="#108ee9" onClick={() => onModalType('record', item, '查看录制')}>
+          <Tag color="#108ee9" onClick={() => onModalType('record', item.doce, '查看录制')}>
             查看录制
           </Tag>
-          <Tag color="#108ee9" onClick={() => onModalType('behavior', item, '查看用户行为')}>
+          <Tag color="#108ee9" onClick={() => onModalType('behavior', item.doce, '查看用户行为')}>
             查看用户行为
           </Tag>
         </>
       )
     } else {
-      switch (item.reportsType) {
+      switch (item.doce.reportsType) {
         case MetricsName.FP:
           return (
-            <Tag color="#108ee9" onClick={() => onModalType(MetricsName.FP, item, 'FP分析')}>
+            <Tag color="#108ee9" onClick={() => onModalType(MetricsName.FP, item.doce, 'FP分析')}>
               FP分析
             </Tag>
           )
         case MetricsName.NT:
           return (
-            <Tag color="#108ee9" onClick={() => onModalType(MetricsName.NT, item, 'NT分析')}>
+            <Tag color="#108ee9" onClick={() => onModalType(MetricsName.NT, item.doce, 'NT分析')}>
               NT分析
             </Tag>
           )
         case MetricsName.FMP:
           return (
-            <Tag color="#108ee9" onClick={() => onModalType(MetricsName.FMP, item, 'FMP分析')}>
+            <Tag color="#108ee9" onClick={() => onModalType(MetricsName.FMP, item.doce, 'FMP分析')}>
               FMP分析
             </Tag>
           )
         case MetricsName.FCP:
           return (
-            <Tag color="#108ee9" onClick={() => onModalType(MetricsName.FCP, item, 'FCP分析')}>
+            <Tag color="#108ee9" onClick={() => onModalType(MetricsName.FCP, item.doce, 'FCP分析')}>
               FCP分析
             </Tag>
           )
         case MetricsName.RF:
           return (
-            <Tag color="#108ee9" onClick={() => onModalType(MetricsName.RF, item, 'RF分析')}>
+            <Tag color="#108ee9" onClick={() => onModalType(MetricsName.RF, item.doce, 'RF分析')}>
               RF分析
             </Tag>
           )
       }
     }
   }
-  const uaResult = isString(item?.ua_result) ? JSON.parse(item?.ua_result) : item?.ua_result
   return (
     <List.Item key={item.id}>
       <Space className={styles.logItem}>
@@ -80,29 +78,16 @@ const LogDetail = ({ onModalType, ...item }: IProps) => {
         <Space direction="vertical">
           <Space className={styles.tagList} size={[0, 8]} wrap>
             <Tooltip title="复制">
-              <Text style={{ marginRight: '8px' }}>复制</Text>
+              <Text style={{ marginRight: '8px' }}>
+                <CopyOutlined />
+              </Text>
             </Tooltip>
-            <Tag color="#108ee9" onClick={() => onModalType('ip', item, 'IP分析')}>
-              IP: {item.ip} 分析
-            </Tag>
-            <Tooltip
-              overlay={
-                <div className={styles.uaResult}>
-                  <p>浏览器: {uaResult?.browser?.name}</p>
-                  <p>操作系统: {uaResult?.os?.name}</p>
-                  <p>操作系统版本: {uaResult?.os?.version}</p>
-                  <p>浏览器版本: {uaResult?.engine?.version}</p>
-                  <p>引擎: {uaResult?.engine?.name}</p>
-                  <p>UA: {uaResult?.ua}</p>
-                </div>
-              }
-            >
-              <Tag color="#108ee9">UA分析</Tag>
-            </Tooltip>
+            <Tag color="#108ee9">IP: {item.doce.ip} 分析</Tag>
+            <Tag color="#108ee9">UA分析</Tag>
             {render()}
           </Space>
-          {isObject(item) &&
-            Object.entries(item).map(
+          {isObject(item.doce) &&
+            Object.entries(item.doce).map(
               ([key, value]: any) =>
                 !!value &&
                 !excludeKeys.includes(key) && (
@@ -111,15 +96,15 @@ const LogDetail = ({ onModalType, ...item }: IProps) => {
                     {isObject(value)
                       ? JSON.stringify(value)
                       : keys.includes(key)
-                        ? dayjs(value).format('YYYY-MM-DD HH:mm:ss')
-                        : value || ''}
+                      ? dayjs(value).format('YYYY-MM-DD HH:mm:ss')
+                      : value || ''}
                   </Text>
                 ),
             )}
-          {item?.requestTime && item.responseTime && (
+          {item.doce?.requestTime && item.doce?.responseTime && (
             <Text className={styles.logInfo}>
               <Tag>接口耗时:</Tag>
-              {item.responseTime - item.requestTime}
+              {item.doce?.responseTime - item.doce?.requestTime}
             </Text>
           )}
           {item.category === 'error' &&

@@ -2,16 +2,41 @@ import { StoreExt } from '@src/utils/reactExt'
 import { action, observable, makeObservable, computed, toJS } from 'mobx'
 import * as STORE_KEY from '@src/constants/storeKey.constant'
 import { MenuProps } from 'antd'
-import { routesFlat } from '@src/routes'
 import { pathToRegexp } from 'path-to-regexp'
+import { routesFlat } from '@src/routes'
+import { MechanismType } from '@src/interfaces/log.interface'
+
+const errorList: Array<IGlobalStore.ErrorTypeItem> = [
+  {
+    label: '跨域报错',
+    value: MechanismType.CS,
+  },
+  {
+    label: 'HTTP请求报错',
+    value: MechanismType.HP,
+  },
+  {
+    label: 'JS代码错误',
+    value: MechanismType.JS,
+  },
+  {
+    label: 'Promise错误',
+    value: MechanismType.UJ,
+  },
+  {
+    label: '资源加载错误',
+    value: MechanismType.RS,
+  },
+  {
+    label: 'React组件错误',
+    value: MechanismType.REACT,
+  },
+]
 
 export class GlobalStore extends StoreExt {
   constructor() {
     super()
     makeObservable(this)
-    if (window.INIT_DATA._id) {
-      this.updateSite(window.INIT_DATA._id)
-    }
   }
 
   private curTheme = localStorage.getItem(STORE_KEY.SIDE_BAR_THEME) as IGlobalStore.SideBarTheme
@@ -23,6 +48,9 @@ export class GlobalStore extends StoreExt {
 
   // 上报类型数据
   @observable categoryList: Array<IGlobalStore.CategoryItem> = window.INIT_DATA?.categoryList || []
+
+  // 错误类型数据
+  @observable errorTypeList: Array<IGlobalStore.ErrorTypeItem> = errorList
 
   /**
    * 菜单栏折叠
@@ -76,36 +104,19 @@ export class GlobalStore extends StoreExt {
     localStorage.setItem(STORE_KEY.NAV_OPEN_KEYS, JSON.stringify(openKeys))
   }
 
-  /**
-   * 选择路由
-   * @param {*} { selectedKeys }
-   * @type {MenuProps['onSelect']}
-   * @memberof GlobalStore
-   */
   @action
   onSelected: MenuProps['onSelect'] = ({ selectedKeys }: any) => {
     this.selectedKeys = selectedKeys
     localStorage.setItem(STORE_KEY.SELECTED_KEY, JSON.stringify(selectedKeys))
   }
 
-  /**
-   * 更新选中的路由
-   * @param {string} pathname
-   * @memberof GlobalStore
-   */
   @action
   updateSelectKey = (pathname: string) => {
-    const key = (routesFlat.find((item) => item.path && pathToRegexp(`/page/${item.path}`).exec(pathname))?.key ||
-      '1') as string
+    const key = (routesFlat.find((item) => item.path && pathToRegexp(item.path).exec(pathname))?.key || '1') as string
     this.selectedKeys = [key]
     localStorage.setItem(STORE_KEY.SELECTED_KEY, JSON.stringify(toJS(this.selectedKeys)))
   }
 
-  /**
-   * 更新站点
-   * @param {string} siteId
-   * @memberof GlobalStore
-   */
   @action
   updateSite = (siteId: string) => {
     this.siteId = siteId

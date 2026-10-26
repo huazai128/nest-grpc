@@ -5,7 +5,7 @@ import { LogList, SaveLogRequest } from '@app/protos/log'
 import { Controller, Get, Post, Query, Res, UseGuards } from '@nestjs/common'
 import { Response as ExpressResponse } from 'express'
 import { LogService } from './log.service'
-import { RedisService } from '@app/processors/redis/redis.service'
+import { LogIngestService } from './log-ingest.service'
 import { LogChartQueryDTO, LogData, LogPaginateQueryDTO } from './log.dto'
 import { ApiGuard } from '@app/guards/api.guard'
 import { ChartItem } from '@app/protos/common/chart_item'
@@ -13,17 +13,11 @@ import { createLogger } from '@app/utils/logger'
 
 const logger = createLogger({ scope: 'LogController', time: true })
 
-const WEB_INFO_TIME = 3 * 24 * 60 * 60
-
-const WEB_INFO = 'webInfo'
-
-const PAGE_INFO = 'pageInfo'
-
 @Controller('/api/log')
 export class LogController {
   constructor(
     private readonly logService: LogService,
-    private readonly cacheService: RedisService,
+    private readonly logIngestService: LogIngestService,
   ) {}
 
   /**
@@ -32,6 +26,7 @@ export class LogController {
    * @return {*}  {Promise<LogList>}
    * @memberof LogController
    */
+  @Get()
   @Get('list')
   @UseGuards(ApiGuard)
   @Responsor.api()
@@ -39,6 +34,24 @@ export class LogController {
   @Responsor.handle('获取日志列表')
   getLogs(@Query() query: LogPaginateQueryDTO): Promise<LogList> {
     return this.logService.getLogs(query)
+  }
+
+  @Post()
+  @Responsor.api()
+  @Responsor.handle('单条日志上报')
+  async postLog(
+    @PlainBody() data: Partial<LogData>,
+    @QueryParams('visitor') visitor: QueryVisitor,
+    @Res() res: ExpressResponse,
+  ) {
+    const logData = {
+      ...data,
+      ip: visitor.ip || '',
+      ua: visitor.ua,
+      ua_result: visitor.ua_result,
+    } as LogData
+    this.logIngestService.kafkaSend(logData)
+    return res.status(204).json()
   }
 
   /**
@@ -57,39 +70,7 @@ export class LogController {
     @QueryParams('visitor') visitor: QueryVisitor,
     @Res() res: ExpressResponse,
   ) {
-    const { logs } = body
-
-    // 如果日志数组长度超过10，直接返回, 这里存在问题，就是数据量多，且日志数据量很大，导致内存占用过高. 所以约定上报日志数量不超过10条
-
-    // 不需要等所有的日志处理完成，直接返回
-    logs.map(async (item) => {
-      const cacheKey = `WEB_INFO:${item.traceId}`
-      const pageCacheKey = `PAGE_INFO:${item.traceId}`
-
-      if (item.category === WEB_INFO && item.traceId) {
-        // 缓存基础网页信息3天
-        await this.cacheService.set(cacheKey, item, WEB_INFO_TIME)
-      } else if (item.category === PAGE_INFO && item.traceId) {
-        // 缓存页面信息3天
-        await this.cacheService.set(pageCacheKey, item, WEB_INFO_TIME)
-      } else {
-        // 获取缓存的基础信息并合并
-        const webInfo = (await this.cacheService.get(cacheKey)) || {}
-        const pageInfo = (await this.cacheService.get(pageCacheKey)) || {}
-        // 合并日志数据
-        const logData = {
-          ...webInfo,
-          ...pageInfo,
-          ...item,
-          ip: visitor.ip || '',
-          ua: visitor.ua,
-        }
-
-        logger.info(`合并日志数据${item.reportsType}:`, logData)
-
-        await this.logService.saveLog(logData as SaveLogRequest)
-      }
-    })
+    this.logIngestService.ingestMultiLogs(body.logs, visitor)
     return res.status(204).json()
   }
 
@@ -129,5 +110,22 @@ export class LogController {
   getIpAnalysis(@Query() { ip }: { ip: string }) {
     logger.info('getIpAnalysis', ip)
     return this.logService.getIpAnalysis(ip)
+  }
+
+  @Get('aggregationPathOrUlr')
+  @UseGuards(ApiGuard)
+  @Responsor.api()
+  @Responsor.paginate()
+  @Responsor.handle('路径或URL聚合统计')
+  getLogsAggregation(@Query() query: LogPaginateQueryDTO & { type?: string }) {
+    return this.logService.getLogsAggregation(query)
+  }
+
+  @Get('getMemoryData')
+  @UseGuards(ApiGuard)
+  @Responsor.api()
+  @Responsor.handle('内存指标图表')
+  getMemoryData(@Query() query: LogChartQueryDTO) {
+    return this.logService.getMemoryData(query)
   }
 }

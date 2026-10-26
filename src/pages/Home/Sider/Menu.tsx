@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react'
-import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import React, { useCallback, useEffect } from 'react'
+import { useHistory, useRouteMatch, useLocation } from 'react-router-dom'
 import { menus, RouteCompont, routesFlat } from '@src/routes'
 import { IMenu } from '@src/interfaces/router.interface'
 import useRootStore from '@src/stores/useRootStore'
@@ -27,11 +27,12 @@ function getItem(
   } as MenuItem
 }
 
-export interface IProps {
+interface IProps {
   sideBarCollapsed: boolean
   sideBarTheme: IGlobalStore.SideBarTheme
   navOpenKeys: string[]
   setOpenKeys: (openKeys: string[]) => void
+  userInfo: IAuthStore.UserInfo
   history: History
   siteId: string
   selectedKeys: string[]
@@ -47,22 +48,20 @@ const items: MenuItem[] = menus.map(loopItem)
 const SiderMenu: React.FC = () => {
   const { globalStore } = useRootStore()
   const { sideBarTheme, selectedKeys, menuProps, onSelected, updateSelectKey } = globalStore
+  const history = useHistory()
   const location = useLocation()
-  const { id } = useParams()
-  const navigate = useNavigate()
+  let { params } = useRouteMatch('/admin/:id/*') as { params: any }
 
   useEffect(() => {
     updateSelectKey(location.pathname)
   }, [])
 
-  const goPage: MenuProps['onClick'] = (e) => {
-    if (id) {
-      const key = e.key
-      const path = routesFlat.find((item) => item.key === key)?.path
-      const url = path?.replace(':id', id)
-      url && navigate('/page/' + url)
-    }
-  }
+  const goPage: MenuProps['onClick'] = useCallback((e) => {
+    const key = e.key
+    const path = routesFlat.find((item) => item.key === key)?.path
+    const url = path?.replace(':id', params?.id)
+    url && history.push(url)
+  }, [])
 
   return (
     <Menu

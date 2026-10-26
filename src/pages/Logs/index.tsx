@@ -2,15 +2,13 @@ import Page from '@src/components/Page'
 import { Input, FormItemProps } from 'antd'
 import { observer } from 'mobx-react-lite'
 import SearchList from '@src/components/SearchData/SearchList'
+import useRootStore from '@src/stores/useRootStore'
+import DateSelect from '@src/components/DateSelect'
 import LogDetail from './components/LogDetail'
 import CategorySelect from '@src/components/CategorySelect'
+import CardChart from './components/CardChart'
 import LogModal from '@src/components/LogModal'
 import AggregationData from '@src/components/AggregationData'
-import { Site } from '@src/interfaces/site.interface'
-import { LogsProvider, useLogStore } from './store'
-import DateSelect from '@src/components/DateSelect'
-import CardChart from './components/CardChart'
-import { useEffect } from 'react'
 
 const formList: Array<FormItemProps> = [
   {
@@ -41,7 +39,7 @@ const formList: Array<FormItemProps> = [
 ]
 
 const TableAggregation = observer(() => {
-  const logStore = useLogStore()
+  const { logStore } = useRootStore()
   const { isLoaddingAgg, aggData, aggPage, onPageChange } = logStore
   return (
     <AggregationData
@@ -57,9 +55,9 @@ const TableAggregation = observer(() => {
   )
 })
 
-const Logs = observer(() => {
-  const logStore = useLogStore()
-  const { open, title, logInfo, type, ipAnalysis, aggregationPathOrUrlData, hideModal, updateType } = logStore
+const Logs = () => {
+  const { logStore } = useRootStore()
+  const { open, title, logInfo, type, aggregationPathOrUrlData, hideModal, updateType } = logStore
 
   const onSelectMenu = (type: string) => {
     updateType(type)
@@ -79,7 +77,7 @@ const Logs = observer(() => {
           centerChildren={<CardChart />}
           listProps={{
             isScrollData: false,
-            renderItem: (item: Site, index: number) => (
+            renderItem: (item: ISiteStore.Site, index: number) => (
               <LogDetail onModalType={logStore.onModalType} idx={index + 1} {...item} />
             ),
           }}
@@ -100,22 +98,9 @@ const Logs = observer(() => {
           }}
         ></SearchList>
       </Page>
-      <LogModal
-        open={open}
-        title={title}
-        logInfo={logInfo}
-        ipAnalysis={ipAnalysis}
-        type={type}
-        hideModal={hideModal}
-      />
+      <LogModal open={open} title={title} logInfo={logInfo} type={type} hideModal={hideModal} />
     </>
   )
-})
-
-export default function () {
-  return (
-    <LogsProvider>
-      <Logs />
-    </LogsProvider>
-  )
 }
+
+export default observer(Logs)

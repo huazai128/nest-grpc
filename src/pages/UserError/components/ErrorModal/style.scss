@@ -1,0 +1,6 @@
+.errorListModal {
+  :global(.ant-modal-body) {
+    overflow: hidden;
+    overflow-y: auto;
+  }
+}

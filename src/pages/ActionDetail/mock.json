@@ -1,0 +1,1162 @@
+{
+  "_id": "64d9ddb80e0f9ecea4e7b77a",
+  "errorList": [],
+  "breadcrumbs": [
+    {
+      "reportsType": "http-record",
+      "category": "api",
+      "method": "GET",
+      "queryUrl": "https://charge.markiapp.com/api/v1/getUserInfo?uid=3312561759&r=0.16893504221409095",
+      "url": "https://charge.markiapp.com/api/v1/getUserInfo",
+      "body": "\"{\\\"r\\\":0.16893504221409095}\"",
+      "params": "{\"uid\":\"3312561759\",\"r\":\"0.16893504221409095\"}",
+      "requestTime": 1691999267446,
+      "status": 200,
+      "statusText": "",
+      "response": {
+        "status": 0,
+        "message": "success",
+        "result": "{\"uid\":3312561759,\"nick\":\"土豆账号11122200001\",\"gender\":\"\",\"icon\":\"http://biu-cn.dwstatic.com/default/squareicon.png\",\"phone\":\"11122200001\",\"login_type\":\"\",\"real_nick\":\"土豆账号11122200001\"}"
+      },
+      "responseTime": 1691999267506
+    },
+    {
+      "reportsType": "http-record",
+      "category": "api",
+      "method": "GET",
+      "queryUrl": "https://monitor-api.markiapp.com/api/site/64c8a14df1a3070522bb0fa8?t=1691999267358",
+      "url": "https://monitor-api.markiapp.com/api/site/64c8a14df1a3070522bb0fa8",
+      "params": "{\"t\":\"1691999267358\"}",
+      "requestTime": 1691999267358,
+      "status": 200,
+      "statusText": "",
+      "response": {
+        "status": "success",
+        "message": "获取站点详情成功",
+        "result": "{\"_id\":\"64c8a14df1a3070522bb0fa8\",\"name\":\"物业系统-正式环境\",\"isApi\":1,\"reportUrl\":\"https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=9633613e-0ee9-485a-9198-826a944dc422\",\"state\":1,\"apiRules\":[{\"apiUrlPattern\":\"*\",\"key\":\"status\",\"enums\":[0]},{\"apiUrlPattern\":\"addBill\",\"key\":\"status\",\"enums\":[-109]},{\"apiUrlPattern\":\"addHisFutureBillCheck\",\"key\":\"status\",\"enums\":[-109]},{\"apiUrlPattern\":\"upInsertHouse\",\"key\":\"status\",\"enums\":[-121]},{\"apiUrlPattern\":\"delMeterReadingV2\",\"key\":\"status\",\"enums\":[-109]},{\"apiUrlPattern\":\"getCommunityList\",\"key\":\"status\",\"enums\":[-109]},{\"apiUrlPattern\":\"addCashPledgeItem\",\"key\":\"status\",\"enums\":[-200]},{\"apiUrlPattern\":\"parkBindItem\",\"key\":\"status\",\"enums\":[-130]},{\"apiUrlPattern\":\"addBillPay\",\"key\":\"status\",\"enums\":[-3]},{\"apiUrlPattern\":\"updateMeter\",\"key\":\"status\",\"enums\":[-111]},{\"apiUrlPattern\":\"batchVerifyDelPark\",\"key\":\"status\",\"enums\":[-101]},{\"apiUrlPattern\":\"rollBackCashOrder\",\"key\":\"status\",\"enums\":[-116]},{\"apiUrlPattern\":\"upInsertUser\",\"key\":\"status\",\"enums\":[-121,-111]},{\"apiUrlPattern\":\"upInsertCar\",\"key\":\"status\",\"enums\":[-121]},{\"apiUrlPattern\":\"upInsertPark\",\"key\":\"status\",\"enums\":[-121]}],\"create_at\":\"2023-08-01T06:08:13.013Z\",\"update_at\":\"2023-08-11T02:06:43.011Z\",\"id\":1000000003,\"__v\":0,\"recordWhiteList\":[3801184126,3801650898,3313978087,4800681821,3801650898]}"
+      },
+      "responseTime": 1691999267546
+    },
+    {
+      "reportsType": "http-record",
+      "category": "api",
+      "method": "GET",
+      "queryUrl": "https://charge.markiapp.com/mkg/api/v2/Charge/getUserChargeSysList?index=&kw=&csID=11243&pageSize=10&r=0.4418116550445259",
+      "url": "https://charge.markiapp.com/mkg/api/v2/Charge/getUserChargeSysList",
+      "body": "\"{\\\"r\\\":0.4418116550445259}\"",
+      "params": "{\"index\":\"\",\"kw\":\"\",\"csID\":\"11243\",\"pageSize\":\"10\",\"r\":\"0.4418116550445259\"}",
+      "requestTime": 1691999267447,
+      "status": 200,
+      "statusText": "",
+      "response": {
+        "status": 0,
+        "result": "{\"list\":[{\"id\":11243,\"name\":\"土豆收费系统\",\"createUid\":3312561759,\"createUserName\":\"土豆账号11122200001\",\"createTime\":\"0001-01-01T00:00:00Z\",\"baseHouseNum\":0,\"trialExpiredAt\":0}],\"hasMore\":false,\"total\":0,\"index\":\"{\\\"sourceType\\\":2,\\\"indexID\\\":0}\",\"noCreateBillTotal\":0,\"blockIndex\":\"\",\"maxAccessible\":0}"
+      },
+      "responseTime": 1691999267557
+    },
+    {
+      "reportsType": "http-record",
+      "category": "api",
+      "method": "GET",
+      "queryUrl": "https://charge.markiapp.com/mkg/api/v2/Charge/getCSBindManagerList?csID=11243&r=0.8016784048833907",
+      "url": "https://charge.markiapp.com/mkg/api/v2/Charge/getCSBindManagerList",
+      "body": "\"{\\\"r\\\":0.8016784048833907}\"",
+      "params": "{\"csID\":\"11243\",\"r\":\"0.8016784048833907\"}",
+      "requestTime": 1691999267555,
+      "status": 200,
+      "statusText": "",
+      "response": {
+        "status": 0,
+        "result": "[3312561759]"
+      },
+      "responseTime": 1691999267631
+    },
+    {
+      "reportsType": "http-record",
+      "category": "api",
+      "method": "GET",
+      "queryUrl": "https://charge.markiapp.com/mkg/api/v2/Charge/getUserChargeSysList?index=&kw=&csID=&pageSize=10&r=0.5003985786149387",
+      "url": "https://charge.markiapp.com/mkg/api/v2/Charge/getUserChargeSysList",
+      "body": "\"{\\\"r\\\":0.5003985786149387}\"",
+      "params": "{\"index\":\"\",\"kw\":\"\",\"csID\":\"\",\"pageSize\":\"10\",\"r\":\"0.5003985786149387\"}",
+      "requestTime": 1691999267552,
+      "status": 200,
+      "statusText": "",
+      "response": {
+        "status": 0,
+        "result": "{\"list\":[{\"id\":11243,\"name\":\"土豆收费系统\",\"createUid\":3312561759,\"createUserName\":\"土豆账号11122200001\",\"createTime\":\"0001-01-01T00:00:00Z\",\"baseHouseNum\":0,\"trialExpiredAt\":0}],\"hasMore\":false,\"total\":0,\"index\":\"{\\\"sourceType\\\":2,\\\"indexID\\\":0}\",\"noCreateBillTotal\":0,\"blockIndex\":\"\",\"maxAccessible\":0}"
+      },
+      "responseTime": 1691999267693
+    },
+    {
+      "reportsType": "router-change-record",
+      "category": "pv",
+      "path": "/assets/house",
+      "href": "https://charge.markiapp.com/assets/house"
+    },
+    {
+      "reportsType": "http-record",
+      "category": "api",
+      "method": "GET",
+      "queryUrl": "https://charge.markiapp.com/mkg/api/v2/Charge/getUserCreateCSList?r=0.9910841810474482",
+      "url": "https://charge.markiapp.com/mkg/api/v2/Charge/getUserCreateCSList",
+      "body": "\"{\\\"r\\\":0.9910841810474482}\"",
+      "params": "{\"r\":\"0.9910841810474482\"}",
+      "requestTime": 1691999267556,
+      "status": 200,
+      "statusText": "",
+      "response": {
+        "status": 0,
+        "result": "[{\"id\":11243,\"name\":\"土豆收费系统\",\"createUid\":3312561759,\"createUserName\":\"土豆账号11122200001\",\"createTime\":\"2023-06-25T15:58:17+08:00\",\"baseHouseNum\":0,\"trialExpiredAt\":0}]"
+      },
+      "responseTime": 1691999267695
+    },
+    {
+      "reportsType": "http-record",
+      "category": "api",
+      "method": "GET",
+      "queryUrl": "https://charge.markiapp.com/mkg/api/v2/Charge/getCommunityList?chargeSystemID=11243&communityID=&page=1&pageSize=10&r=0.6187207321219823",
+      "url": "https://charge.markiapp.com/mkg/api/v2/Charge/getCommunityList",
+      "body": "\"{\\\"r\\\":0.6187207321219823}\"",
+      "params": "{\"chargeSystemID\":\"11243\",\"communityID\":\"\",\"page\":\"1\",\"pageSize\":\"10\",\"r\":\"0.6187207321219823\"}",
+      "requestTime": 1691999267557,
+      "status": 200,
+      "statusText": "",
+      "response": {
+        "status": 0,
+        "result": "{\"list\":[{\"id\":5309,\"name\":\"默认小区\",\"createUid\":3312561759,\"chargeSystemID\":11243,\"buildingNum\":1,\"unitNum\":1,\"houseNum\":0}],\"hasMore\":false,\"total\":1,\"noCreateBillTotal\":0,\"blockIndex\":\"\",\"maxAccessible\":0}"
+      },
+      "responseTime": 1691999267696
+    },
+    {
+      "reportsType": "http-record",
+      "category": "api",
+      "method": "POST",
+      "queryUrl": "https://miao.baidu.com/abdr?_o=https%3A%2F%2Fcharge.markiapp.com",
+      "url": "https://miao.baidu.com/abdr",
+      "body": "\"{\\\"data\\\":\\\"seiCGWxBoPTjKiWCmsLawuUjPmscHHbwbcXQAYNftu/S//lNgJynhYnfR5xdvCtY3jbmS50RxYIPut/bSecMdZafWkKADkGKBmoXRz7LmHE54cYQtwXQpgMWurxqVjy8r/GyiS7a1ccNWlwPY270mHOFAgwFWhU/60iatKa5MM6H/2p4+FbJL7kYHqF+nH6amiQYnCOVZsmQusoFm/pq0K2b7FoGSe0ergvn+nFcY/Y7VEVKFqeuWq0PeyNuYmhLx3q4P8gOkXupCjpYm6oJhN+B6AhffAudNT7+k0HzdM9HyVTqX/5xoOvzhMRAbDF5UIGLeYwhr6J/9nV8YE0PunCFpXVnAgYmaAaicb5qu4dYHszfdFgg7ocRI76MMbbrrxAMKwY7Ta4phrQxhbAy1H+stEW9uh0MmiAcfwvCWivquFcv/13Zb30LM0NvkDFsGg6MQsSKHNsYxFfCXONv79OAarq1oJ6ggGSFvrOE0jEuWxbkBfc8fg4Ngc3wivJTwsDE7JqHsBRNSSznbiCUnuE6fbEQVgOUWGTdD28CGRoHZ6p9vzH6X8Xk4qB5qEKbllknUe1sXJyBOUCzMy4KVoJRTvl3BOcFboAwvU3CsyM3Po96yhFXFLZyRdyW/k+NfH+h0pGaj17tYK6JZUGzbKomEX+ZtTIiDDYgTKZqvc2WI2sNiuecxuqrC8el27uyylUdCATnkL4f3c/MVu4f9tm8UYr2eKNJvCkGQt31KLegPGoqL9xpIBcT2pO0u5I7v3JXLd4zAYv5rInc36ekcRcS0vJY3SedYJQknOPm+NoTCFeh0mMqVwUI735MTJ6HdyeRg54D047ClOXNh6mmrgSyE3MPTjISojvbliKmZkSTgvtxC3C98RlJzmB6R53/gl8/w8GkCVj9otfszUfOwxvxGA9A23O9iJpisqUCIKFFowAfLQoackOmdtEnvKQuE7ceUPp0Op1L3UAryYIoagid3TjajO9oYSnTFbYjRAYC12tAUNgVneDbaox900pGZ6AMvJWT5wk4jjfF/UawzvLE6UHnZmhXL51/iKHQpKJq72M84ZUJ7VnVHeESQuqQaCbCiiTVJzo1NFS2vW8/2+W0iYUp986TFCTrOIelAibpcbrH4Irl6lH0Kpqn+g11eomsZHDcYi9Xl7ovVuT+Z63faXsCIZcQ+OB5Mtd8ZoefEYZocu1tN6SHihSbfioky1WixOVBvjRFPC4sLjb0NLikU0R68hLNQOit61JvE7pWhH88MGe0kxToWdpUHybQ2AhogI8fuCrPNjxRcCAnTznBiHyg77HnO1pRbeSAXSOxXdTcHa8m67KeYXHXZ8At/dG5BdIjclldaRhcCVnOJVwQNo1tuw30HNjXq3BTcgxKS30SaVN3SPGAce2O766KQYrver30z2GDcEwohsQZe9MfuwTBUS87F71W3V07DWXGJ+3UZeAOXSO8W0ab+J8APwUAvVF+3p91Mo842Eloc4PlheEQrMrCWtFK82pwq58R1k/szyfBwg2Ak25naYPePB/OljrNVQ+X6KixV/j1Txz8J+LKuTjJSfRGV9jWOTkcxLoWZ9s6Uqmr5hxb0xbhUrXQgHvd7R+D7CCPwsYHtZ+fq2u+SG9l+y2kzp7aQvrpCC64a2RZ25pozu6jftlwj7kSudoEzM8YaiKosfIqPy1YOsu4+p0kZZ9gAkip3ShKJmas71QIeY118puYAaU9uo4F2UWC1w4hKnRp1l+GYgsDloLKOvyZmF/DPNv0xARRx323S97u78U4ivr3LLZwoWi/JLSPda4ksu82sdxVpoVcwyhuUzSWhotMMEYl2DoagSJXawTyrQ9QUIvNpgXypJFjk0VDpgb7TeUJnk/7aDdGvu0MwGdWWvSRlWSDIdJNj8Lducsik+FdCDEGsP5/ZX2MkTHdBwls+iQocoLkzIPHYy/PnMmEk9d1k85GYw0FNyI3yShkn18F5Zt8gmovv/FQaW1FaFhGcL2ulqv0ysE8yain1Ca3H/MneyG7IYEk0illIO93uDkOiTc5IKauoWF+1jpDo/I9Jlq14QN/eDUmQHUqcCHdoa3ZVXKf+tTLeMudHTtTkrj8XUTvwkLq4Zc0HU53gKAyS+Kgcil5xPZUxhC2VpK7ZG7SEu64CYuAB+EXfOUS37X4KyWl5RH5IXOlppUnxiHhNb90zZFbpA==\\\",\\\"key_id\\\":\\\"1f3c61da2302424d\\\",\\\"enc\\\":2}\"",
+      "params": "{\"_o\":\"https://charge.markiapp.com\"}",
+      "requestTime": 1691999267702,
+      "status": 200,
+      "statusText": "OK",
+      "response": {
+        "result": "rPoiGfnDEUYsO3ftuM_UL2Bs--L_G5u5XSqKrKdKv0nY8gGqPP3N_EzU_Af5NAviWCIiyArbNvQktt9YD1Oknf4bjVeaPGhtvdi436z0IRNbNv1sn1wATGJUIARrzyXtExTAvr7bdmCRYoyjGwN2Xbkau3YGHZCkq7EOEOOpqoylIfb5lhDK0WyUnLzX7nw-"
+      },
+      "responseTime": 1691999267768
+    },
+    {
+      "reportsType": "http-record",
+      "category": "api",
+      "method": "GET",
+      "queryUrl": "https://charge.markiapp.com/mkg/api/v2/Charge/getCommunityList?communityID=5309&page=1&pageSize=10&chargeSystemID=11243&r=0.8721734464135973",
+      "url": "https://charge.markiapp.com/mkg/api/v2/Charge/getCommunityList",
+      "body": "\"{\\\"r\\\":0.8721734464135973}\"",
+      "params": "{\"communityID\":\"5309\",\"page\":\"1\",\"pageSize\":\"10\",\"chargeSystemID\":\"11243\",\"r\":\"0.8721734464135973\"}",
+      "requestTime": 1691999267696,
+      "status": 200,
+      "statusText": "",
+      "response": {
+        "status": 0,
+        "result": "{\"list\":[{\"id\":5309,\"name\":\"默认小区\",\"createUid\":3312561759,\"chargeSystemID\":11243,\"buildingNum\":1,\"unitNum\":1,\"houseNum\":0}],\"hasMore\":false,\"total\":1,\"noCreateBillTotal\":0,\"blockIndex\":\"\",\"maxAccessible\":0}"
+      },
+      "responseTime": 1691999267792
+    },
+    {
+      "reportsType": "http-record",
+      "category": "api",
+      "method": "GET",
+      "queryUrl": "https://charge.markiapp.com/mkg/api/v2/Charge/checkImportEntrance?communityId=5309&r=0.991078968820986",
+      "url": "https://charge.markiapp.com/mkg/api/v2/Charge/checkImportEntrance",
+      "body": "\"{\\\"r\\\":0.991078968820986}\"",
+      "params": "{\"communityId\":\"5309\",\"r\":\"0.991078968820986\"}",
+      "requestTime": 1691999267792,
+      "status": 200,
+      "statusText": "",
+      "response": {
+        "status": 0,
+        "result": "{\"id\":0,\"csId\":0,\"communityId\":0,\"entranceStatus\":0,\"hasAuthed\":0,\"createTime\":\"0001-01-01T00:00:00Z\",\"updateTime\":\"0001-01-01T00:00:00Z\"}"
+      },
+      "responseTime": 1691999267854
+    },
+    {
+      "reportsType": "http-record",
+      "category": "api",
+      "method": "GET",
+      "queryUrl": "https://charge.markiapp.com/mkg/api/v2/Charge/getUserCommunityAuth?communityID=5309&r=0.3192791292566415",
+      "url": "https://charge.markiapp.com/mkg/api/v2/Charge/getUserCommunityAuth",
+      "body": "\"{\\\"r\\\":0.3192791292566415}\"",
+      "params": "{\"communityID\":\"5309\",\"r\":\"0.3192791292566415\"}",
+      "requestTime": 1691999267791,
+      "status": 200,
+      "statusText": "",
+      "response": {
+        "status": 0,
+        "result": "[{\"id\":1,\"name\":\"资产管理\",\"checkSubItem\":false,\"showSubItemList\":null},{\"id\":2,\"name\":\"收费设置\",\"checkSubItem\":false,\"showSubItemList\":null},{\"id\":3,\"name\":\"收费管理\",\"checkSubItem\":false,\"showSubItemList\":null},{\"id\":4,\"name\":\"财务报表\",\"checkSubItem\":false,\"showSubItemList\":null},{\"id\":6,\"name\":\"小区服务\",\"checkSubItem\":false,\"showSubItemList\":null},{\"id\":8,\"name\":\"收支管理\",\"checkSubItem\":false,\"showSubItemList\":null},{\"id\":9,\"name\":\"App移动抄表\",\"checkSubItem\":false,\"showSubItemList\":null},{\"id\":7,\"name\":\"App缴费管理\",\"checkSubItem\":false,\"showSubItemList\":null},{\"id\":17,\"name\":\"\",\"checkSubItem\":false,\"showSubItemList\":null},{\"id\":38,\"name\":\"\",\"checkSubItem\":false,\"showSubItemList\":null},{\"id\":22,\"name\":\"\",\"checkSubItem\":false,\"showSubItemList\":null},{\"id\":39,\"name\":\"\",\"checkSubItem\":false,\"showSubItemList\":null},{\"id\":23,\"name\":\"\",\"checkSubItem\":false,\"showSubItemList\":null},{\"id\":40,\"name\":\"\",\"checkSubItem\":false,\"showSubItemList\":null},{\"id\":24,\"name\":\"\",\"checkSubItem\":false,\"showSubItemList\":null},{\"id\":41,\"name\":\"\",\"checkSubItem\":false,\"showSubItemList\":null},{\"id\":25,\"name\":\"\",\"checkSubItem\":false,\"showSubItemList\":null},{\"id\":26,\"name\":\"\",\"checkSubItem\":false,\"showSubItemList\":null},{\"id\":27,\"name\":\"\",\"checkSubItem\":false,\"showSubItemList\":null},{\"id\":18,\"name\":\"\",\"checkSubItem\":false,\"showSubItemList\":null},{\"id\":28,\"name\":\"\",\"checkSubItem\":false,\"showSubItemList\":null},{\"id\":19,\"name\":\"\",\"checkSubItem\":false,\"showSubItemList\":null},{\"id\":29,\"name\":\"\",\"checkSubItem\":false,\"showSubItemList\":null},{\"id\":20,\"name\":\"\",\"checkSubItem\":false,\"showSubItemList\":null},{\"id\":30,\"name\":\"\",\"checkSubItem\":false,\"showSubItemList\":null},{\"id\":31,\"name\":\"\",\"checkSubItem\":false,\"showSubItemList\":null},{\"id\":43,\"name\":\"\",\"checkSubItem\":false,\"showSubItemList\":null},{\"id\":32,\"name\":\"\",\"checkSubItem\":false,\"showSubItemList\":null},{\"id\":33,\"name\":\"\",\"checkSubItem\":false,\"showSubItemList\":null},{\"id\":34,\"name\":\"\",\"checkSubItem\":false,\"showSubItemList\":null},{\"id\":35,\"name\":\"\",\"checkSubItem\":false,\"showSubItemList\":null},{\"id\":36,\"name\":\"\",\"checkSubItem\":false,\"showSubItemList\":null},{\"id\":42,\"name\":\"\",\"checkSubItem\":false,\"showSubItemList\":null},{\"id\":44,\"name\":\"\",\"checkSubItem\":false,\"showSubItemList\":null},{\"id\":21,\"name\":\"\",\"checkSubItem\":false,\"showSubItemList\":null},{\"id\":37,\"name\":\"\",\"checkSubItem\":false,\"showSubItemList\":null},{\"id\":5,\"name\":\"权限设置\",\"checkSubItem\":false,\"showSubItemList\":null}]"
+      },
+      "responseTime": 1691999267863
+    },
+    {
+      "reportsType": "http-record",
+      "category": "api",
+      "method": "GET",
+      "queryUrl": "https://charge.markiapp.com/mkg/api/v2/Charge/checkImportEntrance?communityId=5309&r=0.08830256332961839",
+      "url": "https://charge.markiapp.com/mkg/api/v2/Charge/checkImportEntrance",
+      "body": "\"{\\\"r\\\":0.08830256332961839}\"",
+      "params": "{\"communityId\":\"5309\",\"r\":\"0.08830256332961839\"}",
+      "requestTime": 1691999267863,
+      "status": 200,
+      "statusText": "",
+      "response": {
+        "status": 0,
+        "result": "{\"id\":0,\"csId\":0,\"communityId\":0,\"entranceStatus\":0,\"hasAuthed\":0,\"createTime\":\"0001-01-01T00:00:00Z\",\"updateTime\":\"0001-01-01T00:00:00Z\"}"
+      },
+      "responseTime": 1691999267924
+    },
+    {
+      "reportsType": "http-record",
+      "category": "api",
+      "method": "GET",
+      "queryUrl": "https://charge.markiapp.com/mkg/api/v2/Charge/getCsCommunityManagers?communityID=5309&csID=11243&r=0.4386757625171791",
+      "url": "https://charge.markiapp.com/mkg/api/v2/Charge/getCsCommunityManagers",
+      "body": "\"{\\\"csID\\\":\\\"11243\\\",\\\"r\\\":0.4386757625171791}\"",
+      "params": "{\"communityID\":\"5309\",\"csID\":\"11243\",\"r\":\"0.4386757625171791\"}",
+      "requestTime": 1691999267862,
+      "status": 200,
+      "statusText": "",
+      "response": {
+        "status": 0,
+        "result": "[{\"base\":{\"lUid\":3312561759,\"sNickname\":\"土豆账号11122200001\",\"sIcon\":\"http://biu-cn.dwstatic.com/default/squareicon.png\",\"sPhone\":\"11122200001\",\"registerTime\":1651826382,\"realNick\":\"土豆账号11122200001\",\"updateTime\":1691996039}}]"
+      },
+      "responseTime": 1691999267948
+    },
+    {
+      "reportsType": "http-record",
+      "category": "api",
+      "method": "GET",
+      "queryUrl": "https://charge.markiapp.com/mkg/api/v2/Charge/getMyCommunityAuth?communityID=5309&r=0.9996805858059259",
+      "url": "https://charge.markiapp.com/mkg/api/v2/Charge/getMyCommunityAuth",
+      "body": "\"{\\\"r\\\":0.9996805858059259}\"",
+      "params": "{\"communityID\":\"5309\",\"r\":\"0.9996805858059259\"}",
+      "requestTime": 1691999267862,
+      "status": 200,
+      "statusText": "",
+      "response": {
+        "status": 0,
+        "result": "{\"id\":11701,\"uid\":3312561759,\"orgID\":0,\"communityID\":5309,\"authList\":[1,2,3,4,6,8,9,7,17,38,22,39,23,40,24,41,25,26,27,18,28,19,29,20,30,31,43,32,33,34,35,36,42,44,21,37,5],\"remark\":\"\",\"chargeSystemId\":11243,\"position\":0,\"role\":1,\"AuthSys\":[{\"id\":1,\"parentId\":0,\"path\":\"资产管理\",\"pathId\":\"1\",\"pathArray\":[1],\"authCode\":\"FINANCIAL_MANAGE\",\"level\":1,\"name\":\"资产管理\",\"authType\":0,\"resourceUrls\":\"{}\",\"sort\":1,\"disableEdit\":0,\"authDesc\":\"\",\"extend\":\"{}\",\"child\":null},{\"id\":2,\"parentId\":0,\"path\":\"收费设置\",\"pathId\":\"2\",\"pathArray\":[2],\"authCode\":\"CHARGE_SETTINGS\",\"level\":1,\"name\":\"收费设置\",\"authType\":0,\"resourceUrls\":\"{}\",\"sort\":2,\"disableEdit\":0,\"authDesc\":\"\",\"extend\":\"{}\",\"child\":null},{\"id\":3,\"parentId\":0,\"path\":\"收费管理\",\"pathId\":\"3\",\"pathArray\":[3],\"authCode\":\"CHARGE_MANAGE\",\"level\":1,\"name\":\"收费管理\",\"authType\":0,\"resourceUrls\":\"{}\",\"sort\":3,\"disableEdit\":0,\"authDesc\":\"\",\"extend\":\"{}\",\"child\":null},{\"id\":4,\"parentId\":0,\"path\":\"财务报表\",\"pathId\":\"4\",\"pathArray\":[4],\"authCode\":\"FINANCIAL_STATEMENTS\",\"level\":1,\"name\":\"财务报表\",\"authType\":0,\"resourceUrls\":\"{}\",\"sort\":4,\"disableEdit\":0,\"authDesc\":\"\",\"extend\":\"{}\",\"child\":null},{\"id\":6,\"parentId\":0,\"path\":\"小区服务\",\"pathId\":\"6\",\"pathArray\":[6],\"authCode\":\"COMMUNITY_SERVICE\",\"level\":1,\"name\":\"小区服务\",\"authType\":0,\"resourceUrls\":\"{}\",\"sort\":5,\"disableEdit\":0,\"authDesc\":\"\",\"extend\":\"{}\",\"child\":null},{\"id\":8,\"parentId\":0,\"path\":\"收支管理\",\"pathId\":\"8\",\"pathArray\":[8],\"authCode\":\"IN_OUT_MONEY_MANAGE\",\"level\":1,\"name\":\"收支管理\",\"authType\":0,\"resourceUrls\":\"{}\",\"sort\":6,\"disableEdit\":0,\"authDesc\":\"\",\"extend\":\"{}\",\"child\":null},{\"id\":9,\"parentId\":0,\"path\":\"App移动抄表\",\"pathId\":\"9\",\"pathArray\":[9],\"authCode\":\"APP_METER_READING\",\"level\":1,\"name\":\"App移动抄表\",\"authType\":0,\"resourceUrls\":\"{}\",\"sort\":7,\"disableEdit\":0,\"authDesc\":\"\",\"extend\":\"{}\",\"child\":null},{\"id\":7,\"parentId\":0,\"path\":\"App催缴管理\",\"pathId\":\"7\",\"pathArray\":[7],\"authCode\":\"APP_COLLECT_MANAGE\",\"level\":1,\"name\":\"App催缴管理\",\"authType\":0,\"resourceUrls\":\"{}\",\"sort\":8,\"disableEdit\":0,\"authDesc\":\"\",\"extend\":\"{}\",\"child\":null},{\"id\":17,\"parentId\":3,\"path\":\"收费管理/收银台\",\"pathId\":\"3/17\",\"pathArray\":[3,17],\"authCode\":\"CHARGE_MANAGE_001\",\"level\":2,\"name\":\"收银台\",\"authType\":0,\"resourceUrls\":\"{}\",\"sort\":1,\"disableEdit\":0,\"authDesc\":\"\",\"extend\":\"{}\",\"child\":null},{\"id\":38,\"parentId\":4,\"path\":\"财务报表/收入统计\",\"pathId\":\"4/38\",\"pathArray\":[4,38],\"authCode\":\"FINANCIAL_STATEMENTS_001\",\"level\":2,\"name\":\"收入统计\",\"authType\":0,\"resourceUrls\":\"{}\",\"sort\":1,\"disableEdit\":0,\"authDesc\":\"\",\"extend\":\"{}\",\"child\":null},{\"id\":22,\"parentId\":3,\"path\":\"收费管理/欠费与催缴\",\"pathId\":\"3/22\",\"pathArray\":[3,22],\"authCode\":\"CHARGE_MANAGE_002\",\"level\":2,\"name\":\"欠费与催缴\",\"authType\":0,\"resourceUrls\":\"{}\",\"sort\":2,\"disableEdit\":0,\"authDesc\":\"\",\"extend\":\"{}\",\"child\":null},{\"id\":39,\"parentId\":4,\"path\":\"财务报表/财务台账\",\"pathId\":\"4/39\",\"pathArray\":[4,39],\"authCode\":\"FINANCIAL_STATEMENTS_002\",\"level\":2,\"name\":\"财务台账\",\"authType\":0,\"resourceUrls\":\"{}\",\"sort\":2,\"disableEdit\":0,\"authDesc\":\"\",\"extend\":\"{}\",\"child\":null},{\"id\":23,\"parentId\":3,\"path\":\"收费管理/代扣管理\",\"pathId\":\"3/23\",\"pathArray\":[3,23],\"authCode\":\"CHARGE_MANAGE_003\",\"level\":2,\"name\":\"代扣管理\",\"authType\":0,\"resourceUrls\":\"{}\",\"sort\":3,\"disableEdit\":0,\"authDesc\":\"\",\"extend\":\"{}\",\"child\":null},{\"id\":40,\"parentId\":4,\"path\":\"财务报表/财务对账\",\"pathId\":\"4/40\",\"pathArray\":[4,40],\"authCode\":\"FINANCIAL_STATEMENTS_003\",\"level\":2,\"name\":\"财务对账\",\"authType\":0,\"resourceUrls\":\"{}\",\"sort\":3,\"disableEdit\":0,\"authDesc\":\"\",\"extend\":\"{}\",\"child\":null},{\"id\":24,\"parentId\":3,\"path\":\"收费管理/预存款管理\",\"pathId\":\"3/24\",\"pathArray\":[3,24],\"authCode\":\"CHARGE_MANAGE_004\",\"level\":2,\"name\":\"预存款管理\",\"authType\":0,\"resourceUrls\":\"{}\",\"sort\":4,\"disableEdit\":0,\"authDesc\":\"\",\"extend\":\"{}\",\"child\":null},{\"id\":41,\"parentId\":4,\"path\":\"财务报表/更多统计\",\"pathId\":\"4/41\",\"pathArray\":[4,41],\"authCode\":\"FINANCIAL_STATEMENTS_004\",\"level\":2,\"name\":\"更多统计\",\"authType\":0,\"resourceUrls\":\"{}\",\"sort\":4,\"disableEdit\":0,\"authDesc\":\"\",\"extend\":\"{}\",\"child\":null},{\"id\":25,\"parentId\":3,\"path\":\"收费管理/押金管理\",\"pathId\":\"3/25\",\"pathArray\":[3,25],\"authCode\":\"CHARGE_MANAGE_005\",\"level\":2,\"name\":\"押金管理\",\"authType\":0,\"resourceUrls\":\"{}\",\"sort\":5,\"disableEdit\":0,\"authDesc\":\"\",\"extend\":\"{}\",\"child\":null},{\"id\":26,\"parentId\":3,\"path\":\"收费管理/缴费短信群发\",\"pathId\":\"3/26\",\"pathArray\":[3,26],\"authCode\":\"CHARGE_MANAGE_006\",\"level\":2,\"name\":\"缴费短信群发\",\"authType\":0,\"resourceUrls\":\"{}\",\"sort\":6,\"disableEdit\":0,\"authDesc\":\"\",\"extend\":\"{}\",\"child\":null},{\"id\":27,\"parentId\":3,\"path\":\"收费管理/账单与开票\",\"pathId\":\"3/27\",\"pathArray\":[3,27],\"authCode\":\"CHARGE_MANAGE_007\",\"level\":2,\"name\":\"账单与开票\",\"authType\":0,\"resourceUrls\":\"{}\",\"sort\":7,\"disableEdit\":0,\"authDesc\":\"\",\"extend\":\"{}\",\"child\":null},{\"id\":18,\"parentId\":17,\"path\":\"收费管理/收银台/修改账单金额\",\"pathId\":\"3/17/18\",\"pathArray\":[3,17,18],\"authCode\":\"CHARGE_MANAGE_001_001\",\"level\":3,\"name\":\"修改账单金额\",\"authType\":1,\"resourceUrls\":\"{\\\"path\\\":\\\"/mkg/api/v2/Charge/modDiscountOrLateMoney\\\",\\\"referer\\\":\\\"/charge-manage/checkout-counter\\\"}\",\"sort\":1,\"disableEdit\":0,\"authDesc\":\"在「未缴账单」列表中修改账单的优惠金额、修改账单的违约金额\",\"extend\":\"{}\",\"child\":null},{\"id\":28,\"parentId\":27,\"path\":\"收费管理/账单与开票/账单作废\",\"pathId\":\"3/27/28\",\"pathArray\":[3,27,28],\"authCode\":\"CHARGE_MANAGE_007_001\",\"level\":3,\"name\":\"账单作废\",\"authType\":1,\"resourceUrls\":\"{\\\"path\\\":\\\"/mkg/api/v2/Charge/modBill\\\",\\\"referer\\\":\\\"/charge-manage/bill-list\\\",\\\"params\\\":[{\\\"key\\\":\\\"payStatus\\\",\\\"val\\\":\\\"-1\\\",\\\"type\\\":\\\"int\\\"}]}\",\"sort\":1,\"disableEdit\":0,\"authDesc\":\"在「账单列表」中对未缴的单条账单进行作废\",\"extend\":\"{}\",\"child\":null},{\"id\":19,\"parentId\":17,\"path\":\"收费管理/收银台/账单撤回\",\"pathId\":\"3/17/19\",\"pathArray\":[3,17,19],\"authCode\":\"CHARGE_MANAGE_001_002\",\"level\":3,\"name\":\"账单撤回\",\"authType\":1,\"resourceUrls\":\"{\\\"path\\\":\\\"/mkg/api/v2/Charge/revokeByDealLog\\\",\\\"referer\\\":\\\"/charge-manage/checkout-counter\\\"}\",\"sort\":2,\"disableEdit\":0,\"authDesc\":\"在「开票管理」列表中对非线上支付的账单缴费记录中的账单进行单条或全部撤回\",\"extend\":\"{}\",\"child\":null},{\"id\":29,\"parentId\":27,\"path\":\"收费管理/账单与开票/账单恢复\",\"pathId\":\"3/27/29\",\"pathArray\":[3,27,29],\"authCode\":\"CHARGE_MANAGE_007_002\",\"level\":3,\"name\":\"账单恢复\",\"authType\":1,\"resourceUrls\":\"{\\\"path\\\":\\\"/mkg/api/v2/Charge/modBill\\\",\\\"referer\\\":\\\"/charge-manage/bill-list\\\",\\\"params\\\":[{\\\"key\\\":\\\"payStatus\\\",\\\"val\\\":\\\"0\\\",\\\"type\\\":\\\"int\\\"}]}\",\"sort\":2,\"disableEdit\":0,\"authDesc\":\"在「账单列表」中对已作废的单条账单进行恢复\",\"extend\":\"{}\",\"child\":null},{\"id\":20,\"parentId\":17,\"path\":\"收费管理/收银台/账单退款\",\"pathId\":\"3/17/20\",\"pathArray\":[3,17,20],\"authCode\":\"CHARGE_MANAGE_001_003\",\"level\":3,\"name\":\"账单退款\",\"authType\":1,\"resourceUrls\":\"{\\\"path\\\":\\\"/mkg/api/v2/Charge/refundByDealLog\\\",\\\"referer\\\":\\\"/charge-manage/checkout-counter\\\"}\",\"sort\":3,\"disableEdit\":0,\"authDesc\":\"在「开票管理」对账单缴费记录中的账单进行单条或全部退款\",\"extend\":\"{}\",\"child\":null},{\"id\":30,\"parentId\":27,\"path\":\"收费管理/账单与开票/账单撤回\",\"pathId\":\"3/27/30\",\"pathArray\":[3,27,30],\"authCode\":\"CHARGE_MANAGE_007_003\",\"level\":3,\"name\":\"账单撤回\",\"authType\":1,\"resourceUrls\":\"{\\\"path\\\":\\\"/mkg/api/v2/Charge/modBill\\\",\\\"referer\\\":\\\"/charge-manage/record,/charge-manage/bill-list\\\",\\\"params\\\":[{\\\"key\\\":\\\"payStatus\\\",\\\"val\\\":\\\"4\\\",\\\"type\\\":\\\"int\\\"}]}\",\"sort\":3,\"disableEdit\":0,\"authDesc\":\"1）在「账单列表」中对非线上支付的单条已缴账单进行撤回\\r\\n2）在「开票管理」对非线上支付的账单缴费记录中的账单进行单条或全部撤回\",\"extend\":\"{}\",\"child\":null},{\"id\":31,\"parentId\":27,\"path\":\"收费管理/账单与开票/账单退款\",\"pathId\":\"3/27/31\",\"pathArray\":[3,27,31],\"authCode\":\"CHARGE_MANAGE_007_004\",\"level\":3,\"name\":\"账单退款\",\"authType\":1,\"resourceUrls\":\"{\\\"path\\\":\\\"/mkg/api/v2/Charge/refundByDealLog\\\",\\\"referer\\\":\\\"/charge-manage/record,/charge-manage/bill-list\\\"}\",\"sort\":4,\"disableEdit\":0,\"authDesc\":\"1）在「账单列表」中对单条已缴账单进行退款\\r\\n2）在「开票管理」对账单缴费记录中的账单进行单条或全部退款\",\"extend\":\"{}\",\"child\":null},{\"id\":43,\"parentId\":17,\"path\":\"收费管理/收银台/押金撤回\",\"pathId\":\"3/17/43\",\"pathArray\":[3,17,43],\"authCode\":\"CHARGE_MANAGE_001_004\",\"level\":3,\"name\":\"押金撤回\",\"authType\":1,\"resourceUrls\":\"{\\\"path\\\":\\\"/mkg/api/v2/Charge/rollBackCashOrder\\\",\\\"referer\\\":\\\"/charge-manage/checkout-counter\\\"}\",\"sort\":4,\"disableEdit\":0,\"authDesc\":\"在「开票管理」列表中对非线上支付的押金收取记录进行撤回\",\"extend\":\"{}\",\"child\":null},{\"id\":32,\"parentId\":27,\"path\":\"收费管理/账单与开票/账单设置为呆账\",\"pathId\":\"3/27/32\",\"pathArray\":[3,27,32],\"authCode\":\"CHARGE_MANAGE_007_005\",\"level\":3,\"name\":\"账单设置为呆账\",\"authType\":1,\"resourceUrls\":\"{\\\"path\\\":\\\"/mkg/api/v2/Charge/setBadBillState\\\",\\\"referer\\\":\\\"/charge-manage/bill-list\\\"}\",\"sort\":5,\"disableEdit\":0,\"authDesc\":\"在「账单列表」中对未缴的单条账单进行设为呆账\",\"extend\":\"{}\",\"child\":null},{\"id\":33,\"parentId\":27,\"path\":\"收费管理/账单与开票/批量账单作废\",\"pathId\":\"3/27/33\",\"pathArray\":[3,27,33],\"authCode\":\"CHARGE_MANAGE_007_006\",\"level\":3,\"name\":\"批量账单作废\",\"authType\":1,\"resourceUrls\":\"{\\\"path\\\":\\\"/mkg/api/v2/Charge/modBillBatch\\\",\\\"referer\\\":\\\"/charge-manage/bill-list\\\",\\\"params\\\":[{\\\"key\\\":\\\"modOp\\\",\\\"val\\\":\\\"-1\\\",\\\"type\\\":\\\"int\\\"}]}\",\"sort\":6,\"disableEdit\":0,\"authDesc\":\"在「账单列表」中对未缴账单进行批量作废\",\"extend\":\"{}\",\"child\":null},{\"id\":34,\"parentId\":27,\"path\":\"收费管理/账单与开票/批量账单恢复\",\"pathId\":\"3/27/34\",\"pathArray\":[3,27,34],\"authCode\":\"CHARGE_MANAGE_007_007\",\"level\":3,\"name\":\"批量账单恢复\",\"authType\":1,\"resourceUrls\":\"{\\\"path\\\":\\\"/mkg/api/v2/Charge/modBillBatch\\\",\\\"referer\\\":\\\"/charge-manage/bill-list\\\",\\\"params\\\":[{\\\"key\\\":\\\"modOp\\\",\\\"val\\\":\\\"0\\\",\\\"type\\\":\\\"int\\\"}]}\",\"sort\":7,\"disableEdit\":0,\"authDesc\":\"在「账单列表」中对非线上支付的已缴账单进行批量撤回\",\"extend\":\"{}\",\"child\":null},{\"id\":35,\"parentId\":27,\"path\":\"收费管理/账单与开票/批量账单撤回\",\"pathId\":\"3/27/35\",\"pathArray\":[3,27,35],\"authCode\":\"CHARGE_MANAGE_007_008\",\"level\":3,\"name\":\"批量账单撤回\",\"authType\":1,\"resourceUrls\":\"{\\\"path\\\":\\\"/mkg/api/v2/Charge/modBillBatch\\\",\\\"referer\\\":\\\"/charge-manage/bill-list\\\",\\\"params\\\":[{\\\"key\\\":\\\"modOp\\\",\\\"val\\\":\\\"4\\\",\\\"type\\\":\\\"int\\\"}]}\",\"sort\":8,\"disableEdit\":0,\"authDesc\":\"在「账单列表」中对已作废的账单进行批量恢复\",\"extend\":\"{}\",\"child\":null},{\"id\":36,\"parentId\":27,\"path\":\"收费管理/账单与开票/批量账单收款\",\"pathId\":\"3/27/36\",\"pathArray\":[3,27,36],\"authCode\":\"CHARGE_MANAGE_007_009\",\"level\":3,\"name\":\"批量账单收款\",\"authType\":1,\"resourceUrls\":\"{\\\"path\\\":\\\"/mkg/api/v2/Charge/addBillPayBatch\\\",\\\"referer\\\":\\\"/charge-manage/bill-list\\\"}\",\"sort\":9,\"disableEdit\":0,\"authDesc\":\"在「账单列表」中对未缴账单进行批量收款\",\"extend\":\"{}\",\"child\":null},{\"id\":42,\"parentId\":27,\"path\":\"收费管理/账单与开票/批量设为呆账\",\"pathId\":\"3/27/42\",\"pathArray\":[3,27,42],\"authCode\":\"CHARGE_MANAGE_007_010\",\"level\":3,\"name\":\"批量设为呆账\",\"authType\":1,\"resourceUrls\":\"{\\\"path\\\":\\\"/mkg/api/v2/Charge/modBillBatch\\\",\\\"referer\\\":\\\"/charge-manage/bill-list\\\",\\\"params\\\":[{\\\"key\\\":\\\"modOp\\\",\\\"val\\\":\\\"5\\\",\\\"type\\\":\\\"int\\\"}]}\",\"sort\":10,\"disableEdit\":0,\"authDesc\":\"在「账单列表」中对未缴账单进行批量设为呆账\",\"extend\":\"{}\",\"child\":null},{\"id\":44,\"parentId\":27,\"path\":\"收费管理/账单与开票/押金撤回\",\"pathId\":\"3/27/44\",\"pathArray\":[3,27,44],\"authCode\":\"CHARGE_MANAGE_007_011\",\"level\":3,\"name\":\"押金撤回\",\"authType\":1,\"resourceUrls\":\"{\\\"path\\\":\\\"/mkg/api/v2/Charge/rollBackCashOrder\\\",\\\"referer\\\":\\\"/charge-manage/record\\\"}\",\"sort\":11,\"disableEdit\":0,\"authDesc\":\"在「开票管理」列表中对非线上支付的押金收取记录进行撤回\",\"extend\":\"{}\",\"child\":null},{\"id\":21,\"parentId\":17,\"path\":\"收费管理/收银台/其他功能\",\"pathId\":\"3/17/21\",\"pathArray\":[3,17,21],\"authCode\":\"CHARGE_MANAGE_001_OTHER\",\"level\":3,\"name\":\"其他功能\",\"authType\":1,\"resourceUrls\":\"{}\",\"sort\":99,\"disableEdit\":1,\"authDesc\":\"成员可以正常查看收银台数据，以及使用收银台中除了修改账单金额、账单撤回、账单退款之外的其他功能\",\"extend\":\"{}\",\"child\":null},{\"id\":37,\"parentId\":27,\"path\":\"收费管理/账单与开票/其他功能\",\"pathId\":\"3/27/37\",\"pathArray\":[3,27,37],\"authCode\":\"CHARGE_MANAGE_007_OTHER\",\"level\":3,\"name\":\"其他功能\",\"authType\":1,\"resourceUrls\":\"{}\",\"sort\":99,\"disableEdit\":1,\"authDesc\":\"成员可以正常查看「账单与开票」列表中的数据，以及使用「账单与开票」列表中除了上面列举功能之外的其他功能\",\"extend\":\"{}\",\"child\":null}]}"
+      },
+      "responseTime": 1691999267951
+    },
+    {
+      "reportsType": "http-record",
+      "category": "api",
+      "method": "GET",
+      "queryUrl": "https://charge.markiapp.com/mkg/api/v2/Charge/getEntrances?communityID=5309&r=0.937562644311144",
+      "url": "https://charge.markiapp.com/mkg/api/v2/Charge/getEntrances",
+      "body": "\"{\\\"r\\\":0.937562644311144}\"",
+      "params": "{\"communityID\":\"5309\",\"r\":\"0.937562644311144\"}",
+      "requestTime": 1691999267863,
+      "status": 200,
+      "statusText": "",
+      "response": {
+        "status": 0,
+        "result": "[{\"id\":1,\"parentId\":0,\"path\":\"资产管理\",\"pathId\":\"1\",\"pathArray\":[1],\"authCode\":\"FINANCIAL_MANAGE\",\"level\":1,\"name\":\"资产管理\",\"authType\":0,\"resourceUrls\":\"{}\",\"sort\":1,\"disableEdit\":0,\"authDesc\":\"\",\"extend\":\"{}\",\"child\":[]},{\"id\":2,\"parentId\":0,\"path\":\"收费设置\",\"pathId\":\"2\",\"pathArray\":[2],\"authCode\":\"CHARGE_SETTINGS\",\"level\":1,\"name\":\"收费设置\",\"authType\":0,\"resourceUrls\":\"{}\",\"sort\":2,\"disableEdit\":0,\"authDesc\":\"\",\"extend\":\"{}\",\"child\":[]},{\"id\":3,\"parentId\":0,\"path\":\"收费管理\",\"pathId\":\"3\",\"pathArray\":[3],\"authCode\":\"CHARGE_MANAGE\",\"level\":1,\"name\":\"收费管理\",\"authType\":0,\"resourceUrls\":\"{}\",\"sort\":3,\"disableEdit\":0,\"authDesc\":\"\",\"extend\":\"{}\",\"child\":[{\"id\":17,\"parentId\":3,\"path\":\"收费管理/收银台\",\"pathId\":\"3/17\",\"pathArray\":[3,17],\"authCode\":\"CHARGE_MANAGE_001\",\"level\":2,\"name\":\"收银台\",\"authType\":0,\"resourceUrls\":\"{}\",\"sort\":1,\"disableEdit\":0,\"authDesc\":\"\",\"extend\":\"{}\",\"child\":[{\"id\":18,\"parentId\":17,\"path\":\"收费管理/收银台/修改账单金额\",\"pathId\":\"3/17/18\",\"pathArray\":[3,17,18],\"authCode\":\"CHARGE_MANAGE_001_001\",\"level\":3,\"name\":\"修改账单金额\",\"authType\":1,\"resourceUrls\":\"{\\\"path\\\":\\\"/mkg/api/v2/Charge/modDiscountOrLateMoney\\\",\\\"referer\\\":\\\"/charge-manage/checkout-counter\\\"}\",\"sort\":1,\"disableEdit\":0,\"authDesc\":\"在「未缴账单」列表中修改账单的优惠金额、修改账单的违约金额\",\"extend\":\"{}\",\"child\":[]},{\"id\":19,\"parentId\":17,\"path\":\"收费管理/收银台/账单撤回\",\"pathId\":\"3/17/19\",\"pathArray\":[3,17,19],\"authCode\":\"CHARGE_MANAGE_001_002\",\"level\":3,\"name\":\"账单撤回\",\"authType\":1,\"resourceUrls\":\"{\\\"path\\\":\\\"/mkg/api/v2/Charge/revokeByDealLog\\\",\\\"referer\\\":\\\"/charge-manage/checkout-counter\\\"}\",\"sort\":2,\"disableEdit\":0,\"authDesc\":\"在「开票管理」列表中对非线上支付的账单缴费记录中的账单进行单条或全部撤回\",\"extend\":\"{}\",\"child\":[]},{\"id\":20,\"parentId\":17,\"path\":\"收费管理/收银台/账单退款\",\"pathId\":\"3/17/20\",\"pathArray\":[3,17,20],\"authCode\":\"CHARGE_MANAGE_001_003\",\"level\":3,\"name\":\"账单退款\",\"authType\":1,\"resourceUrls\":\"{\\\"path\\\":\\\"/mkg/api/v2/Charge/refundByDealLog\\\",\\\"referer\\\":\\\"/charge-manage/checkout-counter\\\"}\",\"sort\":3,\"disableEdit\":0,\"authDesc\":\"在「开票管理」对账单缴费记录中的账单进行单条或全部退款\",\"extend\":\"{}\",\"child\":[]},{\"id\":43,\"parentId\":17,\"path\":\"收费管理/收银台/押金撤回\",\"pathId\":\"3/17/43\",\"pathArray\":[3,17,43],\"authCode\":\"CHARGE_MANAGE_001_004\",\"level\":3,\"name\":\"押金撤回\",\"authType\":1,\"resourceUrls\":\"{\\\"path\\\":\\\"/mkg/api/v2/Charge/rollBackCashOrder\\\",\\\"referer\\\":\\\"/charge-manage/checkout-counter\\\"}\",\"sort\":4,\"disableEdit\":0,\"authDesc\":\"在「开票管理」列表中对非线上支付的押金收取记录进行撤回\",\"extend\":\"{}\",\"child\":[]},{\"id\":21,\"parentId\":17,\"path\":\"收费管理/收银台/其他功能\",\"pathId\":\"3/17/21\",\"pathArray\":[3,17,21],\"authCode\":\"CHARGE_MANAGE_001_OTHER\",\"level\":3,\"name\":\"其他功能\",\"authType\":1,\"resourceUrls\":\"{}\",\"sort\":99,\"disableEdit\":1,\"authDesc\":\"成员可以正常查看收银台数据，以及使用收银台中除了修改账单金额、账单撤回、账单退款之外的其他功能\",\"extend\":\"{}\",\"child\":[]}]},{\"id\":22,\"parentId\":3,\"path\":\"收费管理/欠费与催缴\",\"pathId\":\"3/22\",\"pathArray\":[3,22],\"authCode\":\"CHARGE_MANAGE_002\",\"level\":2,\"name\":\"欠费与催缴\",\"authType\":0,\"resourceUrls\":\"{}\",\"sort\":2,\"disableEdit\":0,\"authDesc\":\"\",\"extend\":\"{}\",\"child\":[]},{\"id\":23,\"parentId\":3,\"path\":\"收费管理/代扣管理\",\"pathId\":\"3/23\",\"pathArray\":[3,23],\"authCode\":\"CHARGE_MANAGE_003\",\"level\":2,\"name\":\"代扣管理\",\"authType\":0,\"resourceUrls\":\"{}\",\"sort\":3,\"disableEdit\":0,\"authDesc\":\"\",\"extend\":\"{}\",\"child\":[]},{\"id\":24,\"parentId\":3,\"path\":\"收费管理/预存款管理\",\"pathId\":\"3/24\",\"pathArray\":[3,24],\"authCode\":\"CHARGE_MANAGE_004\",\"level\":2,\"name\":\"预存款管理\",\"authType\":0,\"resourceUrls\":\"{}\",\"sort\":4,\"disableEdit\":0,\"authDesc\":\"\",\"extend\":\"{}\",\"child\":[]},{\"id\":25,\"parentId\":3,\"path\":\"收费管理/押金管理\",\"pathId\":\"3/25\",\"pathArray\":[3,25],\"authCode\":\"CHARGE_MANAGE_005\",\"level\":2,\"name\":\"押金管理\",\"authType\":0,\"resourceUrls\":\"{}\",\"sort\":5,\"disableEdit\":0,\"authDesc\":\"\",\"extend\":\"{}\",\"child\":[]},{\"id\":26,\"parentId\":3,\"path\":\"收费管理/缴费短信群发\",\"pathId\":\"3/26\",\"pathArray\":[3,26],\"authCode\":\"CHARGE_MANAGE_006\",\"level\":2,\"name\":\"缴费短信群发\",\"authType\":0,\"resourceUrls\":\"{}\",\"sort\":6,\"disableEdit\":0,\"authDesc\":\"\",\"extend\":\"{}\",\"child\":[]},{\"id\":27,\"parentId\":3,\"path\":\"收费管理/账单与开票\",\"pathId\":\"3/27\",\"pathArray\":[3,27],\"authCode\":\"CHARGE_MANAGE_007\",\"level\":2,\"name\":\"账单与开票\",\"authType\":0,\"resourceUrls\":\"{}\",\"sort\":7,\"disableEdit\":0,\"authDesc\":\"\",\"extend\":\"{}\",\"child\":[{\"id\":28,\"parentId\":27,\"path\":\"收费管理/账单与开票/账单作废\",\"pathId\":\"3/27/28\",\"pathArray\":[3,27,28],\"authCode\":\"CHARGE_MANAGE_007_001\",\"level\":3,\"name\":\"账单作废\",\"authType\":1,\"resourceUrls\":\"{\\\"path\\\":\\\"/mkg/api/v2/Charge/modBill\\\",\\\"referer\\\":\\\"/charge-manage/bill-list\\\",\\\"params\\\":[{\\\"key\\\":\\\"payStatus\\\",\\\"val\\\":\\\"-1\\\",\\\"type\\\":\\\"int\\\"}]}\",\"sort\":1,\"disableEdit\":0,\"authDesc\":\"在「账单列表」中对未缴的单条账单进行作废\",\"extend\":\"{}\",\"child\":[]},{\"id\":29,\"parentId\":27,\"path\":\"收费管理/账单与开票/账单恢复\",\"pathId\":\"3/27/29\",\"pathArray\":[3,27,29],\"authCode\":\"CHARGE_MANAGE_007_002\",\"level\":3,\"name\":\"账单恢复\",\"authType\":1,\"resourceUrls\":\"{\\\"path\\\":\\\"/mkg/api/v2/Charge/modBill\\\",\\\"referer\\\":\\\"/charge-manage/bill-list\\\",\\\"params\\\":[{\\\"key\\\":\\\"payStatus\\\",\\\"val\\\":\\\"0\\\",\\\"type\\\":\\\"int\\\"}]}\",\"sort\":2,\"disableEdit\":0,\"authDesc\":\"在「账单列表」中对已作废的单条账单进行恢复\",\"extend\":\"{}\",\"child\":[]},{\"id\":30,\"parentId\":27,\"path\":\"收费管理/账单与开票/账单撤回\",\"pathId\":\"3/27/30\",\"pathArray\":[3,27,30],\"authCode\":\"CHARGE_MANAGE_007_003\",\"level\":3,\"name\":\"账单撤回\",\"authType\":1,\"resourceUrls\":\"{\\\"path\\\":\\\"/mkg/api/v2/Charge/modBill\\\",\\\"referer\\\":\\\"/charge-manage/record,/charge-manage/bill-list\\\",\\\"params\\\":[{\\\"key\\\":\\\"payStatus\\\",\\\"val\\\":\\\"4\\\",\\\"type\\\":\\\"int\\\"}]}\",\"sort\":3,\"disableEdit\":0,\"authDesc\":\"1）在「账单列表」中对非线上支付的单条已缴账单进行撤回\\r\\n2）在「开票管理」对非线上支付的账单缴费记录中的账单进行单条或全部撤回\",\"extend\":\"{}\",\"child\":[]},{\"id\":31,\"parentId\":27,\"path\":\"收费管理/账单与开票/账单退款\",\"pathId\":\"3/27/31\",\"pathArray\":[3,27,31],\"authCode\":\"CHARGE_MANAGE_007_004\",\"level\":3,\"name\":\"账单退款\",\"authType\":1,\"resourceUrls\":\"{\\\"path\\\":\\\"/mkg/api/v2/Charge/refundByDealLog\\\",\\\"referer\\\":\\\"/charge-manage/record,/charge-manage/bill-list\\\"}\",\"sort\":4,\"disableEdit\":0,\"authDesc\":\"1）在「账单列表」中对单条已缴账单进行退款\\r\\n2）在「开票管理」对账单缴费记录中的账单进行单条或全部退款\",\"extend\":\"{}\",\"child\":[]},{\"id\":32,\"parentId\":27,\"path\":\"收费管理/账单与开票/账单设置为呆账\",\"pathId\":\"3/27/32\",\"pathArray\":[3,27,32],\"authCode\":\"CHARGE_MANAGE_007_005\",\"level\":3,\"name\":\"账单设置为呆账\",\"authType\":1,\"resourceUrls\":\"{\\\"path\\\":\\\"/mkg/api/v2/Charge/setBadBillState\\\",\\\"referer\\\":\\\"/charge-manage/bill-list\\\"}\",\"sort\":5,\"disableEdit\":0,\"authDesc\":\"在「账单列表」中对未缴的单条账单进行设为呆账\",\"extend\":\"{}\",\"child\":[]},{\"id\":33,\"parentId\":27,\"path\":\"收费管理/账单与开票/批量账单作废\",\"pathId\":\"3/27/33\",\"pathArray\":[3,27,33],\"authCode\":\"CHARGE_MANAGE_007_006\",\"level\":3,\"name\":\"批量账单作废\",\"authType\":1,\"resourceUrls\":\"{\\\"path\\\":\\\"/mkg/api/v2/Charge/modBillBatch\\\",\\\"referer\\\":\\\"/charge-manage/bill-list\\\",\\\"params\\\":[{\\\"key\\\":\\\"modOp\\\",\\\"val\\\":\\\"-1\\\",\\\"type\\\":\\\"int\\\"}]}\",\"sort\":6,\"disableEdit\":0,\"authDesc\":\"在「账单列表」中对未缴账单进行批量作废\",\"extend\":\"{}\",\"child\":[]},{\"id\":34,\"parentId\":27,\"path\":\"收费管理/账单与开票/批量账单恢复\",\"pathId\":\"3/27/34\",\"pathArray\":[3,27,34],\"authCode\":\"CHARGE_MANAGE_007_007\",\"level\":3,\"name\":\"批量账单恢复\",\"authType\":1,\"resourceUrls\":\"{\\\"path\\\":\\\"/mkg/api/v2/Charge/modBillBatch\\\",\\\"referer\\\":\\\"/charge-manage/bill-list\\\",\\\"params\\\":[{\\\"key\\\":\\\"modOp\\\",\\\"val\\\":\\\"0\\\",\\\"type\\\":\\\"int\\\"}]}\",\"sort\":7,\"disableEdit\":0,\"authDesc\":\"在「账单列表」中对非线上支付的已缴账单进行批量撤回\",\"extend\":\"{}\",\"child\":[]},{\"id\":35,\"parentId\":27,\"path\":\"收费管理/账单与开票/批量账单撤回\",\"pathId\":\"3/27/35\",\"pathArray\":[3,27,35],\"authCode\":\"CHARGE_MANAGE_007_008\",\"level\":3,\"name\":\"批量账单撤回\",\"authType\":1,\"resourceUrls\":\"{\\\"path\\\":\\\"/mkg/api/v2/Charge/modBillBatch\\\",\\\"referer\\\":\\\"/charge-manage/bill-list\\\",\\\"params\\\":[{\\\"key\\\":\\\"modOp\\\",\\\"val\\\":\\\"4\\\",\\\"type\\\":\\\"int\\\"}]}\",\"sort\":8,\"disableEdit\":0,\"authDesc\":\"在「账单列表」中对已作废的账单进行批量恢复\",\"extend\":\"{}\",\"child\":[]},{\"id\":36,\"parentId\":27,\"path\":\"收费管理/账单与开票/批量账单收款\",\"pathId\":\"3/27/36\",\"pathArray\":[3,27,36],\"authCode\":\"CHARGE_MANAGE_007_009\",\"level\":3,\"name\":\"批量账单收款\",\"authType\":1,\"resourceUrls\":\"{\\\"path\\\":\\\"/mkg/api/v2/Charge/addBillPayBatch\\\",\\\"referer\\\":\\\"/charge-manage/bill-list\\\"}\",\"sort\":9,\"disableEdit\":0,\"authDesc\":\"在「账单列表」中对未缴账单进行批量收款\",\"extend\":\"{}\",\"child\":[]},{\"id\":42,\"parentId\":27,\"path\":\"收费管理/账单与开票/批量设为呆账\",\"pathId\":\"3/27/42\",\"pathArray\":[3,27,42],\"authCode\":\"CHARGE_MANAGE_007_010\",\"level\":3,\"name\":\"批量设为呆账\",\"authType\":1,\"resourceUrls\":\"{\\\"path\\\":\\\"/mkg/api/v2/Charge/modBillBatch\\\",\\\"referer\\\":\\\"/charge-manage/bill-list\\\",\\\"params\\\":[{\\\"key\\\":\\\"modOp\\\",\\\"val\\\":\\\"5\\\",\\\"type\\\":\\\"int\\\"}]}\",\"sort\":10,\"disableEdit\":0,\"authDesc\":\"在「账单列表」中对未缴账单进行批量设为呆账\",\"extend\":\"{}\",\"child\":[]},{\"id\":44,\"parentId\":27,\"path\":\"收费管理/账单与开票/押金撤回\",\"pathId\":\"3/27/44\",\"pathArray\":[3,27,44],\"authCode\":\"CHARGE_MANAGE_007_011\",\"level\":3,\"name\":\"押金撤回\",\"authType\":1,\"resourceUrls\":\"{\\\"path\\\":\\\"/mkg/api/v2/Charge/rollBackCashOrder\\\",\\\"referer\\\":\\\"/charge-manage/record\\\"}\",\"sort\":11,\"disableEdit\":0,\"authDesc\":\"在「开票管理」列表中对非线上支付的押金收取记录进行撤回\",\"extend\":\"{}\",\"child\":[]},{\"id\":37,\"parentId\":27,\"path\":\"收费管理/账单与开票/其他功能\",\"pathId\":\"3/27/37\",\"pathArray\":[3,27,37],\"authCode\":\"CHARGE_MANAGE_007_OTHER\",\"level\":3,\"name\":\"其他功能\",\"authType\":1,\"resourceUrls\":\"{}\",\"sort\":99,\"disableEdit\":1,\"authDesc\":\"成员可以正常查看「账单与开票」列表中的数据，以及使用「账单与开票」列表中除了上面列举功能之外的其他功能\",\"extend\":\"{}\",\"child\":[]}]}]},{\"id\":4,\"parentId\":0,\"path\":\"财务报表\",\"pathId\":\"4\",\"pathArray\":[4],\"authCode\":\"FINANCIAL_STATEMENTS\",\"level\":1,\"name\":\"财务报表\",\"authType\":0,\"resourceUrls\":\"{}\",\"sort\":4,\"disableEdit\":0,\"authDesc\":\"\",\"extend\":\"{}\",\"child\":[{\"id\":38,\"parentId\":4,\"path\":\"财务报表/收入统计\",\"pathId\":\"4/38\",\"pathArray\":[4,38],\"authCode\":\"FINANCIAL_STATEMENTS_001\",\"level\":2,\"name\":\"收入统计\",\"authType\":0,\"resourceUrls\":\"{}\",\"sort\":1,\"disableEdit\":0,\"authDesc\":\"\",\"extend\":\"{}\",\"child\":[]},{\"id\":39,\"parentId\":4,\"path\":\"财务报表/财务台账\",\"pathId\":\"4/39\",\"pathArray\":[4,39],\"authCode\":\"FINANCIAL_STATEMENTS_002\",\"level\":2,\"name\":\"财务台账\",\"authType\":0,\"resourceUrls\":\"{}\",\"sort\":2,\"disableEdit\":0,\"authDesc\":\"\",\"extend\":\"{}\",\"child\":[]},{\"id\":40,\"parentId\":4,\"path\":\"财务报表/财务对账\",\"pathId\":\"4/40\",\"pathArray\":[4,40],\"authCode\":\"FINANCIAL_STATEMENTS_003\",\"level\":2,\"name\":\"财务对账\",\"authType\":0,\"resourceUrls\":\"{}\",\"sort\":3,\"disableEdit\":0,\"authDesc\":\"\",\"extend\":\"{}\",\"child\":[]},{\"id\":41,\"parentId\":4,\"path\":\"财务报表/更多统计\",\"pathId\":\"4/41\",\"pathArray\":[4,41],\"authCode\":\"FINANCIAL_STATEMENTS_004\",\"level\":2,\"name\":\"更多统计\",\"authType\":0,\"resourceUrls\":\"{}\",\"sort\":4,\"disableEdit\":0,\"authDesc\":\"\",\"extend\":\"{}\",\"child\":[]}]},{\"id\":6,\"parentId\":0,\"path\":\"小区服务\",\"pathId\":\"6\",\"pathArray\":[6],\"authCode\":\"COMMUNITY_SERVICE\",\"level\":1,\"name\":\"小区服务\",\"authType\":0,\"resourceUrls\":\"{}\",\"sort\":5,\"disableEdit\":0,\"authDesc\":\"\",\"extend\":\"{}\",\"child\":[]},{\"id\":8,\"parentId\":0,\"path\":\"收支管理\",\"pathId\":\"8\",\"pathArray\":[8],\"authCode\":\"IN_OUT_MONEY_MANAGE\",\"level\":1,\"name\":\"收支管理\",\"authType\":0,\"resourceUrls\":\"{}\",\"sort\":6,\"disableEdit\":0,\"authDesc\":\"\",\"extend\":\"{}\",\"child\":[]},{\"id\":9,\"parentId\":0,\"path\":\"App移动抄表\",\"pathId\":\"9\",\"pathArray\":[9],\"authCode\":\"APP_METER_READING\",\"level\":1,\"name\":\"App移动抄表\",\"authType\":0,\"resourceUrls\":\"{}\",\"sort\":7,\"disableEdit\":0,\"authDesc\":\"\",\"extend\":\"{}\",\"child\":[]},{\"id\":7,\"parentId\":0,\"path\":\"App催缴管理\",\"pathId\":\"7\",\"pathArray\":[7],\"authCode\":\"APP_COLLECT_MANAGE\",\"level\":1,\"name\":\"App催缴管理\",\"authType\":0,\"resourceUrls\":\"{}\",\"sort\":8,\"disableEdit\":0,\"authDesc\":\"\",\"extend\":\"{}\",\"child\":[]}]"
+      },
+      "responseTime": 1691999267968
+    },
+    {
+      "reportsType": "http-record",
+      "category": "api",
+      "method": "GET",
+      "queryUrl": "https://charge.markiapp.com/mkg/api/v2/Charge/getUserCreateCSList?r=0.5522720969365584",
+      "url": "https://charge.markiapp.com/mkg/api/v2/Charge/getUserCreateCSList",
+      "body": "\"{\\\"r\\\":0.5522720969365584}\"",
+      "params": "{\"r\":\"0.5522720969365584\"}",
+      "requestTime": 1691999267855,
+      "status": 200,
+      "statusText": "",
+      "response": {
+        "status": 0,
+        "result": "[{\"id\":11243,\"name\":\"土豆收费系统\",\"createUid\":3312561759,\"createUserName\":\"土豆账号11122200001\",\"createTime\":\"2023-06-25T15:58:17+08:00\",\"baseHouseNum\":0,\"trialExpiredAt\":0}]"
+      },
+      "responseTime": 1691999267970
+    },
+    {
+      "reportsType": "http-record",
+      "category": "api",
+      "method": "GET",
+      "queryUrl": "https://charge.markiapp.com/mkg/api/v2/Charge/getAllCommunityAuth?communityId=5309&r=0.6704639556065786",
+      "url": "https://charge.markiapp.com/mkg/api/v2/Charge/getAllCommunityAuth",
+      "body": "\"{\\\"r\\\":0.6704639556065786}\"",
+      "params": "{\"communityId\":\"5309\",\"r\":\"0.6704639556065786\"}",
+      "requestTime": 1691999267967,
+      "status": 200,
+      "statusText": "",
+      "response": {
+        "status": 0,
+        "message": "操作成功",
+        "result": "[{\"title\":\"资产管理\",\"value\":1,\"disableEdit\":0,\"authDesc\":\"\",\"children\":[]},{\"title\":\"收费设置\",\"value\":2,\"disableEdit\":0,\"authDesc\":\"\",\"children\":[]},{\"title\":\"收费管理\",\"value\":3,\"disableEdit\":0,\"authDesc\":\"\",\"children\":[{\"title\":\"收银台\",\"value\":17,\"disableEdit\":0,\"authDesc\":\"\",\"children\":[{\"title\":\"修改账单金额\",\"value\":18,\"disableEdit\":0,\"authDesc\":\"在「未缴账单」列表中修改账单的优惠金额、修改账单的违约金额\",\"children\":null},{\"title\":\"账单撤回\",\"value\":19,\"disableEdit\":0,\"authDesc\":\"在「开票管理」列表中对非线上支付的账单缴费记录中的账单进行单条或全部撤回\",\"children\":null},{\"title\":\"账单退款\",\"value\":20,\"disableEdit\":0,\"authDesc\":\"在「开票管理」对账单缴费记录中的账单进行单条或全部退款\",\"children\":null},{\"title\":\"押金撤回\",\"value\":43,\"disableEdit\":0,\"authDesc\":\"在「开票管理」列表中对非线上支付的押金收取记录进行撤回\",\"children\":null},{\"title\":\"其他功能\",\"value\":21,\"disableEdit\":1,\"authDesc\":\"成员可以正常查看收银台数据，以及使用收银台中除了修改账单金额、账单撤回、账单退款之外的其他功能\",\"children\":null}]},{\"title\":\"欠费与催缴\",\"value\":22,\"disableEdit\":0,\"authDesc\":\"\",\"children\":[]},{\"title\":\"代扣管理\",\"value\":23,\"disableEdit\":0,\"authDesc\":\"\",\"children\":[]},{\"title\":\"预存款管理\",\"value\":24,\"disableEdit\":0,\"authDesc\":\"\",\"children\":[]},{\"title\":\"押金管理\",\"value\":25,\"disableEdit\":0,\"authDesc\":\"\",\"children\":[]},{\"title\":\"缴费短信群发\",\"value\":26,\"disableEdit\":0,\"authDesc\":\"\",\"children\":[]},{\"title\":\"账单与开票\",\"value\":27,\"disableEdit\":0,\"authDesc\":\"\",\"children\":[{\"title\":\"账单作废\",\"value\":28,\"disableEdit\":0,\"authDesc\":\"在「账单列表」中对未缴的单条账单进行作废\",\"children\":null},{\"title\":\"账单恢复\",\"value\":29,\"disableEdit\":0,\"authDesc\":\"在「账单列表」中对已作废的单条账单进行恢复\",\"children\":null},{\"title\":\"账单撤回\",\"value\":30,\"disableEdit\":0,\"authDesc\":\"1）在「账单列表」中对非线上支付的单条已缴账单进行撤回\\r\\n2）在「开票管理」对非线上支付的账单缴费记录中的账单进行单条或全部撤回\",\"children\":null},{\"title\":\"账单退款\",\"value\":31,\"disableEdit\":0,\"authDesc\":\"1）在「账单列表」中对单条已缴账单进行退款\\r\\n2）在「开票管理」对账单缴费记录中的账单进行单条或全部退款\",\"children\":null},{\"title\":\"账单设置为呆账\",\"value\":32,\"disableEdit\":0,\"authDesc\":\"在「账单列表」中对未缴的单条账单进行设为呆账\",\"children\":null},{\"title\":\"批量账单作废\",\"value\":33,\"disableEdit\":0,\"authDesc\":\"在「账单列表」中对未缴账单进行批量作废\",\"children\":null},{\"title\":\"批量账单恢复\",\"value\":34,\"disableEdit\":0,\"authDesc\":\"在「账单列表」中对非线上支付的已缴账单进行批量撤回\",\"children\":null},{\"title\":\"批量账单撤回\",\"value\":35,\"disableEdit\":0,\"authDesc\":\"在「账单列表」中对已作废的账单进行批量恢复\",\"children\":null},{\"title\":\"批量账单收款\",\"value\":36,\"disableEdit\":0,\"authDesc\":\"在「账单列表」中对未缴账单进行批量收款\",\"children\":null},{\"title\":\"批量设为呆账\",\"value\":42,\"disableEdit\":0,\"authDesc\":\"在「账单列表」中对未缴账单进行批量设为呆账\",\"children\":null},{\"title\":\"押金撤回\",\"value\":44,\"disableEdit\":0,\"authDesc\":\"在「开票管理」列表中对非线上支付的押金收取记录进行撤回\",\"children\":null},{\"title\":\"其他功能\",\"value\":37,\"disableEdit\":1,\"authDesc\":\"成员可以正常查看「账单与开票」列表中的数据，以及使用「账单与开票」列表中除了上面列举功能之外的其他功能\",\"children\":null}]}]},{\"title\":\"财务报表\",\"value\":4,\"disableEdit\":0,\"authDesc\":\"\",\"children\":[{\"title\":\"收入统计\",\"value\":38,\"disableEdit\":0,\"authDesc\":\"\",\"children\":[]},{\"title\":\"财务台账\",\"value\":39,\"disableEdit\":0,\"authDesc\":\"\",\"children\":[]},{\"title\":\"财务对账\",\"value\":40,\"disableEdit\":0,\"authDesc\":\"\",\"children\":[]},{\"title\":\"更多统计\",\"value\":41,\"disableEdit\":0,\"authDesc\":\"\",\"children\":[]}]},{\"title\":\"小区服务\",\"value\":6,\"disableEdit\":0,\"authDesc\":\"\",\"children\":[]},{\"title\":\"收支管理\",\"value\":8,\"disableEdit\":0,\"authDesc\":\"\",\"children\":[]},{\"title\":\"App移动抄表\",\"value\":9,\"disableEdit\":0,\"authDesc\":\"\",\"children\":[]},{\"title\":\"App催缴管理\",\"value\":7,\"disableEdit\":0,\"authDesc\":\"\",\"children\":[]}]"
+      },
+      "responseTime": 1691999268100
+    },
+    {
+      "reportsType": "http-record",
+      "category": "api",
+      "method": "GET",
+      "queryUrl": "https://charge.markiapp.com/api/v1/getUserInfo?uid=3312561759&r=0.5685254175064434",
+      "url": "https://charge.markiapp.com/api/v1/getUserInfo",
+      "body": "\"{\\\"r\\\":0.5685254175064434}\"",
+      "params": "{\"uid\":\"3312561759\",\"r\":\"0.5685254175064434\"}",
+      "requestTime": 1691999268099,
+      "status": 200,
+      "statusText": "",
+      "response": {
+        "status": 0,
+        "message": "success",
+        "result": "{\"uid\":3312561759,\"nick\":\"土豆账号11122200001\",\"gender\":\"\",\"icon\":\"http://biu-cn.dwstatic.com/default/squareicon.png\",\"phone\":\"11122200001\",\"login_type\":\"\",\"real_nick\":\"土豆账号11122200001\"}"
+      },
+      "responseTime": 1691999268173
+    },
+    {
+      "reportsType": "http-record",
+      "category": "api",
+      "method": "GET",
+      "queryUrl": "https://charge.markiapp.com/mkg/api/v2/Charge/getRiseInfo?communityId=5309&r=0.7425841781892122",
+      "url": "https://charge.markiapp.com/mkg/api/v2/Charge/getRiseInfo",
+      "body": "\"{\\\"r\\\":0.7425841781892122}\"",
+      "params": "{\"communityId\":\"5309\",\"r\":\"0.7425841781892122\"}",
+      "requestTime": 1691999268092,
+      "status": 200,
+      "statusText": "",
+      "response": {
+        "status": 0,
+        "result": "{\"free\":true,\"house\":200,\"addedHouse\":0,\"expiryTime\":\"--\",\"validDays\":0,\"sms\":0,\"debit\":0,\"houseVersion\":0,\"defFreeHouseNum\":200,\"defHouseUnitPrice\":188,\"defFreeSmsTemplateNum\":5,\"chargeSystemId\":11243,\"comboID\":0,\"minHouseCount\":1,\"defaultIncHouseCount\":100}"
+      },
+      "responseTime": 1691999268176
+    },
+    {
+      "reportsType": "http-record",
+      "category": "api",
+      "method": "GET",
+      "queryUrl": "https://charge.markiapp.com/mkg/api/v2/Charge/getChargeExpireDay?communityID=5309&r=0.44455233658915305",
+      "url": "https://charge.markiapp.com/mkg/api/v2/Charge/getChargeExpireDay",
+      "body": "\"{\\\"r\\\":0.44455233658915305}\"",
+      "params": "{\"communityID\":\"5309\",\"r\":\"0.44455233658915305\"}",
+      "requestTime": 1691999268092,
+      "status": 200,
+      "statusText": "",
+      "response": {
+        "status": 0,
+        "result": "{\"leftDay\":-1,\"isPay\":false,\"hasPermission\":true}"
+      },
+      "responseTime": 1691999268179
+    },
+    {
+      "reportsType": "http-record",
+      "category": "api",
+      "method": "GET",
+      "queryUrl": "https://charge.markiapp.com/mkg/api/v2/Charge/getSysRelation?csID=11243&r=0.14690215828544306",
+      "url": "https://charge.markiapp.com/mkg/api/v2/Charge/getSysRelation",
+      "body": "\"{\\\"r\\\":0.14690215828544306}\"",
+      "params": "{\"csID\":\"11243\",\"r\":\"0.14690215828544306\"}",
+      "requestTime": 1691999268100,
+      "status": 200,
+      "statusText": "",
+      "response": {
+        "status": 0,
+        "result": "{\"bindItemId\":0,\"bindItemType\":0,\"bindItemName\":\"\",\"auditState\":0,\"bindItemManager\":\"\"}"
+      },
+      "responseTime": 1691999268187
+    },
+    {
+      "reportsType": "http-record",
+      "category": "api",
+      "method": "GET",
+      "queryUrl": "https://charge.markiapp.com/mkg/api/v2/Charge/getNotificationState?communityID=5309&r=0.4147473722263715",
+      "url": "https://charge.markiapp.com/mkg/api/v2/Charge/getNotificationState",
+      "body": "\"{\\\"r\\\":0.4147473722263715}\"",
+      "params": "{\"communityID\":\"5309\",\"r\":\"0.4147473722263715\"}",
+      "requestTime": 1691999268098,
+      "status": 200,
+      "statusText": "",
+      "response": {
+        "status": 0,
+        "result": "{\"showEntry\":false,\"showRedHot\":false}"
+      },
+      "responseTime": 1691999268188
+    },
+    {
+      "reportsType": "http-record",
+      "category": "api",
+      "method": "GET",
+      "queryUrl": "https://charge.markiapp.com/mkg/api/v2/Charge/getRiseInfoV2?communityId=5309&r=0.5247600355351909",
+      "url": "https://charge.markiapp.com/mkg/api/v2/Charge/getRiseInfoV2",
+      "body": "\"{\\\"r\\\":0.5247600355351909}\"",
+      "params": "{\"communityId\":\"5309\",\"r\":\"0.5247600355351909\"}",
+      "requestTime": 1691999268092,
+      "status": 200,
+      "statusText": "",
+      "response": {
+        "status": 0,
+        "result": "{\"trial\":true,\"house\":0,\"addedHouse\":0,\"expiryTime\":\"2023-07-10\",\"validDays\":0,\"sms\":0,\"debit\":0,\"houseVersion\":0,\"defFreeHouseNum\":0,\"defHouseUnitPrice\":188,\"defFreeSmsTemplateNum\":5,\"chargeSystemId\":11243,\"comboID\":0,\"minHouseCount\":1,\"defaultIncHouseCount\":1,\"defMaxHouseNum\":500000,\"startTrialVersion\":true,\"isExpired\":true}"
+      },
+      "responseTime": 1691999268194
+    },
+    {
+      "reportsType": "http-record",
+      "category": "api",
+      "method": "GET",
+      "queryUrl": "https://charge.markiapp.com/mkg/api/v2/Charge/getSysRelation?csID=11243&r=0.14186489222251275",
+      "url": "https://charge.markiapp.com/mkg/api/v2/Charge/getSysRelation",
+      "body": "\"{\\\"r\\\":0.14186489222251275}\"",
+      "params": "{\"csID\":\"11243\",\"r\":\"0.14186489222251275\"}",
+      "requestTime": 1691999268100,
+      "status": 200,
+      "statusText": "",
+      "response": {
+        "status": 0,
+        "result": "{\"bindItemId\":0,\"bindItemType\":0,\"bindItemName\":\"\",\"auditState\":0,\"bindItemManager\":\"\"}"
+      },
+      "responseTime": 1691999268199
+    },
+    {
+      "reportsType": "http-record",
+      "category": "api",
+      "method": "GET",
+      "queryUrl": "https://charge.markiapp.com/mkg/api/v2/Charge/getCommunityList?chargeSystemID=11243&page=1&pageSize=9&r=0.39692709694072503",
+      "url": "https://charge.markiapp.com/mkg/api/v2/Charge/getCommunityList",
+      "body": "\"{\\\"r\\\":0.39692709694072503}\"",
+      "params": "{\"chargeSystemID\":\"11243\",\"page\":\"1\",\"pageSize\":\"9\",\"r\":\"0.39692709694072503\"}",
+      "requestTime": 1691999268099,
+      "status": 200,
+      "statusText": "",
+      "response": {
+        "status": 0,
+        "result": "{\"list\":[{\"id\":5309,\"name\":\"默认小区\",\"createUid\":3312561759,\"chargeSystemID\":11243,\"buildingNum\":1,\"unitNum\":1,\"houseNum\":0}],\"hasMore\":false,\"total\":1,\"noCreateBillTotal\":0,\"blockIndex\":\"\",\"maxAccessible\":0}"
+      },
+      "responseTime": 1691999268199
+    },
+    {
+      "reportsType": "http-record",
+      "category": "api",
+      "method": "GET",
+      "queryUrl": "https://charge.markiapp.com/mkg/api/v2/Charge/getNotificationList?nextID=&communityID=5309&r=0.149282489003697",
+      "url": "https://charge.markiapp.com/mkg/api/v2/Charge/getNotificationList",
+      "body": "\"{\\\"r\\\":0.149282489003697}\"",
+      "params": "{\"nextID\":\"\",\"communityID\":\"5309\",\"r\":\"0.149282489003697\"}",
+      "requestTime": 1691999268098,
+      "status": 200,
+      "statusText": "",
+      "response": {
+        "status": 0,
+        "result": "{\"list\":[],\"nextID\":\"\"}"
+      },
+      "responseTime": 1691999268207
+    },
+    {
+      "reportsType": "http-record",
+      "category": "api",
+      "method": "GET",
+      "queryUrl": "https://charge.markiapp.com/mkg/api/v2/Charge/getSysRelation?csID=11243&r=0.6212827831219905",
+      "url": "https://charge.markiapp.com/mkg/api/v2/Charge/getSysRelation",
+      "body": "\"{\\\"r\\\":0.6212827831219905}\"",
+      "params": "{\"csID\":\"11243\",\"r\":\"0.6212827831219905\"}",
+      "requestTime": 1691999268099,
+      "status": 200,
+      "statusText": "",
+      "response": {
+        "status": 0,
+        "result": "{\"bindItemId\":0,\"bindItemType\":0,\"bindItemName\":\"\",\"auditState\":0,\"bindItemManager\":\"\"}"
+      },
+      "responseTime": 1691999268212
+    },
+    {
+      "reportsType": "http-record",
+      "category": "api",
+      "method": "GET",
+      "queryUrl": "https://charge.markiapp.com/mkg/api/v2/Charge/getSysRelation?csID=11243&r=0.26209494055228344",
+      "url": "https://charge.markiapp.com/mkg/api/v2/Charge/getSysRelation",
+      "body": "\"{\\\"r\\\":0.26209494055228344}\"",
+      "params": "{\"csID\":\"11243\",\"r\":\"0.26209494055228344\"}",
+      "requestTime": 1691999268099,
+      "status": 200,
+      "statusText": "",
+      "response": {
+        "status": 0,
+        "result": "{\"bindItemId\":0,\"bindItemType\":0,\"bindItemName\":\"\",\"auditState\":0,\"bindItemManager\":\"\"}"
+      },
+      "responseTime": 1691999268216
+    },
+    {
+      "reportsType": "http-record",
+      "category": "api",
+      "method": "POST",
+      "queryUrl": "https://charge.markiapp.com/mkg/api/v2/Charge/getCommunityItemList",
+      "url": "https://charge.markiapp.com/mkg/api/v2/Charge/getCommunityItemList",
+      "body": "\"{\\\"index\\\":\\\"\\\",\\\"pageSize\\\":50,\\\"communityID\\\":5309,\\\"idList\\\":[],\\\"kw\\\":null,\\\"itemType\\\":15,\\\"expand\\\":\\\"{}\\\"}\"",
+      "params": "{}",
+      "requestTime": 1691999268163,
+      "status": 200,
+      "statusText": "",
+      "response": {
+        "status": 0,
+        "result": "{\"list\":[{\"id\":1,\"name\":\"住宅\",\"MeterExtInfo\":{\"Type\":0,\"HouseId\":0,\"userType\":0}},{\"id\":2,\"name\":\"公寓\",\"MeterExtInfo\":{\"Type\":0,\"HouseId\":0,\"userType\":0}},{\"id\":3,\"name\":\"商铺\",\"MeterExtInfo\":{\"Type\":0,\"HouseId\":0,\"userType\":0}},{\"id\":4,\"name\":\"办公\",\"MeterExtInfo\":{\"Type\":0,\"HouseId\":0,\"userType\":0}},{\"id\":5,\"name\":\"仓库\",\"MeterExtInfo\":{\"Type\":0,\"HouseId\":0,\"userType\":0}},{\"id\":7,\"name\":\"厂房\",\"MeterExtInfo\":{\"Type\":0,\"HouseId\":0,\"userType\":0}},{\"id\":6,\"name\":\"其他\",\"MeterExtInfo\":{\"Type\":0,\"HouseId\":0,\"userType\":0}}],\"index\":\"\",\"hasMore\":false}"
+      },
+      "responseTime": 1691999268228
+    },
+    {
+      "reportsType": "http-record",
+      "category": "api",
+      "method": "POST",
+      "queryUrl": "https://charge.markiapp.com/mkg/api/v2/Charge/getCommunityItemList",
+      "url": "https://charge.markiapp.com/mkg/api/v2/Charge/getCommunityItemList",
+      "body": "\"{\\\"index\\\":\\\"\\\",\\\"pageSize\\\":50,\\\"communityID\\\":5309,\\\"idList\\\":[],\\\"kw\\\":null,\\\"itemType\\\":16,\\\"expand\\\":\\\"{}\\\"}\"",
+      "params": "{}",
+      "requestTime": 1691999268164,
+      "status": 200,
+      "statusText": "",
+      "response": {
+        "status": 0,
+        "result": "{\"list\":[{\"id\":1,\"name\":\"已入住\",\"MeterExtInfo\":{\"Type\":0,\"HouseId\":0,\"userType\":0}},{\"id\":2,\"name\":\"装修中\",\"MeterExtInfo\":{\"Type\":0,\"HouseId\":0,\"userType\":0}},{\"id\":3,\"name\":\"未入住\",\"MeterExtInfo\":{\"Type\":0,\"HouseId\":0,\"userType\":0}},{\"id\":4,\"name\":\"已租出\",\"MeterExtInfo\":{\"Type\":0,\"HouseId\":0,\"userType\":0}},{\"id\":5,\"name\":\"未装修\",\"MeterExtInfo\":{\"Type\":0,\"HouseId\":0,\"userType\":0}},{\"id\":6,\"name\":\"未收房\",\"MeterExtInfo\":{\"Type\":0,\"HouseId\":0,\"userType\":0}},{\"id\":7,\"name\":\"空置房\",\"MeterExtInfo\":{\"Type\":0,\"HouseId\":0,\"userType\":0}},{\"id\":8,\"name\":\"未售房\",\"MeterExtInfo\":{\"Type\":0,\"HouseId\":0,\"userType\":0}}],\"index\":\"\",\"hasMore\":false}"
+      },
+      "responseTime": 1691999268238
+    },
+    {
+      "reportsType": "http-record",
+      "category": "api",
+      "method": "GET",
+      "queryUrl": "https://charge.markiapp.com/mkg/api/v2/Charge/getUserChargeSysList?index=&kw=&csID=&pageSize=10&r=0.015789126914511176",
+      "url": "https://charge.markiapp.com/mkg/api/v2/Charge/getUserChargeSysList",
+      "body": "\"{\\\"r\\\":0.015789126914511176}\"",
+      "params": "{\"index\":\"\",\"kw\":\"\",\"csID\":\"\",\"pageSize\":\"10\",\"r\":\"0.015789126914511176\"}",
+      "requestTime": 1691999268098,
+      "status": 200,
+      "statusText": "",
+      "response": {
+        "status": 0,
+        "result": "{\"list\":[{\"id\":11243,\"name\":\"土豆收费系统\",\"createUid\":3312561759,\"createUserName\":\"土豆账号11122200001\",\"createTime\":\"0001-01-01T00:00:00Z\",\"baseHouseNum\":0,\"trialExpiredAt\":0}],\"hasMore\":false,\"total\":0,\"index\":\"{\\\"sourceType\\\":2,\\\"indexID\\\":0}\",\"noCreateBillTotal\":0,\"blockIndex\":\"\",\"maxAccessible\":0}"
+      },
+      "responseTime": 1691999268253
+    },
+    {
+      "reportsType": "http-record",
+      "category": "api",
+      "method": "POST",
+      "queryUrl": "https://charge.markiapp.com/mkg/api/v2/Charge/getCommunityItemList",
+      "url": "https://charge.markiapp.com/mkg/api/v2/Charge/getCommunityItemList",
+      "body": "\"{\\\"index\\\":\\\"\\\",\\\"pageSize\\\":50,\\\"communityID\\\":5309,\\\"idList\\\":[],\\\"kw\\\":null,\\\"itemType\\\":15,\\\"expand\\\":\\\"{}\\\"}\"",
+      "params": "{}",
+      "requestTime": 1691999268166,
+      "status": 200,
+      "statusText": "",
+      "response": {
+        "status": 0,
+        "result": "{\"list\":[{\"id\":1,\"name\":\"住宅\",\"MeterExtInfo\":{\"Type\":0,\"HouseId\":0,\"userType\":0}},{\"id\":2,\"name\":\"公寓\",\"MeterExtInfo\":{\"Type\":0,\"HouseId\":0,\"userType\":0}},{\"id\":3,\"name\":\"商铺\",\"MeterExtInfo\":{\"Type\":0,\"HouseId\":0,\"userType\":0}},{\"id\":4,\"name\":\"办公\",\"MeterExtInfo\":{\"Type\":0,\"HouseId\":0,\"userType\":0}},{\"id\":5,\"name\":\"仓库\",\"MeterExtInfo\":{\"Type\":0,\"HouseId\":0,\"userType\":0}},{\"id\":7,\"name\":\"厂房\",\"MeterExtInfo\":{\"Type\":0,\"HouseId\":0,\"userType\":0}},{\"id\":6,\"name\":\"其他\",\"MeterExtInfo\":{\"Type\":0,\"HouseId\":0,\"userType\":0}}],\"index\":\"\",\"hasMore\":false}"
+      },
+      "responseTime": 1691999268259
+    },
+    {
+      "reportsType": "http-record",
+      "category": "api",
+      "method": "GET",
+      "queryUrl": "https://charge.markiapp.com/mkg/api/v2/Charge/getWebConf?key=columns-%2Fassets%2Fhouse-Apartment-5309&r=0.931530481077363",
+      "url": "https://charge.markiapp.com/mkg/api/v2/Charge/getWebConf",
+      "body": "\"{\\\"r\\\":0.931530481077363}\"",
+      "params": "{\"key\":\"columns-/assets/house-Apartment-5309\",\"r\":\"0.931530481077363\"}",
+      "requestTime": 1691999268164,
+      "status": 200,
+      "statusText": "",
+      "response": {
+        "status": 0,
+        "result": ""
+      },
+      "responseTime": 1691999268266
+    },
+    {
+      "reportsType": "http-record",
+      "category": "api",
+      "method": "POST",
+      "queryUrl": "https://charge.markiapp.com/mkg/api/v2/Charge/getCommunityItemList",
+      "url": "https://charge.markiapp.com/mkg/api/v2/Charge/getCommunityItemList",
+      "body": "\"{\\\"index\\\":\\\"\\\",\\\"pageSize\\\":50,\\\"communityID\\\":5309,\\\"idList\\\":[],\\\"kw\\\":null,\\\"itemType\\\":16,\\\"expand\\\":\\\"{}\\\"}\"",
+      "params": "{}",
+      "requestTime": 1691999268166,
+      "status": 200,
+      "statusText": "",
+      "response": {
+        "status": 0,
+        "result": "{\"list\":[{\"id\":1,\"name\":\"已入住\",\"MeterExtInfo\":{\"Type\":0,\"HouseId\":0,\"userType\":0}},{\"id\":2,\"name\":\"装修中\",\"MeterExtInfo\":{\"Type\":0,\"HouseId\":0,\"userType\":0}},{\"id\":3,\"name\":\"未入住\",\"MeterExtInfo\":{\"Type\":0,\"HouseId\":0,\"userType\":0}},{\"id\":4,\"name\":\"已租出\",\"MeterExtInfo\":{\"Type\":0,\"HouseId\":0,\"userType\":0}},{\"id\":5,\"name\":\"未装修\",\"MeterExtInfo\":{\"Type\":0,\"HouseId\":0,\"userType\":0}},{\"id\":6,\"name\":\"未收房\",\"MeterExtInfo\":{\"Type\":0,\"HouseId\":0,\"userType\":0}},{\"id\":7,\"name\":\"空置房\",\"MeterExtInfo\":{\"Type\":0,\"HouseId\":0,\"userType\":0}},{\"id\":8,\"name\":\"未售房\",\"MeterExtInfo\":{\"Type\":0,\"HouseId\":0,\"userType\":0}}],\"index\":\"\",\"hasMore\":false}"
+      },
+      "responseTime": 1691999268267
+    },
+    {
+      "reportsType": "http-record",
+      "category": "api",
+      "method": "POST",
+      "queryUrl": "https://charge.markiapp.com/mkg/api/v2/Charge/getCommunityItemList",
+      "url": "https://charge.markiapp.com/mkg/api/v2/Charge/getCommunityItemList",
+      "body": "\"{\\\"itemType\\\":16,\\\"pageSize\\\":100,\\\"index\\\":\\\"\\\",\\\"kw\\\":\\\"\\\"}\"",
+      "params": "{}",
+      "requestTime": 1691999268165,
+      "status": 200,
+      "statusText": "",
+      "response": {
+        "status": 0,
+        "result": "{\"list\":[{\"id\":1,\"name\":\"已入住\",\"MeterExtInfo\":{\"Type\":0,\"HouseId\":0,\"userType\":0}},{\"id\":2,\"name\":\"装修中\",\"MeterExtInfo\":{\"Type\":0,\"HouseId\":0,\"userType\":0}},{\"id\":3,\"name\":\"未入住\",\"MeterExtInfo\":{\"Type\":0,\"HouseId\":0,\"userType\":0}},{\"id\":4,\"name\":\"已租出\",\"MeterExtInfo\":{\"Type\":0,\"HouseId\":0,\"userType\":0}},{\"id\":5,\"name\":\"未装修\",\"MeterExtInfo\":{\"Type\":0,\"HouseId\":0,\"userType\":0}},{\"id\":6,\"name\":\"未收房\",\"MeterExtInfo\":{\"Type\":0,\"HouseId\":0,\"userType\":0}},{\"id\":7,\"name\":\"空置房\",\"MeterExtInfo\":{\"Type\":0,\"HouseId\":0,\"userType\":0}},{\"id\":8,\"name\":\"未售房\",\"MeterExtInfo\":{\"Type\":0,\"HouseId\":0,\"userType\":0}}],\"index\":\"\",\"hasMore\":false}"
+      },
+      "responseTime": 1691999268272
+    },
+    {
+      "reportsType": "http-record",
+      "category": "api",
+      "method": "GET",
+      "queryUrl": "https://charge.markiapp.com/mkg/api/v2/Charge/getCommunityInfo?communityID=5309&kw=&needHouse=0&r=0.751372427482818",
+      "url": "https://charge.markiapp.com/mkg/api/v2/Charge/getCommunityInfo",
+      "body": "\"{\\\"r\\\":0.751372427482818}\"",
+      "params": "{\"communityID\":\"5309\",\"kw\":\"\",\"needHouse\":\"0\",\"r\":\"0.751372427482818\"}",
+      "requestTime": 1691999268162,
+      "status": 200,
+      "statusText": "",
+      "response": {
+        "status": 0,
+        "result": "{\"communityID\":5309,\"communityName\":\"默认小区\",\"communityRemark\":\"\",\"buildingList\":[{\"id\":27194,\"communityID\":5309,\"name\":\"默认楼宇\",\"unitList\":[{\"id\":38694,\"communityID\":5309,\"buildingID\":27194,\"name\":\"默认单元\",\"houseList\":[]}],\"layerList\":null}],\"address\":\"\",\"addrLongitude\":\"\",\"addrLatitude\":\"\"}"
+      },
+      "responseTime": 1691999268288
+    },
+    {
+      "reportsType": "http-record",
+      "category": "api",
+      "method": "GET",
+      "queryUrl": "https://charge.markiapp.com/mkg/api/v2/Charge/getRiseInfoV2?communityId=5309&r=0.9643461522615342",
+      "url": "https://charge.markiapp.com/mkg/api/v2/Charge/getRiseInfoV2",
+      "body": "\"{\\\"r\\\":0.9643461522615342}\"",
+      "params": "{\"communityId\":\"5309\",\"r\":\"0.9643461522615342\"}",
+      "requestTime": 1691999268178,
+      "status": 200,
+      "statusText": "",
+      "response": {
+        "status": 0,
+        "result": "{\"trial\":true,\"house\":0,\"addedHouse\":0,\"expiryTime\":\"2023-07-10\",\"validDays\":0,\"sms\":0,\"debit\":0,\"houseVersion\":0,\"defFreeHouseNum\":0,\"defHouseUnitPrice\":188,\"defFreeSmsTemplateNum\":5,\"chargeSystemId\":11243,\"comboID\":0,\"minHouseCount\":1,\"defaultIncHouseCount\":1,\"defMaxHouseNum\":500000,\"startTrialVersion\":true,\"isExpired\":true}"
+      },
+      "responseTime": 1691999268299
+    },
+    {
+      "reportsType": "http-record",
+      "category": "api",
+      "method": "POST",
+      "queryUrl": "https://charge.markiapp.com/mkg/api/v2/Charge/getCommunityItemList",
+      "url": "https://charge.markiapp.com/mkg/api/v2/Charge/getCommunityItemList",
+      "body": "\"{\\\"itemType\\\":15,\\\"pageSize\\\":100,\\\"index\\\":\\\"\\\",\\\"kw\\\":\\\"\\\"}\"",
+      "params": "{}",
+      "requestTime": 1691999268165,
+      "status": 200,
+      "statusText": "",
+      "response": {
+        "status": 0,
+        "result": "{\"list\":[{\"id\":1,\"name\":\"住宅\",\"MeterExtInfo\":{\"Type\":0,\"HouseId\":0,\"userType\":0}},{\"id\":2,\"name\":\"公寓\",\"MeterExtInfo\":{\"Type\":0,\"HouseId\":0,\"userType\":0}},{\"id\":3,\"name\":\"商铺\",\"MeterExtInfo\":{\"Type\":0,\"HouseId\":0,\"userType\":0}},{\"id\":4,\"name\":\"办公\",\"MeterExtInfo\":{\"Type\":0,\"HouseId\":0,\"userType\":0}},{\"id\":5,\"name\":\"仓库\",\"MeterExtInfo\":{\"Type\":0,\"HouseId\":0,\"userType\":0}},{\"id\":7,\"name\":\"厂房\",\"MeterExtInfo\":{\"Type\":0,\"HouseId\":0,\"userType\":0}},{\"id\":6,\"name\":\"其他\",\"MeterExtInfo\":{\"Type\":0,\"HouseId\":0,\"userType\":0}}],\"index\":\"\",\"hasMore\":false}"
+      },
+      "responseTime": 1691999268322
+    },
+    {
+      "reportsType": "http-record",
+      "category": "api",
+      "method": "GET",
+      "queryUrl": "https://charge.markiapp.com/mkg/api/v2/Charge/getRiseInfo?communityId=5309&r=0.38035767989772196",
+      "url": "https://charge.markiapp.com/mkg/api/v2/Charge/getRiseInfo",
+      "body": "\"{\\\"r\\\":0.38035767989772196}\"",
+      "params": "{\"communityId\":\"5309\",\"r\":\"0.38035767989772196\"}",
+      "requestTime": 1691999268178,
+      "status": 200,
+      "statusText": "",
+      "response": {
+        "status": 0,
+        "result": "{\"free\":true,\"house\":200,\"addedHouse\":0,\"expiryTime\":\"--\",\"validDays\":0,\"sms\":0,\"debit\":0,\"houseVersion\":0,\"defFreeHouseNum\":200,\"defHouseUnitPrice\":188,\"defFreeSmsTemplateNum\":5,\"chargeSystemId\":11243,\"comboID\":0,\"minHouseCount\":1,\"defaultIncHouseCount\":100}"
+      },
+      "responseTime": 1691999268337
+    },
+    {
+      "reportsType": "http-record",
+      "category": "api",
+      "method": "GET",
+      "queryUrl": "https://charge.markiapp.com/mkg/api/v2/Charge/getHouseList?communityID=5309&page=1&pageSize=20&r=0.4040226866167236",
+      "url": "https://charge.markiapp.com/mkg/api/v2/Charge/getHouseList",
+      "body": "\"{\\\"r\\\":0.4040226866167236}\"",
+      "params": "{\"communityID\":\"5309\",\"page\":\"1\",\"pageSize\":\"20\",\"r\":\"0.4040226866167236\"}",
+      "requestTime": 1691999268456,
+      "status": 200,
+      "statusText": "",
+      "response": {
+        "status": 0,
+        "result": "{\"list\":null,\"hasMore\":false,\"total\":0,\"noCreateBillTotal\":0,\"blockIndex\":\"\",\"maxAccessible\":0}"
+      },
+      "responseTime": 1691999268559
+    },
+    {
+      "reportsType": "http-record",
+      "category": "api",
+      "method": "GET",
+      "queryUrl": "https://charge.markiapp.com/mkg/api/v2/Charge/getCommunityList?chargeSystemID=11243&page=1&pageSize=9&r=0.2446645761725419",
+      "url": "https://charge.markiapp.com/mkg/api/v2/Charge/getCommunityList",
+      "body": "\"{\\\"r\\\":0.2446645761725419}\"",
+      "params": "{\"chargeSystemID\":\"11243\",\"page\":\"1\",\"pageSize\":\"9\",\"r\":\"0.2446645761725419\"}",
+      "requestTime": 1691999268598,
+      "status": 200,
+      "statusText": "",
+      "response": {
+        "status": 0,
+        "result": "{\"list\":[{\"id\":5309,\"name\":\"默认小区\",\"createUid\":3312561759,\"chargeSystemID\":11243,\"buildingNum\":1,\"unitNum\":1,\"houseNum\":0}],\"hasMore\":false,\"total\":1,\"noCreateBillTotal\":0,\"blockIndex\":\"\",\"maxAccessible\":0}"
+      },
+      "responseTime": 1691999268682
+    },
+    {
+      "reportsType": "http-record",
+      "category": "api",
+      "method": "GET",
+      "queryUrl": "https://charge.markiapp.com/mkg/api/v2/Charge/getTaskList?communityId=5309&r=0.13699465751126305",
+      "url": "https://charge.markiapp.com/mkg/api/v2/Charge/getTaskList",
+      "body": "\"{\\\"r\\\":0.13699465751126305}\"",
+      "params": "{\"communityId\":\"5309\",\"r\":\"0.13699465751126305\"}",
+      "requestTime": 1691999269028,
+      "status": 200,
+      "statusText": "",
+      "response": {
+        "status": 0,
+        "result": "[]"
+      },
+      "responseTime": 1691999269154
+    },
+    {
+      "reportsType": "click-behavior-record",
+      "nodeId": "",
+      "classList": [
+        "ant-menu-title-content"
+      ],
+      "tagName": "span",
+      "tagText": "小区",
+      "category": "event",
+      "nodeDom": "<span   class=\"ant-menu-title-content\">小区</span>"
+    },
+    {
+      "reportsType": "router-change-record",
+      "category": "pv",
+      "path": "/assets/community",
+      "href": "https://charge.markiapp.com/assets/community"
+    },
+    {
+      "reportsType": "http-record",
+      "category": "api",
+      "method": "GET",
+      "queryUrl": "https://charge.markiapp.com/mkg/api/v2/Charge/getWebConf?key=columns-%2Fassets%2Fcommunity-Community-5309&r=0.4976424936263002",
+      "url": "https://charge.markiapp.com/mkg/api/v2/Charge/getWebConf",
+      "body": "\"{\\\"r\\\":0.4976424936263002}\"",
+      "params": "{\"key\":\"columns-/assets/community-Community-5309\",\"r\":\"0.4976424936263002\"}",
+      "requestTime": 1691999270328,
+      "status": 200,
+      "statusText": "",
+      "response": {
+        "status": 0,
+        "result": ""
+      },
+      "responseTime": 1691999270406
+    },
+    {
+      "reportsType": "http-record",
+      "category": "api",
+      "method": "GET",
+      "queryUrl": "https://charge.markiapp.com/mkg/api/v2/Charge/getCommunityList?communityID=5309&kw=&page=1&pageSize=20&chargeSystemID=11243&r=0.703859094789782",
+      "url": "https://charge.markiapp.com/mkg/api/v2/Charge/getCommunityList",
+      "body": "\"{\\\"r\\\":0.703859094789782}\"",
+      "params": "{\"communityID\":\"5309\",\"kw\":\"\",\"page\":\"1\",\"pageSize\":\"20\",\"chargeSystemID\":\"11243\",\"r\":\"0.703859094789782\"}",
+      "requestTime": 1691999270638,
+      "status": 200,
+      "statusText": "",
+      "response": {
+        "status": 0,
+        "result": "{\"list\":[{\"id\":5309,\"name\":\"默认小区\",\"createUid\":3312561759,\"chargeSystemID\":11243,\"buildingNum\":1,\"unitNum\":1,\"houseNum\":0}],\"hasMore\":false,\"total\":1,\"noCreateBillTotal\":0,\"blockIndex\":\"\",\"maxAccessible\":0}"
+      },
+      "responseTime": 1691999270746
+    },
+    {
+      "reportsType": "click-behavior-record",
+      "nodeId": "",
+      "classList": [
+        "ant-table-cell",
+        "ant-table-cell-row-hover"
+      ],
+      "tagName": "td",
+      "tagText": "默认小区",
+      "category": "event",
+      "nodeDom": "<td   class=\"ant-table-cell ant-table-cell-row-hover\">默认小区</td>"
+    },
+    {
+      "reportsType": "click-behavior-record",
+      "nodeId": "",
+      "classList": [
+        "ant-typography",
+        "un-danger-text"
+      ],
+      "tagName": "span",
+      "tagText": "编辑",
+      "category": "event",
+      "nodeDom": "<span   class=\"ant-typography un-danger-text\">编辑</span>"
+    },
+    {
+      "reportsType": "click-behavior-record",
+      "nodeId": "",
+      "classList": [],
+      "tagName": "svg",
+      "tagText": "",
+      "category": "event",
+      "nodeDom": "<svg  >undefined</svg>",
+      "icon": "close"
+    },
+    {
+      "reportsType": "click-behavior-record",
+      "nodeId": "",
+      "classList": [
+        "ant-card",
+        "ant-card-bordered",
+        "noBorderCard-rXDkH"
+      ],
+      "tagName": "div",
+      "tagText": "小区名称\t楼宇数量\t单元数量\t房屋数量\t备注\t操作\n\n \n\t\n \n\t\n \n\t\n \n\t\n \n\t\n \n\n默认小区\t1\t1\t0\t\t\n编辑\n删除",
+      "category": "event",
+      "nodeDom": "<div   class=\"ant-card ant-card-bordered noBorderCard-rXDkH\">小区名称\t楼宇数量\t单元数量\t房屋数量\t备注\t操作\n\n \n\t\n \n\t\n \n\t\n \n\t\n \n\t\n \n\n默认小区\t1\t1\t0\t\t\n编辑\n删除</div>"
+    },
+    {
+      "reportsType": "click-behavior-record",
+      "nodeId": "",
+      "classList": [
+        "ant-btn",
+        "ant-btn-primary",
+        "ant-btn-background-ghost",
+        "communitySwitchBtn"
+      ],
+      "tagName": "button",
+      "tagText": "默认小区",
+      "category": "event",
+      "nodeDom": "<button   class=\"ant-btn ant-btn-primary ant-btn-background-ghost communitySwitchBtn\">默认小区</button>"
+    },
+    {
+      "reportsType": "click-behavior-record",
+      "nodeId": "",
+      "classList": [
+        "modal-title"
+      ],
+      "tagName": "div",
+      "tagText": "选择小区新增小区",
+      "category": "event",
+      "nodeDom": "<div   class=\"modal-title\">选择小区新增小区</div>"
+    },
+    {
+      "reportsType": "click-behavior-record",
+      "nodeId": "",
+      "classList": [
+        "ant-btn",
+        "ant-btn-default",
+        "un-danger"
+      ],
+      "tagName": "button",
+      "tagText": "新增小区",
+      "category": "event",
+      "nodeDom": "<button   class=\"ant-btn ant-btn-default un-danger\">新增小区</button>"
+    },
+    {
+      "reportsType": "click-behavior-record",
+      "nodeId": "",
+      "classList": [],
+      "tagName": "span",
+      "tagText": "新增小区",
+      "category": "event",
+      "nodeDom": "<span  >新增小区</span>"
+    },
+    {
+      "reportsType": "click-behavior-record",
+      "nodeId": "",
+      "classList": [],
+      "tagName": "span",
+      "tagText": "新增小区",
+      "category": "event",
+      "nodeDom": "<span  >新增小区</span>"
+    },
+    {
+      "reportsType": "click-behavior-record",
+      "nodeId": "",
+      "classList": [],
+      "tagName": "span",
+      "tagText": "新增小区",
+      "category": "event",
+      "nodeDom": "<span  >新增小区</span>"
+    },
+    {
+      "reportsType": "click-behavior-record",
+      "nodeId": "",
+      "classList": [],
+      "tagName": "span",
+      "tagText": "新增小区",
+      "category": "event",
+      "nodeDom": "<span  >新增小区</span>"
+    },
+    {
+      "reportsType": "click-behavior-record",
+      "nodeId": "",
+      "classList": [
+        "item"
+      ],
+      "tagName": "div",
+      "tagText": "当前小区\n小区\n默认小区\n小区号：5309",
+      "category": "event",
+      "nodeDom": "<div   class=\"item\">当前小区\n小区\n默认小区\n小区号：5309</div>"
+    },
+    {
+      "reportsType": "click-behavior-record",
+      "nodeId": "",
+      "classList": [
+        "modal-title"
+      ],
+      "tagName": "div",
+      "tagText": "选择小区新增小区",
+      "category": "event",
+      "nodeDom": "<div   class=\"modal-title\">选择小区新增小区</div>"
+    },
+    {
+      "reportsType": "click-behavior-record",
+      "nodeId": "",
+      "classList": [],
+      "tagName": "span",
+      "tagText": "新增小区",
+      "category": "event",
+      "nodeDom": "<span  >新增小区</span>"
+    },
+    {
+      "reportsType": "click-behavior-record",
+      "nodeId": "",
+      "classList": [],
+      "tagName": "span",
+      "tagText": "新增小区",
+      "category": "event",
+      "nodeDom": "<span  >新增小区</span>"
+    },
+    {
+      "reportsType": "click-behavior-record",
+      "nodeId": "",
+      "classList": [],
+      "tagName": "span",
+      "tagText": "新增小区",
+      "category": "event",
+      "nodeDom": "<span  >新增小区</span>"
+    },
+    {
+      "reportsType": "click-behavior-record",
+      "nodeId": "",
+      "classList": [],
+      "tagName": "span",
+      "tagText": "新增小区",
+      "category": "event",
+      "nodeDom": "<span  >新增小区</span>"
+    },
+    {
+      "reportsType": "click-behavior-record",
+      "nodeId": "",
+      "classList": [],
+      "tagName": "span",
+      "tagText": "新增小区",
+      "category": "event",
+      "nodeDom": "<span  >新增小区</span>"
+    },
+    {
+      "reportsType": "click-behavior-record",
+      "nodeId": "",
+      "classList": [],
+      "tagName": "span",
+      "tagText": "新增小区",
+      "category": "event",
+      "nodeDom": "<span  >新增小区</span>"
+    },
+    {
+      "reportsType": "click-behavior-record",
+      "nodeId": "",
+      "classList": [
+        "ant-modal-wrap",
+        "modal-box",
+        "undefined"
+      ],
+      "tagName": "div",
+      "tagText": "选择小区新增小区\n当前小区\n小区\n默认小区\n小区号：5309\n1",
+      "category": "event",
+      "nodeDom": "<div   class=\"ant-modal-wrap modal-box undefined\">选择小区新增小区\n当前小区\n小区\n默认小区\n小区号：5309\n1</div>"
+    },
+    {
+      "reportsType": "http-record",
+      "category": "api",
+      "method": "GET",
+      "queryUrl": "https://charge.markiapp.com/mkg/api/v2/Charge/getCommunityList?chargeSystemID=11243&page=1&pageSize=9&r=0.11024897556230284",
+      "url": "https://charge.markiapp.com/mkg/api/v2/Charge/getCommunityList",
+      "body": "\"{\\\"r\\\":0.11024897556230284}\"",
+      "params": "{\"chargeSystemID\":\"11243\",\"page\":\"1\",\"pageSize\":\"9\",\"r\":\"0.11024897556230284\"}",
+      "requestTime": 1691999324156,
+      "status": 200,
+      "statusText": "",
+      "response": {
+        "status": 0,
+        "result": "{\"list\":[{\"id\":5309,\"name\":\"默认小区\",\"createUid\":3312561759,\"chargeSystemID\":11243,\"buildingNum\":1,\"unitNum\":1,\"houseNum\":0}],\"hasMore\":false,\"total\":1,\"noCreateBillTotal\":0,\"blockIndex\":\"\",\"maxAccessible\":0}"
+      },
+      "responseTime": 1691999324239
+    },
+    {
+      "reportsType": "click-behavior-record",
+      "nodeId": "",
+      "classList": [],
+      "tagName": "svg",
+      "tagText": "",
+      "category": "event",
+      "nodeDom": "<svg  >undefined</svg>",
+      "icon": "close"
+    },
+    {
+      "reportsType": "click-behavior-record",
+      "nodeId": "",
+      "classList": [
+        "headerButton"
+      ],
+      "tagName": "span",
+      "tagText": "问题反馈",
+      "category": "event",
+      "nodeDom": "<span   class=\"headerButton\">问题反馈</span>"
+    },
+    {
+      "reportsType": "click-behavior-record",
+      "nodeId": "form_in_modal_content",
+      "classList": [
+        "ant-input"
+      ],
+      "tagName": "textarea",
+      "tagText": "",
+      "category": "event",
+      "nodeDom": "<textarea  id=\"form_in_modal_content\"  class=\"ant-input\"></textarea>"
+    },
+    {
+      "reportsType": "click-behavior-record",
+      "nodeId": "form_in_modal_content",
+      "classList": [
+        "ant-input",
+        "ant-input-status-success"
+      ],
+      "tagName": "textarea",
+      "tagText": "在没有正式版本后",
+      "category": "event",
+      "nodeDom": "<textarea  id=\"form_in_modal_content\"  class=\"ant-input ant-input-status-success\"></textarea>"
+    },
+    {
+      "reportsType": "click-behavior-record",
+      "nodeId": "",
+      "classList": [
+        "ant-modal-wrap"
+      ],
+      "tagName": "div",
+      "tagText": "问题反馈\n取 消提 交",
+      "category": "event",
+      "nodeDom": "<div   class=\"ant-modal-wrap\">问题反馈\n取 消提 交</div>"
+    },
+    {
+      "reportsType": "click-behavior-record",
+      "nodeId": "form_in_modal_content",
+      "classList": [
+        "ant-input",
+        "ant-input-status-success"
+      ],
+      "tagName": "textarea",
+      "tagText": "在没有正式版本后",
+      "category": "event",
+      "nodeDom": "<textarea  id=\"form_in_modal_content\"  class=\"ant-input ant-input-status-success\"></textarea>"
+    },
+    {
+      "reportsType": "click-behavior-record",
+      "nodeId": "form_in_modal_content",
+      "classList": [
+        "ant-input",
+        "ant-input-status-success"
+      ],
+      "tagName": "textarea",
+      "tagText": "在没有正式版本后",
+      "category": "event",
+      "nodeDom": "<textarea  id=\"form_in_modal_content\"  class=\"ant-input ant-input-status-success\"></textarea>"
+    },
+    {
+      "reportsType": "click-behavior-record",
+      "nodeId": "form_in_modal_content",
+      "classList": [
+        "ant-input",
+        "ant-input-status-success"
+      ],
+      "tagName": "textarea",
+      "tagText": "在没有正式版本后",
+      "category": "event",
+      "nodeDom": "<textarea  id=\"form_in_modal_content\"  class=\"ant-input ant-input-status-success\"></textarea>"
+    },
+    {
+      "reportsType": "click-behavior-record",
+      "nodeId": "form_in_modal_content",
+      "classList": [
+        "ant-input",
+        "ant-input-status-success"
+      ],
+      "tagName": "textarea",
+      "tagText": "在没有正式版本后",
+      "category": "event",
+      "nodeDom": "<textarea  id=\"form_in_modal_content\"  class=\"ant-input ant-input-status-success\"></textarea>"
+    },
+    {
+      "reportsType": "click-behavior-record",
+      "nodeId": "form_in_modal_content",
+      "classList": [
+        "ant-input",
+        "ant-input-status-success"
+      ],
+      "tagName": "textarea",
+      "tagText": "在没有正式版本后",
+      "category": "event",
+      "nodeDom": "<textarea  id=\"form_in_modal_content\"  class=\"ant-input ant-input-status-success\"></textarea>"
+    },
+    {
+      "reportsType": "click-behavior-record",
+      "nodeId": "",
+      "classList": [],
+      "tagName": "span",
+      "tagText": "提 交",
+      "category": "event",
+      "nodeDom": "<span  >提 交</span>"
+    },
+    {
+      "reportsType": "click-behavior-record",
+      "nodeId": "",
+      "classList": [
+        "headerButton"
+      ],
+      "tagName": "span",
+      "tagText": "问题反馈",
+      "category": "event",
+      "nodeDom": "<span   class=\"headerButton\">问题反馈</span>"
+    },
+    {
+      "reportsType": "click-behavior-record",
+      "nodeId": "form_in_modal_content",
+      "classList": [
+        "ant-input"
+      ],
+      "tagName": "textarea",
+      "tagText": "",
+      "category": "event",
+      "nodeDom": "<textarea  id=\"form_in_modal_content\"  class=\"ant-input\"></textarea>"
+    },
+    {
+      "reportsType": "click-behavior-record",
+      "nodeId": "",
+      "classList": [],
+      "tagName": "span",
+      "tagText": "提 交",
+      "category": "event",
+      "nodeDom": "<span  >提 交</span>"
+    }
+  ],
+  "events": "[]"
+}

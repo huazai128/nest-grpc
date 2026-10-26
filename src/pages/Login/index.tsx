@@ -2,20 +2,22 @@ import { useEffect } from 'react'
 import { Form, Button, Input } from 'antd'
 import { observer } from 'mobx-react-lite'
 import useRootStore from '@src/stores/useRootStore'
-import { useNavigate } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import styles from './style.scss'
 
 function Login() {
   const { authStore } = useRootStore()
-  const navigate = useNavigate()
+  const history = useHistory()
 
   useEffect(() => {}, [])
 
   const onFinish = (values: any) => {
     authStore.login(values, () => {
-      navigate('/')
+      history.push('/')
     })
   }
+
+  const onFinishFailed = (errorInfo: any) => {}
 
   return (
     <div className={`${styles.loginBox} flex flex-center`}>
@@ -25,6 +27,7 @@ function Login() {
         wrapperCol={{ span: 16 }}
         initialValues={{ remember: true }}
         onFinish={onFinish}
+        onFinishFailed={onFinishFailed}
         autoComplete="off"
       >
         <Form.Item label="账号" name="account" rules={[{ required: true, message: '请输入账号' }]}>

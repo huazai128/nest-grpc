@@ -2,7 +2,7 @@ import { ResponseData } from '@src/interfaces/response.iterface'
 import http, { HttpParams } from '@src/services/http'
 
 function getLogs<T>(data: HttpParams): Promise<ResponseData<T>> {
-  return http.get<T>('/api/log/list', data)
+  return http.get<T>('/api/log', data)
 }
 
 function getLogsByCursor<T>(data: HttpParams): Promise<ResponseData<T>> {
@@ -19,9 +19,6 @@ function getAggregationPathOrUrl<T>(data: HttpParams): Promise<ResponseData<T>> 
 function getMemoryData<T>(data: HttpParams): Promise<ResponseData<T>> {
   return http.get<T>('/api/log/getMemoryData', data)
 }
-function getIpAnalysis<T>(data: HttpParams): Promise<ResponseData<T>> {
-  return http.get<T>('/api/log/ip', data)
-}
 
 export default {
   getLogs,
@@ -29,5 +26,4 @@ export default {
   getLogsChart,
   getAggregationPathOrUrl,
   getMemoryData,
-  getIpAnalysis,
 }

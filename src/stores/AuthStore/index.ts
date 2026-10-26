@@ -13,6 +13,16 @@ export class AuthStore extends StoreExt {
   @observable userInfo!: IAuthStore.UserInfo
 
   /**
+   * 获取用户信息,也可以在node直接返回到window
+   * @memberof AuthStore
+   */
+  @action
+  getUserInfo = async () => {
+    const res = await this.api.auth.getUserInfo<IAuthStore.UserInfo>({ name: 12, pass: 1212 })
+    this.userInfo = res.result || undefined
+  }
+
+  /**
    * 登录信息
    * @param {Record<string, string>} data
    * @param {() => void} cb

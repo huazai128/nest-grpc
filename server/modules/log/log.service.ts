@@ -7,6 +7,8 @@ import { QueryDTO } from '@app/protos/common/query_dto'
 import { LogChartQueryDTO, LogPaginateQueryDTO } from './log.dto'
 import { ChartItem } from '@app/protos/common/chart_item'
 import { MeasureAsyncTime } from '@app/decorators/async.decorator'
+import { LOG_FIELD_LIMITS } from '@app/constants/logFieldLimits.constant'
+import { normalizeInboundSaveLog } from './logPayload.util'
 
 const Logger = createLogger({ scope: 'LogService', time: true })
 
@@ -34,13 +36,20 @@ export class LogService implements OnModuleInit {
   async saveLog(data: SaveLogRequest) {
     try {
       // 过滤掉null和undefined的值
-      const filteredData = this.filterNullUndefined(data)
+      const filteredData = normalizeInboundSaveLog(
+        this.filterNullUndefined(data) as SaveLogRequest,
+      )
 
-      Logger.info('saveLog grpc请求数据:', filteredData)
+      Logger.info('saveLog grpc请求数据:', {
+        category: filteredData.category,
+        reportsType: filteredData.reportsType,
+        siteId: filteredData.siteId,
+        traceId: filteredData.traceId,
+      })
 
       // 使用更高效的方式估算数据大小，避免完整序列化
       const estimatedSize = this.estimateDataSize(filteredData)
-      const maxSize = 4 * 1024 * 1024 // 4MB阈值
+      const maxSize = LOG_FIELD_LIMITS.CHUNK_JSON_MAX_BYTES
 
       if (estimatedSize > maxSize) {
         // 延迟导入，避免不必要的模块加载
@@ -208,6 +217,29 @@ export class LogService implements OnModuleInit {
    * @return {*}  {Promise<IPLocationResponse>}
    * @memberof LogService
    */
+  public async getLogsAggregation(query: LogPaginateQueryDTO & { type?: string }) {
+    try {
+      return await lastValueFrom(
+        this.logService.getLogsAggregation(query as unknown as QueryDTO),
+      )
+    } catch (error) {
+      Logger.error('getLogsAggregation grpc错误:', error.code, error.message)
+      throw new BadRequestException({ code: error.code, message: '聚合查询失败' })
+    }
+  }
+
+  public async getMemoryData(query: LogChartQueryDTO) {
+    try {
+      const data = await lastValueFrom(
+        this.logService.getMemoryData(query as unknown as QueryDTO),
+      )
+      return data.data
+    } catch (error) {
+      Logger.error('getMemoryData grpc错误:', error.code, error.message)
+      throw new BadRequestException({ code: error.code, message: '内存图表查询失败' })
+    }
+  }
+
   public async getIpAnalysis(ip: string) {
     try {
       const data = await lastValueFrom(this.logService.handleIPLocation({ ip } as IPLocationRequest))

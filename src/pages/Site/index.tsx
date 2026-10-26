@@ -1,15 +1,11 @@
-import dayjs from 'dayjs'
-import { onMounted } from 'veact'
-import { Link } from 'react-router-dom'
 import Page from '@src/components/Page'
-import { observer } from 'mobx-react-lite'
+import { Layout, Input, FormItemProps, Button, List, Space, Typography, Popconfirm } from 'antd'
 import SearchList from '@src/components/SearchData/SearchList'
-import { Site as SiteItem } from '@src/interfaces/site.interface'
-import { Button, FormItemProps, Input, Layout, List, Popconfirm, Space, Typography } from 'antd'
-import styles from './style.scss'
-import EditSite from './components/EditSite'
-import { useStore, SiteProvider } from './store'
 import useRootStore from '@src/stores/useRootStore'
+import EditSite from './components/EditSite'
+import { Link } from 'react-router-dom'
+import dayjs from 'dayjs'
+import styles from './style.scss'
 
 const { Content } = Layout
 
@@ -21,28 +17,24 @@ const formList: Array<FormItemProps> = [
   },
 ]
 
-const Site = observer(() => {
-  const { globalStore } = useRootStore()
-  const siteStore = useStore()
-  onMounted(() => {
-    siteStore.loadMoreData()
-  })
+const Site = () => {
+  const { siteStore } = useRootStore()
 
   return (
-    <Page title="首页" className={styles.siteBox}>
+    <Page title="站点" className={styles.siteBox}>
       <Content className={styles.siteLayout} style={{ padding: '24px 50px' }}>
         <SearchList
           listStore={siteStore}
           formProps={{ formItems: formList }}
           listProps={{
-            renderItem: (item: SiteItem) => (
+            renderItem: (item: ISiteStore.Site) => (
               <List.Item key={item.id}>
-                <Link to={`/page/${item.id}/home`} onClick={() => globalStore.updateSite(item._id)}>
+                <Link to={`/admin/${item._id}/home`}>
                   {item.name}
                   <p>{dayjs(item.create_at).format('YYYY-MM-DD HH:mm:ss')}</p>
                 </Link>
                 <Space>
-                  <Typography.Link onClick={() => siteStore.showModal(item)}>编辑</Typography.Link>
+                  <Typography.Link onClick={() => siteStore.handleModal(item)}>编辑</Typography.Link>
                   <Popconfirm title="请和研发确认好后在删除！！！" onConfirm={() => siteStore.delteSiteId(item._id)}>
                     <Typography.Link type="danger">删除</Typography.Link>
                   </Popconfirm>
@@ -51,20 +43,14 @@ const Site = observer(() => {
             ),
           }}
         >
-          <Button type="primary" onClick={() => siteStore.showModal()}>
+          <Button type="primary" onClick={() => siteStore.handleModal()}>
             新增站点
           </Button>
         </SearchList>
       </Content>
+      <EditSite />
     </Page>
   )
-})
-
-export default function () {
-  return (
-    <SiteProvider>
-      <Site />
-      <EditSite />
-    </SiteProvider>
-  )
 }
+
+export default Site

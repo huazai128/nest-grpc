@@ -1,0 +1,10 @@
+.prefBox {
+  background: #e7e7e7 !important;
+  overflow-y: auto !important;
+}
+
+.prefCard {
+  :global(.ant-card-body) {
+    height: 605px !important;
+  }
+}

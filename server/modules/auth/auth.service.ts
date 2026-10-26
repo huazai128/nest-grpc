@@ -100,4 +100,9 @@ export class AuthService implements OnModuleInit {
     })
     return payload
   }
+
+  @MeasureAsyncTime
+  public async getUserById(userId: number) {
+    return lastValueFrom(this.authService.getUserById({ userId }))
+  }
 }
