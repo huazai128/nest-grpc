@@ -17,7 +17,73 @@ const maxKafkaPayloadBytes = 1048576
 const WEB_INFO_TIME = 3 * 24 * 60 * 60
 const WEB_INFO = 'webInfo'
 const PAGE_INFO = 'pageInfo'
-const MULTI_MAX = 10
+const MULTI_MAX = 100
+const CACHE_SKIP_KEYS = new Set(['category', 'reportsType', 'timestamp'])
+
+function splitQueryUrl(queryUrl: string): { url: string; params?: Record<string, string> } {
+  const q = queryUrl.indexOf('?')
+  const url = q === -1 ? queryUrl : queryUrl.slice(0, q)
+  if (q === -1 || q === queryUrl.length - 1) return { url }
+  const params: Record<string, string> = {}
+  queryUrl
+    .slice(q + 1)
+    .split('&')
+    .forEach((pair) => {
+      if (!pair) return
+      const eq = pair.indexOf('=')
+      const rawKey = eq === -1 ? pair : pair.slice(0, eq)
+      const rawVal = eq === -1 ? '' : pair.slice(eq + 1)
+      try {
+        const key = decodeURIComponent(rawKey.replace(/\+/g, ' '))
+        const value = decodeURIComponent(rawVal.replace(/\+/g, ' '))
+        if (key) params[key] = value
+      } catch {
+        if (rawKey) params[rawKey] = rawVal
+      }
+    })
+  return Object.keys(params).length ? { url, params } : { url }
+}
+
+function hydrateHttpFromQueryUrl(target: Record<string, unknown> | undefined): void {
+  if (!target) return
+  if (typeof target.queryUrl !== 'string' || !target.queryUrl) return
+  if (target.url != null && target.url !== '') return
+  const parsed = splitQueryUrl(target.queryUrl)
+  target.url = parsed.url
+  if (target.params == null && parsed.params) {
+    target.params = parsed.params
+  }
+}
+
+function hydrateCollectedAliases(data: LogData): void {
+  const rec = data as LogData & {
+    resourcePrefs?: Array<Record<string, number>>
+    meta?: Record<string, unknown>
+  }
+  const prefs = rec.resourcePrefs
+  if (Array.isArray(prefs)) {
+    prefs.forEach((row) => {
+      if (row && row.request == null && row.ttfb != null) {
+        row.request = row.ttfb
+      }
+    })
+  }
+  hydrateHttpFromQueryUrl(rec as Record<string, unknown>)
+  hydrateHttpFromQueryUrl(rec.meta)
+}
+
+function pickCacheFields(
+  item: Partial<LogData>,
+  extras: { siteId?: string; traceId?: string },
+): Record<string, unknown> {
+  const out: Record<string, unknown> = { ...extras }
+  Object.entries(item).forEach(([key, value]) => {
+    if (CACHE_SKIP_KEYS.has(key)) return
+    if (value === undefined || value === null || value === '') return
+    out[key] = value
+  })
+  return out
+}
 
 const supportedCategories = new Set<string>([
   TransportCategory.EVENT,
@@ -39,10 +105,7 @@ export class LogIngestService {
   ) {}
 
   private preparePayload(data: LogData): SaveLogRequest {
-    return {
-      ...data,
-      title: data.title || '信托制物业小区',
-    } as SaveLogRequest
+    return { ...data } as SaveLogRequest
   }
 
   private isSupported(data: LogData): boolean {
@@ -86,29 +149,52 @@ export class LogIngestService {
   }
 
   /** 批量：合并 Redis 后一次 Kafka send，减少 broker 往返 */
-  public ingestMultiLogs(logs: Partial<LogData>[] | undefined, visitor: QueryVisitor): void {
-    const slice = (logs || []).slice(0, MULTI_MAX)
+  public async ingestMultiLogs(
+    body: { logs?: Partial<LogData>[]; siteId?: string; traceId?: string } | Partial<LogData>[] | undefined,
+    visitor: QueryVisitor,
+  ): Promise<void> {
+    const logs = Array.isArray(body) ? body : body?.logs
+    const siteId = Array.isArray(body) ? undefined : body?.siteId
+    const traceId = Array.isArray(body) ? undefined : body?.traceId
+    const list = logs || []
+    if (list.length > MULTI_MAX) {
+      logger.warn(`multi 上报 ${list.length} 条，截断为 ${MULTI_MAX}`)
+    }
+    const slice = list.slice(0, MULTI_MAX)
     if (!slice.length) return
 
-    void this.processMultiLogs(slice, visitor).catch((error) => {
-      logger.error('multi 上报后台处理失败', error)
-    })
+    await this.processMultiLogs(slice, visitor, { siteId, traceId })
   }
 
-  private async processMultiLogs(items: Partial<LogData>[], visitor: QueryVisitor): Promise<void> {
+  private async processMultiLogs(
+    items: Partial<LogData>[],
+    visitor: QueryVisitor,
+    batchMeta: { siteId?: string; traceId?: string },
+  ): Promise<void> {
     const kafkaBatch: LogData[] = []
     const grpcOversized: SaveLogRequest[] = []
+    let lastPageId: string | undefined
 
-    for (const item of items) {
-      const cacheKey = `WEB_INFO:${item.traceId}`
-      const pageCacheKey = `PAGE_INFO:${item.traceId}`
+    for (const raw of items) {
+      const item = { ...raw }
+      const traceId = item.traceId || batchMeta.traceId
+      const siteId = item.siteId || batchMeta.siteId
+      if (!item.pageId && lastPageId) {
+        item.pageId = lastPageId
+      }
+      if (typeof item.pageId === 'string' && item.pageId) {
+        lastPageId = item.pageId
+      }
+      const cacheKey = `WEB_INFO:${traceId}`
+      const pageCacheKey = `PAGE_INFO:${traceId}`
 
-      if (item.category === WEB_INFO && item.traceId) {
-        await this.cacheService.set(cacheKey, item, WEB_INFO_TIME)
+      if (item.category === WEB_INFO && traceId) {
+        await this.cacheService.set(cacheKey, pickCacheFields(item, { siteId, traceId }), WEB_INFO_TIME)
         continue
       }
-      if (item.category === PAGE_INFO && item.traceId) {
-        await this.cacheService.set(pageCacheKey, item, WEB_INFO_TIME)
+      if (item.category === PAGE_INFO && traceId) {
+        await this.cacheService.set(pageCacheKey, pickCacheFields(item, { siteId, traceId }), WEB_INFO_TIME)
+        lastPageId = (item.pageId as string) || lastPageId
         continue
       }
 
@@ -121,10 +207,14 @@ export class LogIngestService {
         ...(webInfo || {}),
         ...(pageInfo || {}),
         ...item,
+        siteId,
+        traceId,
         ip: visitor.ip || '',
         ua: visitor.ua,
         ua_result: visitor.ua_result,
       } as LogData
+
+      hydrateCollectedAliases(merged)
 
       if (!this.isSupported(merged)) continue
 

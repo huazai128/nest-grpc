@@ -16,11 +16,13 @@
 }
 ```
 
-- 单次批量数量：SDK 每批最多取 `10` 条日志上报。
-- 站点标识：SDK 会把 `ConfigProps.appKey` 作为 `siteId` 写入**批量请求体外层**（整批共享，单条日志不再重复携带）。
-- 会话标识：`traceId` 同样上报在批量请求体外层；整批日志共享同一 `traceId`。跨会话补报的历史日志会在**单条日志内**保留各自原会话的 `traceId`，其优先级高于外层值，服务端解析时应优先取单条日志的 `traceId`。
-- 发送方式：优先使用 `navigator.sendBeacon`，失败后降级为原生 `XMLHttpRequest`。
-- 服务端合并：`webInfo` 和 `pageInfo` 会在服务端按 `traceId` 缓存 3 天，普通日志入库前会合并对应的基础网页信息、页面信息、`ip` 和 `ua`。`siteId`、`traceId` 取自批量外层（单条日志带 `traceId` 时以单条为准）。
+- 单次批量数量：SDK 每批最多取 `10` 条日志上报。服务端单次最多处理 `100` 条。
+- 站点标识：SDK 会把 `ConfigProps.appKey` 作为 `siteId` 写入**批量请求体外层**（整批共享，单条日志不再重复携带）。服务端会把外层 `siteId` 合并进每条日志。
+- 会话标识：`traceId` 同样上报在批量请求体外层；整批日志共享同一 `traceId`。跨会话补报的历史日志会在**单条日志内**保留各自原会话的 `traceId`，其优先级高于外层值，服务端解析时应优先取单条日志的 `traceId`，缺省再用外层值。
+- 发送方式：常规路径用原生 `XMLHttpRequest`（`text/plain`）并在 HTTP 2xx 后才出队；`pagehide` / 页面隐藏时用 `sendBeacon`（超 60KB 则 `fetch keepalive`）。
+- 失败重试：发送失败或离线不出队，队列写入 IndexedDB；`online` 后自动续发。
+- 服务端合并：`webInfo` 和 `pageInfo` 会在服务端按 `traceId` 缓存 3 天，普通日志入库前会合并对应的基础网页信息、页面信息、`ip` 和 `ua`。`siteId`、`traceId` 取自批量外层（单条日志带 `traceId` 时以单条为准）。接口在入库流程完成后再返回 204。
+- 传输压缩（不丢采集语义）：发送前去掉空值/`siteId`/与外层相同的 `traceId`；同一批内连续相同的 `pageId` 只出现一次，服务端按批内上一页回填。超长字符串只按服务端入库上限截断（`queryUrl`、资源 `name`、元素文本不截）。资源不再重复上报与 `ttfb` 相同的 `request`，入库时用 `ttfb` 回填 `request`；`contentDownload` 为 `responseEnd - responseStart`。HTTP 只上报 `queryUrl`，入库时拆出 `url`/`params`。为 0 的未采集阶段时间戳不上报。
 
 ## 初始化配置
 
@@ -38,9 +40,9 @@ interface ConfigProps {
 - `url`：上报服务地址，必填。
 - `appKey`：站点 ID，必填，上报时落到 `siteId`。
 - `mode`：环境标识，如 `test`、`release`、`prod`。
-- `isExposure`：是否开启曝光埋点，当前 SDK 会初始化曝光监听。
-- `maxBehaviorRecords`：行为轨迹最大记录数，当前实现默认最多保留 `200` 条。
-- `isOnRecord`：是否开启录屏，当前错误模块会初始化 rrweb 录制。
+- `isExposure`：是否开启曝光埋点，默认开启；传 `false` 时不初始化曝光监听。
+- `maxBehaviorRecords`：行为轨迹最大记录数，默认 `200`。
+- `isOnRecord`：是否开启录屏，默认开启；传 `false` 时不启动 rrweb。自定义埋点通过 `window.sendTracker` 上报。
 
 ## 公共字段
 
@@ -48,7 +50,7 @@ interface ConfigProps {
 
 - **批量外层（整批共享，只上报一次）**：`siteId`、`traceId`。见“上报协议”。
 - **单条日志级**：由 `LogStore.mergeCommonFields()` 统一注入 `pageId`、`timestamp`，是所有日志的唯一注入入口，避免各采集模块各自拼装导致字段重复或不一致。注入规则：
-  - 在日志入队时一次性补充，发送（`getLog`）阶段不再重复拼装。
+  - 在日志入队时一次性补充，发送阶段不再重复拼装；成功 ack 后才出队。
   - 调用方已显式传入的同名字段优先级最高，不会被默认值覆盖（如错误/录屏/反馈的 `timestamp`）。
   - `pageId` 缺省时不会写入 `undefined`，例如 `webInfo` 不含 `pageId`。
 
@@ -198,13 +200,14 @@ interface ConfigProps {
 | `startTime` | number | 开始时间。 |
 | `responseEnd` | number | 响应结束时间。 |
 | `time` | number | 总耗时，来自 `duration`。 |
-| `dnsLookup` | number | DNS 耗时。 |
-| `initialConnect` | number | TCP 连接耗时。 |
-| `ssl` | number | SSL 耗时。 |
-| `request` | number | 请求响应耗时。 |
-| `ttfb` | number | 首字节耗时。 |
-| `contentDownload` | number | 内容下载耗时。 |
+| `dnsLookup` | number | DNS 耗时，为 0 时不上报。 |
+| `initialConnect` | number | TCP 连接耗时，为 0 时不上报。 |
+| `ssl` | number | SSL 耗时，无 SSL 或为 0 时不上报。 |
+| `ttfb` | number | 首字节耗时（`responseStart - requestStart`）。 |
+| `contentDownload` | number | 内容下载耗时（`responseEnd - responseStart`）。 |
 | `isCache` | boolean | 是否命中缓存。 |
+
+入库时服务端用 `ttfb` 回填 Mongo `ResourcePref.request`（历史上与 `ttfb` 同值，SDK 不再重复传输）。
 
 ## PV 日志
 
@@ -233,8 +236,8 @@ interface ConfigProps {
 | `classList` | string[] | 目标元素类名列表。 |
 | `tagName` | string | 目标元素标签名。 |
 | `tagText` | string | 元素文本。 |
-| `nodeDom` | string \| null | 输入框失焦时会包含输入值，其余场景可能为 `null`。 |
-| `data-*` | any | 目标元素的 `dataset` 会展开到日志根字段。 |
+| `nodeDom` | string | 仅输入框 `blur` 时上报，含输入值；其余场景不上报该字段。 |
+| `data-*` | any | 目标元素的 `dataset` 展开到根字段，但不会覆盖 `category` / `monitorId` 等保留键。 |
 
 ### `change-exposure`
 
@@ -284,18 +287,18 @@ SDK 代理 `XMLHttpRequest` 和 `fetch`，请求完成后上报。
 | `reportsType` | `http-record` | 固定值。 |
 | `monitorId` | string | `api${uuid}`。 |
 | `method` | string | 请求方法。 |
-| `queryUrl` | string | 原始请求 URL（含 Query）。不含 Query 的 URL 与解析后的 Query 参数可由后端从该字段派生，SDK 不再单独上报 `url`、`params`。 |
+| `queryUrl` | string | 原始请求 URL（含 Query）。SDK 不再单独上报 `url`、`params`；服务端入库前从 `queryUrl` 拆出不含 Query 的 `url` 和 Query 对象 `params`。 |
 | `body` | any | 请求体。 |
 | `requestTime` | number | 请求发起时间戳。 |
 | `responseTime` | number | 响应完成时间戳。 |
 | `status` | number | HTTP 状态码；`fetch` 异常时为 `0`。 |
 | `statusText` | string | HTTP 状态文本或异常消息。 |
 | `response` | ResponseInfo | 响应摘要。HTML 响应会被过滤为 `[-Body内容为HTML已过滤-]`。 |
-| `zeroTime` | number | `fetch` 初始化时间戳，XHR 默认为 `0`。 |
-| `loadingTime` | number | `fetch` 请求开始等待响应时间戳。 |
-| `loadedTime` | number | `fetch` 收到响应时间戳。 |
-| `interactionTime` | number | `fetch` clone 响应后的时间戳。 |
-| `endTime` | number | `fetch` 读取响应文本完成时间戳。 |
+| `zeroTime` | number | `fetch` 初始化时间戳；为 0 不上报。 |
+| `loadingTime` | number | `fetch` 请求开始等待响应时间戳；为 0 不上报。 |
+| `loadedTime` | number | `fetch` 收到响应时间戳；为 0 不上报。 |
+| `interactionTime` | number | `fetch` clone 响应后的时间戳；为 0 不上报。 |
+| `endTime` | number | `fetch` 读取响应文本完成时间戳；为 0 不上报。 |
 
 `ResponseInfo`：
 
@@ -503,9 +506,8 @@ SDK 使用 `rrweb` 录制页面操作。达到检查点或单片段大小阈值�
       "dnsLookup": 8.3,
       "initialConnect": 18.5,
       "ssl": 12.2,
-      "request": 75.1,
       "ttfb": 75.1,
-      "contentDownload": 75.1,
+      "contentDownload": 180.4,
       "isCache": false
     }
   ]
@@ -537,7 +539,6 @@ SDK 使用 `rrweb` 录制页面操作。达到检查点或单片段大小阈值�
   "classList": ["btn", "btn-primary"],
   "tagName": "button",
   "tagText": "提交",
-  "nodeDom": null,
   "trackId": "submit_order"
 }
 ```

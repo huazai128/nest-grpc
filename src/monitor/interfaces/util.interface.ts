@@ -41,10 +41,9 @@ export interface ResourceFlowTiming {
   initiatorType: string
   startTime: number
   responseEnd: number
-  dnsLookup: number
-  initialConnect: number
-  ssl: number
-  request: number
+  dnsLookup?: number
+  initialConnect?: number
+  ssl?: number
   ttfb: number
   contentDownload: number
   time: number

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
 import { CommonExtends } from './commonExtends'
+import { compactHttpMetrics } from './compactLog'
 import { proxyFetch, proxyXmlHttp } from './httpProxy'
 import {
   ErrorInfo,
@@ -127,6 +128,7 @@ export default class ErrorVitals extends CommonExtends {
    */
   private onPageLoad() {
     const handler = () => {
+      if (this.sendLog.config?.isOnRecord === false) return
       if (!this.isStartRecord) {
         this.isStartRecord = true
         this.startRecordId()
@@ -158,12 +160,12 @@ export default class ErrorVitals extends CommonExtends {
     const errorInfo = {
       ...error,
       category: TransportCategory.ERROR,
-      breadcrumbs: breadcrumbs,
-      meta,
-      stackTrace,
+      breadcrumbs: breadcrumbs.length ? breadcrumbs : undefined,
+      meta: meta && Object.keys(meta).length ? meta : undefined,
+      stackTrace: Array.isArray(stackTrace) && stackTrace.length ? stackTrace : undefined,
       monitorId,
-      recordKeys: recordKeys,
-      timestamp: Date.now(), // 添加时间戳
+      recordKeys: recordKeys.length ? recordKeys : undefined,
+      timestamp: Date.now(),
     }
     this.sendLog.add(errorInfo)
   }
@@ -173,8 +175,6 @@ export default class ErrorVitals extends CommonExtends {
    */
   private initJsError() {
     const handler = (event: ErrorEvent) => {
-      event.preventDefault()
-
       if (getErrorKey(event) !== MechanismType.JS) return false
 
       const errUid = getErrorUid(`${MechanismType.JS}-${event.message}-${event.filename}`)
@@ -202,8 +202,6 @@ export default class ErrorVitals extends CommonExtends {
    */
   private initResourceError() {
     const handler = (e: Event) => {
-      e.preventDefault()
-
       if (getErrorKey(e) !== MechanismType.RS) return false
 
       const target = e.target as any
@@ -231,8 +229,6 @@ export default class ErrorVitals extends CommonExtends {
    */
   private initPromiseError() {
     const handler = (e: PromiseRejectionEvent) => {
-      e.preventDefault()
-
       let value = e.reason.message || e.reason
       if (Object.prototype.toString.call(value) === '[object Object]') {
         value = JSON.stringify(value)
@@ -278,15 +274,15 @@ export default class ErrorVitals extends CommonExtends {
 
       // response 已通过 value 上报（且经过 HTML 过滤），meta 不再重复携带原始 response，
       // 既减少重复字段，也避免 meta.response 绕过过滤泄漏 HTML 内容。
-      const { response: _response, ...restMetrics } = metrics
+      const body =
+        typeof metrics.body === 'string' && isHtml(metrics.body) ? '[-Body内容为HTML已过滤-]' : metrics.body
       const errorInfo: ExceptionMetrics = {
         reportsType: MechanismType.HP,
         value: JSON.stringify(res),
         errorType: 'HttpError',
         errorUid: errUid,
         meta: {
-          ...restMetrics,
-          body: typeof metrics.body === 'string' && isHtml(metrics.body) ? '[-Body内容为HTML已过滤-]' : metrics.body,
+          ...compactHttpMetrics({ ...metrics, body }),
         },
       }
 
@@ -302,8 +298,6 @@ export default class ErrorVitals extends CommonExtends {
    */
   private initCorsError() {
     const handler = (event: ErrorEvent) => {
-      event.preventDefault()
-
       if (getErrorKey(event) !== MechanismType.CS) return
 
       const exception: ExceptionMetrics = {
@@ -448,10 +442,10 @@ export default class ErrorVitals extends CommonExtends {
       timestamp: Date.now(),
       content: feedbackInfo.content,
       oId: feedbackInfo.oId,
-      breadcrumbs: breadcrumbs,
-      errorList: errorLogs,
+      breadcrumbs: breadcrumbs.length ? breadcrumbs : undefined,
+      errorList: errorLogs.length ? errorLogs : undefined,
       currentEvents,
-      recordKeys: recordKeys,
+      recordKeys: recordKeys.length ? recordKeys : undefined,
     }
 
     // 上报反馈信息

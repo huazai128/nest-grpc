@@ -186,11 +186,33 @@ const parseResponse = (response: any) => {
   }
 }
 
+const xhrSendHandlers: FN1[] = []
+const xhrLoadHandlers: FN1[] = []
+let xhrProxied = false
+
+const fetchSendHandlers: FN1[] = []
+const fetchLoadHandlers: FN1[] = []
+let fetchProxied = false
+
+const notify = (handlers: FN1[], payload: unknown) => {
+  handlers.forEach((handler) => {
+    try {
+      handler(payload)
+    } catch {
+      // 单个采集回调失败不影响其余监听和业务请求
+    }
+  })
+}
+
 /**
- * XMLHttpRequest代理
+ * XMLHttpRequest代理。多次调用只包装一次，额外 handler 追加到列表。
  */
 export const proxyXmlHttp = (sendHandler: FN1 | null | undefined, loadHandler: FN1) => {
   if (!('XMLHttpRequest' in window) || typeof window.XMLHttpRequest !== 'function') return
+  if (typeof sendHandler === 'function') xhrSendHandlers.push(sendHandler)
+  if (typeof loadHandler === 'function') xhrLoadHandlers.push(loadHandler)
+  if (xhrProxied) return
+  xhrProxied = true
 
   const oXMLHttpRequest = window.XMLHttpRequest
   if (!(window as any).oXMLHttpRequest) {
@@ -217,12 +239,13 @@ export const proxyXmlHttp = (sendHandler: FN1 | null | undefined, loadHandler: F
         endTime: 0,
       }
 
-      xhr.open = (method, url: string) => {
+      xhr.open = (method: string, url: string, async?: boolean, username?: string | null, password?: string | null) => {
         Object.assign(metrics, {
           method,
           queryUrl: url,
         })
-        open.call(xhr, method, url, true)
+        const isAsync = async !== false
+        return open.call(xhr, method, url, isAsync, username as string, password as string)
       }
 
       xhr.send = (body) => {
@@ -230,8 +253,8 @@ export const proxyXmlHttp = (sendHandler: FN1 | null | undefined, loadHandler: F
           body,
           requestTime: Date.now(),
         })
-        if (typeof sendHandler === 'function') sendHandler(xhr)
-        send.call(xhr, body)
+        notify(xhrSendHandlers, xhr)
+        return send.call(xhr, body)
       }
 
       xhr.addEventListener('readystatechange', () => {
@@ -243,7 +266,7 @@ export const proxyXmlHttp = (sendHandler: FN1 | null | undefined, loadHandler: F
             response: parseResponse(response),
             responseTime: Date.now(),
           })
-          if (typeof loadHandler === 'function') loadHandler(metrics)
+          notify(xhrLoadHandlers, metrics)
         }
       })
 
@@ -257,10 +280,14 @@ export const proxyXmlHttp = (sendHandler: FN1 | null | undefined, loadHandler: F
 }
 
 /**
- * Fetch代理
+ * Fetch代理。多次调用只包装一次，额外 handler 追加到列表。
  */
 export const proxyFetch = (sendHandler: FN1 | null | undefined, loadHandler: FN1) => {
   if (!('fetch' in window) || typeof window.fetch !== 'function') return
+  if (typeof sendHandler === 'function') fetchSendHandlers.push(sendHandler)
+  if (typeof loadHandler === 'function') fetchLoadHandlers.push(loadHandler)
+  if (fetchProxied) return
+  fetchProxied = true
 
   const oFetch = window.fetch
   if (!(window as any).oFetch) {
@@ -268,7 +295,7 @@ export const proxyFetch = (sendHandler: FN1 | null | undefined, loadHandler: FN1
   }
 
   ;(window as any).fetch = async (input: any, init: RequestInit) => {
-    if (typeof sendHandler === 'function') sendHandler(init)
+    notify(fetchSendHandlers, init)
 
     const url = (typeof input === 'string' ? input : input?.url) || ''
     const metrics: HttpMetrics = {
@@ -305,7 +332,7 @@ export const proxyFetch = (sendHandler: FN1 | null | undefined, loadHandler: FN1
         responseTime: Date.now(),
       })
 
-      if (typeof loadHandler === 'function') loadHandler(metrics)
+      notify(fetchLoadHandlers, metrics)
       return response
     } catch (error: any) {
       metrics.endTime = Date.now()
@@ -314,7 +341,7 @@ export const proxyFetch = (sendHandler: FN1 | null | undefined, loadHandler: FN1
       metrics.statusText = error?.message || ''
       metrics.response = { result: error?.message || '' }
 
-      if (typeof loadHandler === 'function') loadHandler(metrics)
+      notify(fetchLoadHandlers, metrics)
       throw error
     }
   }

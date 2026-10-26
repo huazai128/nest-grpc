@@ -66,11 +66,11 @@ export class LogController {
   @Responsor.api()
   @Responsor.handle('批量上传日志')
   async postMultiLogs(
-    @PlainBody() body: { logs: Partial<LogData>[] },
+    @PlainBody() body: { logs?: Partial<LogData>[]; siteId?: string; traceId?: string },
     @QueryParams('visitor') visitor: QueryVisitor,
     @Res() res: ExpressResponse,
   ) {
-    this.logIngestService.ingestMultiLogs(body.logs, visitor)
+    await this.logIngestService.ingestMultiLogs(body || {}, visitor)
     return res.status(204).json()
   }
 

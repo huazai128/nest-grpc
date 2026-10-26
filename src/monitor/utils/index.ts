@@ -144,57 +144,50 @@ export const getNavigationTiming = (): MPerformanceNavigationTiming | undefined 
  * @param {Array<ResourceFlowTiming>} resourceFlow
  * @return {*}  {(PerformanceObserver | undefined)}
  */
+const toResourceFlowTiming = (entry: PerformanceResourceTiming, looseCache = false): ResourceFlowTiming => {
+  const {
+    name,
+    transferSize,
+    initiatorType,
+    startTime,
+    responseEnd,
+    domainLookupEnd,
+    domainLookupStart,
+    connectStart,
+    connectEnd,
+    secureConnectionStart,
+    responseStart,
+    requestStart,
+    duration,
+  } = entry
+  const dnsLookup = domainLookupEnd - domainLookupStart
+  const initialConnect = connectEnd - connectStart
+  const isCache = looseCache
+    ? (duration == 0 && transferSize !== 0) || (!dnsLookup && !initialConnect)
+    : duration == 0 && transferSize !== 0
+  const item: ResourceFlowTiming = {
+    name,
+    transferSize,
+    initiatorType,
+    startTime,
+    responseEnd,
+    time: duration,
+    ttfb: responseStart - requestStart,
+    contentDownload: responseEnd - responseStart,
+    isCache: !!isCache,
+  }
+  if (dnsLookup) item.dnsLookup = dnsLookup
+  if (initialConnect) item.initialConnect = initialConnect
+  if (secureConnectionStart) {
+    const ssl = connectEnd - secureConnectionStart
+    if (ssl) item.ssl = ssl
+  }
+  return item
+}
+
 export const getResourceFlow = (resourceFlow: Array<ResourceFlowTiming>): PerformanceObserver | undefined => {
   const entryHandler = (entry: PerformanceResourceTiming) => {
-    const {
-      name,
-      transferSize,
-      initiatorType,
-      startTime,
-      responseEnd,
-      domainLookupEnd,
-      domainLookupStart,
-      connectStart,
-      connectEnd,
-      secureConnectionStart,
-      responseStart,
-      requestStart,
-      duration,
-    } = entry
-    const isCache = duration == 0 && transferSize !== 0
-    resourceFlow.push(
-      // name 资源地址
-      // startTime 开始时间
-      // responseEnd 结束时间
-      // time 消耗时间
-      // initiatorType 资源类型
-      // transferSize 传输大小
-      // 请求响应耗时 ttfb = item.responseStart - item.startTime
-      // 内容下载耗时 tran = item.responseEnd - item.responseStart
-      // 但是受到跨域资源影响。除非资源设置允许获取timing
-      {
-        // name 资源地址
-        name,
-        // transferSize 传输大小
-        transferSize,
-        // initiatorType 资源类型
-        initiatorType,
-        // startTime 开始时间
-        startTime,
-        // responseEnd 结束时间
-        responseEnd,
-        //消耗时间
-        time: duration,
-        dnsLookup: domainLookupEnd - domainLookupStart,
-        initialConnect: connectEnd - connectStart,
-        ssl: connectEnd - secureConnectionStart,
-        request: responseStart - requestStart,
-        ttfb: responseStart - requestStart,
-        contentDownload: responseStart - requestStart,
-        // 是否命中缓存
-        isCache: isCache,
-      },
-    )
+    resourceFlow.push(toResourceFlowTiming(entry))
   }
 
   return observe({ type: 'resource' }, entryHandler) // 没有监听到全部资源加载
@@ -399,48 +392,7 @@ export const getPerformanceResourceFlow = (): Array<ResourceFlowTiming> => {
     const list = entries.filter((entry) => {
       return ['fetch', 'xmlhttprequest', 'beacon'].indexOf(entry.initiatorType) === -1
     })
-    const metrics = list.map((entry) => {
-      const {
-        name,
-        transferSize,
-        initiatorType,
-        startTime,
-        responseEnd,
-        domainLookupEnd,
-        domainLookupStart,
-        connectStart,
-        connectEnd,
-        secureConnectionStart,
-        responseStart,
-        requestStart,
-        duration,
-      } = entry
-      const dnsLookup = domainLookupEnd - domainLookupStart
-      const initialConnect = connectEnd - connectStart
-      const isCache = (duration == 0 && transferSize !== 0) || (!dnsLookup && !initialConnect)
-      return {
-        // name 资源地址
-        name,
-        // transferSize 传输大小
-        transferSize,
-        // initiatorType 资源类型
-        initiatorType,
-        // startTime 开始时间
-        startTime,
-        // responseEnd 结束时间
-        responseEnd,
-        //消耗时间
-        time: duration,
-        dnsLookup: dnsLookup,
-        initialConnect: initialConnect,
-        ssl: connectEnd - secureConnectionStart,
-        request: responseStart - requestStart,
-        ttfb: responseStart - requestStart,
-        contentDownload: responseStart - requestStart,
-        // 是否命中缓存
-        isCache: !!isCache,
-      }
-    })
+    const metrics = list.map((entry) => toResourceFlowTiming(entry, true))
     return metrics
   }
   return []

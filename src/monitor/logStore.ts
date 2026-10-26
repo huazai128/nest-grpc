@@ -3,6 +3,7 @@ import localForage from 'localforage'
 import { getCookie, proxyHash, proxyHistory, wrHistory } from './utils'
 import { v4 as uuidv4 } from 'uuid'
 import { ConfigProps } from './interfaces/config.interface'
+import { omitEmpty } from './compactLog'
 
 const store = localForage.createInstance({
   name: 'behaviorLog',
@@ -112,7 +113,7 @@ export default abstract class LogStore {
     if (merged.pageId === undefined) {
       delete merged.pageId
     }
-    return merged
+    return omitEmpty(merged)
   }
 
   /**
@@ -126,25 +127,29 @@ export default abstract class LogStore {
     }
     this.curHref = href
     this.pageId = 'pageId:' + uuidv4()
-    this.logList.splice(
-      1,
-      0,
-      this.mergeCommonFields({
-        path: pathname,
-        referrer: document.referrer,
-        prevHref: this.prevHref,
-        title: document.title,
-        href,
-        jumpType: e?.type || '',
-        type: performance?.navigation?.type,
-        category: TransportCategory.PageInfo,
-        // 用户来源
-        // 0: 点击链接、地址栏输入、表单提交、脚本操作等。
-        // 1: 点击重新加载按钮、location.reload。
-        // 2: 点击前进或后退按钮。
-        // 255: 任何其他来源。即非刷新/ 非前进后退、非点击链接 / 地址栏输入 / 表单提交 / 脚本操作等。
-      }),
-    )
+    const pageInfo = this.mergeCommonFields({
+      path: pathname,
+      referrer: document.referrer,
+      prevHref: this.prevHref,
+      title: document.title,
+      href,
+      jumpType: e?.type || '',
+      type: performance?.navigation?.type,
+      category: TransportCategory.PageInfo,
+      // 用户来源
+      // 0: 点击链接、地址栏输入、表单提交、脚本操作等。
+      // 1: 点击重新加载按钮、location.reload。
+      // 2: 点击前进或后退按钮。
+      // 255: 任何其他来源。即非刷新/ 非前进后退、非点击链接 / 地址栏输入 / 表单提交 / 脚本操作等。
+    })
+    const webInfoIndex = this.logList.findIndex((item) => item.category === TransportCategory.WebInfo)
+    if (webInfoIndex >= 0) {
+      this.logList.splice(webInfoIndex + 1, 0, pageInfo)
+    } else {
+      this.logList.unshift(pageInfo)
+    }
+    this.persistLogs()
+    this.handlerCommon()
   }
 
   /**
@@ -155,6 +160,9 @@ export default abstract class LogStore {
   setConfig = (config: ConfigProps) => {
     this.config = config
     this.url = this.config.url + '/api/log/multi'
+    if (typeof config.maxBehaviorRecords === 'number' && config.maxBehaviorRecords > 0) {
+      this.maxBehaviorLen = config.maxBehaviorRecords
+    }
     this.initPageInfo()
   }
 
@@ -179,6 +187,7 @@ export default abstract class LogStore {
         category: TransportCategory.WebInfo,
       }),
     )
+    this.persistLogs()
   }
 
   /**
@@ -186,7 +195,7 @@ export default abstract class LogStore {
    * @memberof LogStore
    */
   initStore = async () => {
-    // 此处要规避先后问题, 导致获取缓存数据前，就有上报数据 然后调用getLog方法，导致数据顺序不一致问题。
+    // 此处要规避先后问题, 导致获取缓存数据前，就有上报数据 然后调用 peekLog，导致数据顺序不一致问题。
     await Promise.all([
       store.getItem(this.behaviorStoreKey).then((value) => {
         if (value) {
@@ -194,7 +203,6 @@ export default abstract class LogStore {
           if (Array.isArray(list)) {
             this.behaviorList = [...list, ...this.behaviorList]
           }
-          store.removeItem(this.behaviorStoreKey)
         }
         return true
       }),
@@ -203,11 +211,11 @@ export default abstract class LogStore {
           const restored = this.restoreLogs(value)
           // 确保这里添加数组开始
           this.logList = [...restored, ...this.logList]
-          store.removeItem(this.logsStoreKey)
         }
         return true
       }),
     ])
+    this.persistLogs()
     this.isOver = true
     this.handlerCommon()
   }
@@ -226,6 +234,7 @@ export default abstract class LogStore {
       })
     }
     this.logList.push(this.mergeCommonFields(value))
+    this.persistLogs()
     this.handlerCommon()
   }
 
@@ -252,28 +261,33 @@ export default abstract class LogStore {
   }
 
   /**
-   * 获取日志并删除已上报的数据
+   * 查看待上报日志，不移出队列。发送成功后再 ackLog。
    * @memberof LogStore
    */
-  getLog = (): IMetrics[] => {
-    // 这里只是简单的对上报时检查网络，但它缺少了对服务器端异常的处理机制比如服务器宕机、请求超时等情况的处理。这是一个潜在的改进点。
+  peekLog = (): IMetrics[] => {
     if (!navigator.onLine) {
       return []
     }
+    return this.logList.slice(0, this.len)
+  }
 
-    // siteId/traceId 已提升到批量外层，pageId/timestamp 在入队（mergeCommonFields）时注入，
-    // 此处不再重复补充，避免字段在多个环节被反复拼装导致不一致。
-    const logs: IMetrics[] = []
-    const list = this.logList.filter((item, index: number) => {
-      if (index < this.len) {
-        logs.push(item)
-      }
-      return index >= this.len
-    })
-    this.logList = [...list]
-    // 缓存时记录当前会话 traceId，便于跨会话补报时还原归属
+  /**
+   * 发送成功后删除队头并落盘。失败不得调用，避免丢数。
+   * @param {number} count
+   * @memberof LogStore
+   */
+  ackLog = (count: number): void => {
+    if (count <= 0) return
+    this.logList = this.logList.slice(count)
+    this.persistLogs()
+  }
+
+  /**
+   * 队列落盘，关页前也能从 IndexedDB 恢复未确认日志。
+   * @memberof LogStore
+   */
+  protected persistLogs = (): void => {
     store.setItem(this.logsStoreKey, { traceId: this.traceId, logs: this.logList })
-    return logs
   }
 
   /**

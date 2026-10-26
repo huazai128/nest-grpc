@@ -11,6 +11,7 @@ import {
   normalizePerformanceRecord,
   supported,
 } from './utils'
+import { compactPaint } from './compactLog'
 import { CommonExtends } from './commonExtends'
 
 /**
@@ -77,7 +78,7 @@ export class WebVitals extends CommonExtends {
       const entry = await getFP()
       if (entry) {
         const { name, ...metrics } = normalizePerformanceRecord(entry)
-        this.sendMetricsLog({ fpTime: metrics }, MetricsName.FP)
+        this.sendMetricsLog({ fpTime: compactPaint(metrics) }, MetricsName.FP)
       }
     } catch (error) {
       console.error('Failed to initialize FP:', error)
@@ -95,7 +96,7 @@ export class WebVitals extends CommonExtends {
         const time = performance.now() - this.startTime
         this.diffTime = Number((entry.startTime - time).toFixed(2))
         const { name, ...metrics } = normalizePerformanceRecord(entry)
-        this.sendMetricsLog({ fcpTime: metrics }, MetricsName.FCP)
+        this.sendMetricsLog({ fcpTime: compactPaint(metrics) }, MetricsName.FCP)
       }
     } catch (error) {
       console.error('Failed to initialize FCP:', error)

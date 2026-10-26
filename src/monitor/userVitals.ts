@@ -4,6 +4,7 @@ import { CustomAnalyticsData, FN1, HttpMetrics, MetricsName, TransportCategory }
 import { downloadSpeed, mOberver, proxyHash, proxyHistory } from './utils'
 import isHtml from 'is-html'
 import { v4 as uuidv4 } from 'uuid'
+import { compactHttpMetrics, pickDataset } from './compactLog'
 
 /**
  * UserVitals 类 - 用于监控用户行为
@@ -25,6 +26,7 @@ export class UserVitals extends CommonExtends {
   constructor() {
     super()
     this.initializeHandlers()
+    window.sendTracker = this.initCustomerHandler()
   }
 
   /**
@@ -43,7 +45,9 @@ export class UserVitals extends CommonExtends {
   private initRouterChange = (): void => {
     const handler = (): void => {
       void this.initPV()
-      this.initExposure()
+      if (this.sendLog.config?.isExposure !== false) {
+        this.initExposure()
+      }
     }
     window.addEventListener('pageshow', handler, { once: true, capture: true })
     proxyHash(handler)
@@ -55,20 +59,20 @@ export class UserVitals extends CommonExtends {
    * 包含网络速度测试
    */
   private initPV = async (): Promise<void> => {
+    const monitorId = `${TransportCategory.PV}${uuidv4()}`
+    let speed: Record<string, number> = {}
     try {
       const url = 'https://biu-cn.dwstatic.com/upload/1726199407972.jpg'
-      const res = await downloadSpeed({ url, size: 103.13 })
-      const monitorId = `${TransportCategory.PV}${uuidv4()}`
-
-      this.sendLog.add({
-        reportsType: MetricsName.RCR,
-        category: TransportCategory.PV,
-        monitorId,
-        ...res,
-      })
+      speed = await downloadSpeed({ url, size: 103.13 })
     } catch (error) {
-      console.error('Failed to initialize PV:', error)
+      console.error('Failed to measure PV network speed:', error)
     }
+    this.sendLog.add({
+      reportsType: MetricsName.RCR,
+      category: TransportCategory.PV,
+      monitorId,
+      ...speed,
+    })
   }
 
   /**
@@ -112,9 +116,10 @@ export class UserVitals extends CommonExtends {
     const innerText = target.innerText
     const value = (target as HTMLInputElement).value
 
-    const nodeDom = value
-      ? `<${target.tagName.toLowerCase()} ${id} ${classNames}>${innerText} ${value && event.type === 'blur' ? '输入框值为：' + value : ''}</${target.tagName.toLowerCase()}>`
-      : null
+    const nodeDom =
+      value && event.type === 'blur'
+        ? `<${target.tagName.toLowerCase()} ${id} ${classNames}>${innerText} 输入框值为：${value}</${target.tagName.toLowerCase()}>`
+        : undefined
 
     return {
       reportsType: MetricsName.CBR,
@@ -125,7 +130,7 @@ export class UserVitals extends CommonExtends {
       category: TransportCategory.EVENT,
       nodeDom,
       monitorId: `${TransportCategory.EVENT}${uuidv4()}`,
-      ...data,
+      ...pickDataset(data),
     }
   }
 
@@ -170,7 +175,8 @@ export class UserVitals extends CommonExtends {
         tagName: nodeRef.tagName,
         text: nodeRef.textContent,
         category: TransportCategory.EVENT,
-        ...data,
+        ...pickDataset(data),
+        monitorId: (data as Record<string, string>).monitorId || `${TransportCategory.EVENT}${uuidv4()}`,
       })
 
       nodeRef.setAttribute('data-visible', 'y')
@@ -244,8 +250,7 @@ export class UserVitals extends CommonExtends {
         reportsType: MetricsName.HT,
         category: TransportCategory.API,
         monitorId,
-        ...metrics,
-        response,
+        ...compactHttpMetrics(metrics, response),
       })
     }
 
